@@ -3,6 +3,7 @@ import { Box, NativeBaseProvider, extendTheme } from 'native-base'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { View, StyleSheet } from 'react-native'
 import { FooterNavigation } from '../components/FooterNavigation'
+import { SongApiControllerImplApi } from '../generated'
 
 const theme = extendTheme({
     useSystemColorMode: false,

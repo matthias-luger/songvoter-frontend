@@ -1,7 +1,7 @@
 {
     "expo": {
         "name": "songvoter-frontend",
-        "slug": "songvoter-frontend",
+        "slug": "songvoter",
         "version": "1.0.0",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
@@ -13,18 +13,28 @@
         },
         "assetBundlePatterns": ["**/*"],
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "com.coflnet.songvoter"
         },
         "android": {
             "adaptiveIcon": {
                 "foregroundImage": "./assets/adaptive-icon.png",
                 "backgroundColor": "#ffffff"
-            }
+            },
+            "package": "com.coflnet.songvoter",
+            "googleServicesFile": "./google-services.json"
         },
+        "plugins": ["@react-native-google-signin/google-signin"],
         "web": {
             "bundler": "metro",
             "favicon": "./assets/favicon.png"
         },
-        "scheme": "myapp"
+        "scheme": "myapp",
+        "extra": {
+            "eas": {
+                "projectId": "5ed28b9f-440a-484b-a86d-bc8433942b3e"
+            }
+        },
+        "owner": "ragult"
     }
 }

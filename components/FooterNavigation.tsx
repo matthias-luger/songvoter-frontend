@@ -10,7 +10,7 @@ interface Route {
     label: string
 }
 
-let routes = [
+let routes: Route[] = [
     {
         href: '/',
         icon: 'home-outline',
@@ -29,7 +29,7 @@ let routes = [
         selectedIcon: 'music',
         label: 'Spotify'
     }
-] as Route[]
+]
 
 export function FooterNavigation() {
     let pathname = usePathname()
