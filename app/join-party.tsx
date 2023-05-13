@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react'
 import { PartyController } from '../utils/ApiHelper'
 import QRCode from 'react-native-qrcode-svg'
+import { QRCodeScanner } from '../components/QRCodeScanner'
 
 export default function App() {
     let [inviteLink, setInviteLink] = useState('')
@@ -16,6 +17,7 @@ export default function App() {
                 <Heading size="xl" style={styles.heading}>
                     Join party
                 </Heading>
+                <QRCodeScanner />
             </MainLayout>
         </>
     )

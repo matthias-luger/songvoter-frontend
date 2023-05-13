@@ -24,7 +24,19 @@
             "package": "com.coflnet.songvoter",
             "googleServicesFile": "./android/app/google-services.json"
         },
-        "plugins": ["@react-native-google-signin/google-signin"],
+        "plugins": [
+            "@react-native-google-signin/google-signin",
+            [
+                "react-native-vision-camera",
+                {
+                    "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+
+                    // optionally, if you want to record audio:
+                    "enableMicrophonePermission": true,
+                    "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+                }
+            ]
+        ],
         "web": {
             "bundler": "metro",
             "favicon": "./assets/favicon.png"
