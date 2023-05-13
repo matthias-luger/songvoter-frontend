@@ -1,30 +1,31 @@
 import { StatusBar } from 'expo-status-bar'
-import { Box, NativeBaseProvider, extendTheme } from 'native-base'
+import { Box, NativeBaseProvider, extendTheme, useColorModeValue } from 'native-base'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { View, StyleSheet } from 'react-native'
 import { FooterNavigation } from '../components/FooterNavigation'
 import { SongApiControllerImplApi } from '../generated'
-
-const theme = extendTheme({
-    useSystemColorMode: false,
-    initialColorMode: 'dark'
-})
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 export default function MainLayout(props) {
     return (
-        <NativeBaseProvider config={{ theme }}>
-            <SafeAreaProvider>
-                <StatusBar style="auto" />
-                <SafeAreaView>
-                    <View style={styles.view}>
-                        <Box style={styles.container}>{props.children}</Box>
-                        <Box style={styles.footer}>
-                            <FooterNavigation />
-                        </Box>
-                    </View>
-                </SafeAreaView>
-            </SafeAreaProvider>
-        </NativeBaseProvider>
+        <>
+            <NativeBaseProvider>
+                <SafeAreaProvider>
+                    <StatusBar style="dark" />
+                    <SafeAreaView>
+                        <View style={styles.view}>
+                            <Box bg={'coolGray.800'} style={styles.container}>
+                                {props.children}
+                            </Box>
+                            <Box style={styles.footer}>
+                                <FooterNavigation />
+                            </Box>
+                        </View>
+                    </SafeAreaView>
+                </SafeAreaProvider>
+            </NativeBaseProvider>
+            <Toast />
+        </>
     )
 }
 

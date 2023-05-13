@@ -18,16 +18,10 @@ let routes: Route[] = [
         label: 'Home'
     },
     {
-        href: '/test',
-        icon: 'home-outline',
-        selectedIcon: 'home',
-        label: 'Test'
-    },
-    {
-        href: '/spotify',
+        href: '/your-songs',
         icon: 'music-note-outline',
         selectedIcon: 'music',
-        label: 'Spotify'
+        label: 'Your Songs'
     }
 ]
 

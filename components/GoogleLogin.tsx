@@ -1,62 +1,92 @@
-import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin'
+import { GoogleSignin, GoogleSigninButton, User, statusCodes } from '@react-native-google-signin/google-signin'
 import { Box, Button, Text } from 'native-base'
 import { useEffect, useState } from 'react'
+import Toast from 'react-native-toast-message'
+import { getCurrentUserInfo, setCurrentUserInfo } from '../utils/GoogleUtils'
+import { GoogleData } from '../types/global'
+import { AuthController } from '../utils/ApiHelper'
+import { AuthApiControllerImplApi, Configuration } from '../generated'
 
-export function GoogleLogin() {
-    let [userInfo, setUserInfo] = useState(null)
-    let [isSigninInProgress, setIsSigninInProgress] = useState(false)
+interface Props {
+    onLogin(user: GoogleData)
+}
+
+export function GoogleLogin(props: Props) {
+    let [isSignedIn, setIsSignedIn] = useState(false)
 
     useEffect(() => {
-        GoogleSignin.configure({
-            webClientId: '1092901711600-cans570mhv8cgok7724gsm54d38c2e4v.apps.googleusercontent.com'
-        })
-        getCurrentUserInfo()
+        let userInfo = getCurrentUserInfo()
+        if (userInfo) {
+            setIsSignedIn(true)
+            if (props.onLogin) {
+                props.onLogin(userInfo)
+            }
+            return
+        }
+        GoogleSignin.configure({ webClientId: '108545418952-7sq5bfbe3467koksr3nsfml7b4saep0n.apps.googleusercontent.com' })
+        loginSilently()
     }, [])
 
-    async function getCurrentUserInfo() {
+    async function loginSilently() {
         try {
-            const userInfo = await GoogleSignin.signInSilently()
-            setUserInfo(userInfo)
+            let userInfo: GoogleData = await GoogleSignin.signInSilently()
+            setGoogleData(userInfo)
         } catch (error) {
-            setUserInfo(JSON.stringify(error))
-            if (error.code === statusCodes.SIGN_IN_REQUIRED) {
-                // user has not signed in yet
-            } else {
-                // some other error
-            }
+            setIsSignedIn(false)
+            Toast.show({
+                type: 'error',
+                text1: error.message
+            })
         }
     }
 
     async function onLogin() {
         try {
             await GoogleSignin.hasPlayServices()
-            const userInfo = await GoogleSignin.signIn()
-            setUserInfo(userInfo)
+            let userInfo: GoogleData = await GoogleSignin.signIn()
+            setGoogleData(userInfo)
+            Toast.show({
+                type: 'success',
+                text1: 'Login successful'
+            })
         } catch (error) {
-            setUserInfo(JSON.stringify(error))
-            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                // user cancelled the login flow
-            } else if (error.code === statusCodes.IN_PROGRESS) {
-                // operation (e.g. sign in) is in progress already
-            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                // play services not available or outdated
-            } else {
-                // some other error happened
+            setIsSignedIn(false)
+            Toast.show({
+                type: 'error',
+                text1: error.message
+            })
+        }
+    }
+
+    async function setGoogleData(userInfo: User) {
+        try {
+            let googleData: GoogleData = { ...userInfo }
+            let response = await AuthController.v1AuthGooglePost({
+                coflnetSongVoterModelsAuthToken: {
+                    token: userInfo.idToken
+                }
+            })
+            googleData.serverToken = response.token
+            setCurrentUserInfo(googleData)
+            if (props.onLogin) {
+                props.onLogin(googleData)
             }
+            setIsSignedIn(true)
+        } catch (e) {
+            console.error(e)
         }
     }
 
     return (
         <Box>
-            <Text>{JSON.stringify(userInfo)}</Text>
-            <GoogleSigninButton
-                style={{ width: 192, height: 48 }}
-                size={GoogleSigninButton.Size.Wide}
-                color={GoogleSigninButton.Color.Dark}
-                onPress={onLogin}
-                disabled={isSigninInProgress}
-            />
-            ;
+            {!isSignedIn ? (
+                <GoogleSigninButton
+                    style={{ width: 192, height: 48 }}
+                    size={GoogleSigninButton.Size.Wide}
+                    color={GoogleSigninButton.Color.Dark}
+                    onPress={onLogin}
+                />
+            ) : null}
         </Box>
     )
 }

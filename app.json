@@ -1,6 +1,6 @@
 {
     "expo": {
-        "name": "songvoter-frontend",
+        "name": "SongVoter",
         "slug": "songvoter",
         "version": "1.0.0",
         "orientation": "portrait",
@@ -22,7 +22,7 @@
                 "backgroundColor": "#ffffff"
             },
             "package": "com.coflnet.songvoter",
-            "googleServicesFile": "./google-services.json"
+            "googleServicesFile": "./android/app/google-services.json"
         },
         "plugins": ["@react-native-google-signin/google-signin"],
         "web": {
