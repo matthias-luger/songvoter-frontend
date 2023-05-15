@@ -1,26 +1,27 @@
 import * as React from 'react'
 
 import { StyleSheet, Text } from 'react-native'
-import { useCameraDevices } from 'react-native-vision-camera'
+import { useCameraDevices, useFrameProcessor } from 'react-native-vision-camera'
 import { Camera } from 'react-native-vision-camera'
-import { useScanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner'
+import { Barcode, BarcodeFormat, scanBarcodes } from 'vision-camera-code-scanner'
 
-export function QRCodeScanner() {
+interface Props {
+    onBarcodeScan?(barcode: Barcode)
+}
+
+export function QRCodeScanner(props: Props) {
     const [hasPermission, setHasPermission] = React.useState(false)
     const devices = useCameraDevices()
     const device = devices.back
 
-    const [frameProcessor, barcodes] = useScanBarcodes([BarcodeFormat.QR_CODE], {
-        checkInverted: true
-    })
-
-    // Alternatively you can use the underlying function:
-    //
-    // const frameProcessor = useFrameProcessor((frame) => {
-    //   'worklet';
-    //   const detectedBarcodes = scanBarcodes(frame, [BarcodeFormat.QR_CODE], { checkInverted: true });
-    //   runOnJS(setBarcodes)(detectedBarcodes);
-    // }, []);
+    const frameProcessor = useFrameProcessor(frame => {
+        'worklet'
+        const detectedBarcodes = scanBarcodes(frame, [BarcodeFormat.QR_CODE], { checkInverted: true })
+        const barcode = detectedBarcodes[0]
+        if (barcode && props.onBarcodeScan) {
+            props.onBarcodeScan(barcode)
+        }
+    }, [])
 
     React.useEffect(() => {
         ;(async () => {
@@ -29,18 +30,11 @@ export function QRCodeScanner() {
         })()
     }, [])
 
-    console.log(barcodes)
-
     return (
         device != null &&
         hasPermission && (
             <>
                 <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} frameProcessor={frameProcessor} frameProcessorFps={5} />
-                {barcodes.map((barcode, idx) => (
-                    <Text key={idx} style={styles.barcodeTextURL}>
-                        {barcode.displayValue}
-                    </Text>
-                ))}
             </>
         )
     )
