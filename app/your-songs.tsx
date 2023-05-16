@@ -1,12 +1,12 @@
 import { Heading } from 'native-base'
 import MainLayout from '../layouts/MainLayout'
-import { GoogleLogin } from '../components/GoogleLogin'
 import { useState } from 'react'
-import { User } from '@react-native-google-signin/google-signin'
 import { StyleSheet } from 'react-native'
+import GoogleLogin from '../components/GoogleLogin'
+import { GoogleData } from '../types/global'
 
 export default function Spotify() {
-    let [userInfo, setUserInfo] = useState<User>()
+    let [userInfo, setUserInfo] = useState<GoogleData>()
 
     return (
         <MainLayout>

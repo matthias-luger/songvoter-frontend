@@ -22,19 +22,19 @@ import {
     CoflnetSongVoterModelsAuthTokenToJSON,
 } from '../models';
 
-export interface V1AuthGooglePostRequest {
+export interface AuthGooglePostRequest {
     coflnetSongVoterModelsAuthToken?: CoflnetSongVoterModelsAuthToken;
 }
 
-export interface V1AuthTestPostRequest {
+export interface AuthTestPostRequest {
     coflnetSongVoterModelsAuthToken?: CoflnetSongVoterModelsAuthToken;
 }
 
-export interface V1DbDeleteRequest {
+export interface DbDeleteRequest {
     coflnetSongVoterModelsAuthToken?: CoflnetSongVoterModelsAuthToken;
 }
 
-export interface V1DbPostRequest {
+export interface DbPostRequest {
     coflnetSongVoterModelsAuthToken?: CoflnetSongVoterModelsAuthToken;
 }
 
@@ -47,7 +47,7 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
      * Exchange a google identity token for a songvoter token
      * Authenticate with google
      */
-    async v1AuthGooglePostRaw(requestParameters: V1AuthGooglePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsAuthToken>> {
+    async authGooglePostRaw(requestParameters: AuthGooglePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsAuthToken>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -55,7 +55,7 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v1/auth/google`,
+            path: `/auth/google`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -69,14 +69,14 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
      * Exchange a google identity token for a songvoter token
      * Authenticate with google
      */
-    async v1AuthGooglePost(requestParameters: V1AuthGooglePostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsAuthToken> {
-        const response = await this.v1AuthGooglePostRaw(requestParameters, initOverrides);
+    async authGooglePost(requestParameters: AuthGooglePostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsAuthToken> {
+        const response = await this.authGooglePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      */
-    async v1AuthTestPostRaw(requestParameters: V1AuthTestPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async authTestPostRaw(requestParameters: AuthTestPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -84,7 +84,7 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v1/auth/test`,
+            path: `/auth/test`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -96,13 +96,13 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
 
     /**
      */
-    async v1AuthTestPost(requestParameters: V1AuthTestPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1AuthTestPostRaw(requestParameters, initOverrides);
+    async authTestPost(requestParameters: AuthTestPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.authTestPostRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async v1DbDeleteRaw(requestParameters: V1DbDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async dbDeleteRaw(requestParameters: DbDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -110,7 +110,7 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v1/db`,
+            path: `/db`,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -122,13 +122,13 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
 
     /**
      */
-    async v1DbDelete(requestParameters: V1DbDeleteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1DbDeleteRaw(requestParameters, initOverrides);
+    async dbDelete(requestParameters: DbDeleteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.dbDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
      */
-    async v1DbPostRaw(requestParameters: V1DbPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async dbPostRaw(requestParameters: DbPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -136,7 +136,7 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v1/db`,
+            path: `/db`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -148,8 +148,8 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
 
     /**
      */
-    async v1DbPost(requestParameters: V1DbPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1DbPostRaw(requestParameters, initOverrides);
+    async dbPost(requestParameters: DbPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.dbPostRaw(requestParameters, initOverrides);
     }
 
 }

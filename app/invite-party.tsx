@@ -2,13 +2,26 @@ import { Button, Center, Heading, Text } from 'native-base'
 import MainLayout from '../layouts/MainLayout'
 import { StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react'
-import { PartyController } from '../utils/ApiHelper'
 import QRCode from 'react-native-qrcode-svg'
+import { PartyController } from '../utils/ApiHelper'
+import { CoflnetSongVoterDBModelsParty } from '../generated'
 
 export default function App() {
+    let [party, setParty] = useState<CoflnetSongVoterDBModelsParty>()
     let [inviteLink, setInviteLink] = useState('https://songvoter.party')
 
-    useEffect(() => {}, [])
+    useEffect(() => {
+        PartyController.partyPost().then(party => {
+            setParty(party)
+            PartyController.partyInviteLinkGet({
+                partyId: party.id.toString()
+            }).then(partyLink => {
+                setInviteLink(partyLink)
+            }).catch(e => {
+                setInviteLink("No invite link :(")
+            })
+        })
+    }, [])
 
     return (
         <>

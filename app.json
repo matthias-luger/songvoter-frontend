@@ -41,7 +41,7 @@
             "bundler": "metro",
             "favicon": "./assets/favicon.png"
         },
-        "scheme": "myapp",
+        "scheme": "com.coflnet.songvoter",
         "extra": {
             "eas": {
                 "projectId": "5ed28b9f-440a-484b-a86d-bc8433942b3e"

@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AuthApiControllerImplApi.ts
 apis/ListApiControllerImplApi.ts
 apis/PartyApiControllerImplApi.ts
@@ -15,6 +14,7 @@ models/CoflnetSongVoterDBModelsUser.ts
 models/CoflnetSongVoterModelsAuthToken.ts
 models/CoflnetSongVoterModelsExternalSong.ts
 models/CoflnetSongVoterModelsExternalSongPlatformEnum.ts
+models/CoflnetSongVoterModelsParty.ts
 models/CoflnetSongVoterModelsPlayList.ts
 models/CoflnetSongVoterModelsSong.ts
 models/CoflnetSongVoterModelsSongCreation.ts

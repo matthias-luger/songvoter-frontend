@@ -22,11 +22,21 @@ import {
     CoflnetSongVoterModelsPlayListToJSON,
 } from '../models';
 
-export interface V1ListsListIdGetRequest {
+export interface ListsListIdGetRequest {
     listId: string;
 }
 
-export interface V1ListsPostRequest {
+export interface ListsListIdSongsPostRequest {
+    listId: string;
+    body?: string;
+}
+
+export interface ListsListIdSongsSongIdDeleteRequest {
+    listId: string;
+    songId: string;
+}
+
+export interface ListsPostRequest {
     coflnetSongVoterModelsPlayList?: CoflnetSongVoterModelsPlayList;
 }
 
@@ -38,13 +48,13 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Get playlist for active user
      */
-    async v1ListsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CoflnetSongVoterModelsPlayList>>> {
+    async listsGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CoflnetSongVoterModelsPlayList>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/lists`,
+            path: `/lists`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -56,8 +66,8 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Get playlist for active user
      */
-    async v1ListsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CoflnetSongVoterModelsPlayList>> {
-        const response = await this.v1ListsGetRaw(initOverrides);
+    async listsGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CoflnetSongVoterModelsPlayList>> {
+        const response = await this.listsGetRaw(initOverrides);
         return await response.value();
     }
 
@@ -65,9 +75,9 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
      * Returns a playList
      * Find playlist by ID
      */
-    async v1ListsListIdGetRaw(requestParameters: V1ListsListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsPlayList>> {
+    async listsListIdGetRaw(requestParameters: ListsListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsPlayList>> {
         if (requestParameters.listId === null || requestParameters.listId === undefined) {
-            throw new runtime.RequiredError('listId','Required parameter requestParameters.listId was null or undefined when calling v1ListsListIdGet.');
+            throw new runtime.RequiredError('listId','Required parameter requestParameters.listId was null or undefined when calling listsListIdGet.');
         }
 
         const queryParameters: any = {};
@@ -75,7 +85,7 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/lists/{listId}`.replace(`{${"listId"}}`, encodeURIComponent(String(requestParameters.listId))),
+            path: `/lists/{listId}`.replace(`{${"listId"}}`, encodeURIComponent(String(requestParameters.listId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -88,15 +98,19 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
      * Returns a playList
      * Find playlist by ID
      */
-    async v1ListsListIdGet(requestParameters: V1ListsListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsPlayList> {
-        const response = await this.v1ListsListIdGetRaw(requestParameters, initOverrides);
+    async listsListIdGet(requestParameters: ListsListIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsPlayList> {
+        const response = await this.listsListIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
-     * Create a new playlist
+     * Adds a song to a playlist
      */
-    async v1ListsPostRaw(requestParameters: V1ListsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsPlayList>> {
+    async listsListIdSongsPostRaw(requestParameters: ListsListIdSongsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsPlayList>> {
+        if (requestParameters.listId === null || requestParameters.listId === undefined) {
+            throw new runtime.RequiredError('listId','Required parameter requestParameters.listId was null or undefined when calling listsListIdSongsPost.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -104,7 +118,70 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v1/lists`,
+            path: `/lists/{listId}/songs`.replace(`{${"listId"}}`, encodeURIComponent(String(requestParameters.listId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: requestParameters.body as any,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsPlayListFromJSON(jsonValue));
+    }
+
+    /**
+     * Adds a song to a playlist
+     */
+    async listsListIdSongsPost(requestParameters: ListsListIdSongsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsPlayList> {
+        const response = await this.listsListIdSongsPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Removes a song from a playlist
+     */
+    async listsListIdSongsSongIdDeleteRaw(requestParameters: ListsListIdSongsSongIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsPlayList>> {
+        if (requestParameters.listId === null || requestParameters.listId === undefined) {
+            throw new runtime.RequiredError('listId','Required parameter requestParameters.listId was null or undefined when calling listsListIdSongsSongIdDelete.');
+        }
+
+        if (requestParameters.songId === null || requestParameters.songId === undefined) {
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling listsListIdSongsSongIdDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/lists/{listId}/songs/{songId}`.replace(`{${"listId"}}`, encodeURIComponent(String(requestParameters.listId))).replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsPlayListFromJSON(jsonValue));
+    }
+
+    /**
+     * Removes a song from a playlist
+     */
+    async listsListIdSongsSongIdDelete(requestParameters: ListsListIdSongsSongIdDeleteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsPlayList> {
+        const response = await this.listsListIdSongsSongIdDeleteRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Create a new playlist
+     */
+    async listsPostRaw(requestParameters: ListsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsPlayList>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/lists`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -117,8 +194,8 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Create a new playlist
      */
-    async v1ListsPost(requestParameters: V1ListsPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsPlayList> {
-        const response = await this.v1ListsPostRaw(requestParameters, initOverrides);
+    async listsPost(requestParameters: ListsPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsPlayList> {
+        const response = await this.listsPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

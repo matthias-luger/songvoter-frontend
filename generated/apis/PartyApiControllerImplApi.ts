@@ -17,51 +17,48 @@ import * as runtime from '../runtime';
 import type {
   CoflnetSongVoterDBModelsParty,
   CoflnetSongVoterDBModelsSong,
+  CoflnetSongVoterModelsParty,
 } from '../models';
 import {
     CoflnetSongVoterDBModelsPartyFromJSON,
     CoflnetSongVoterDBModelsPartyToJSON,
     CoflnetSongVoterDBModelsSongFromJSON,
     CoflnetSongVoterDBModelsSongToJSON,
+    CoflnetSongVoterModelsPartyFromJSON,
+    CoflnetSongVoterModelsPartyToJSON,
 } from '../models';
 
-export interface V1PartyPartyIdDownvoteSongIdPostRequest {
+export interface PartyDownvoteSongIdPostRequest {
+    songId: string;
+}
+
+export interface PartyInviteLinkGetRequest {
+    partyId: string;
+}
+
+export interface PartyInviteUserIdPostRequest {
+    partyId: string;
+    userId: string;
+}
+
+export interface PartyKickUserIdPostRequest {
+    userId: string;
+}
+
+export interface PartyPartyIdJoinPostRequest {
+    partyId: string;
+}
+
+export interface PartyPartyIdResetPostRequest {
+    partyId: string;
+}
+
+export interface PartyPartyIdUpvoteSongIdPostRequest {
     partyId: string;
     songId: string;
 }
 
-export interface V1PartyPartyIdInviteLinkGetRequest {
-    partyId: string;
-}
-
-export interface V1PartyPartyIdInviteUserIdPostRequest {
-    partyId: string;
-    userId: string;
-}
-
-export interface V1PartyPartyIdJoinPostRequest {
-    partyId: string;
-}
-
-export interface V1PartyPartyIdKickUserIdPostRequest {
-    partyId: string;
-    userId: string;
-}
-
-export interface V1PartyPartyIdLeavePostRequest {
-    partyId: string;
-}
-
-export interface V1PartyPartyIdNextSongGetRequest {
-    partyId: string;
-}
-
-export interface V1PartyPartyIdResetPostRequest {
-    partyId: string;
-}
-
-export interface V1PartyPartyIdUpvoteSongIdPostRequest {
-    partyId: string;
+export interface PartySongSongIdPlayedPostRequest {
     songId: string;
 }
 
@@ -73,13 +70,9 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * votes a song down so it is play later/not at all
      */
-    async v1PartyPartyIdDownvoteSongIdPostRaw(requestParameters: V1PartyPartyIdDownvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdDownvoteSongIdPost.');
-        }
-
+    async partyDownvoteSongIdPostRaw(requestParameters: PartyDownvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.songId === null || requestParameters.songId === undefined) {
-            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling v1PartyPartyIdDownvoteSongIdPost.');
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling partyDownvoteSongIdPost.');
         }
 
         const queryParameters: any = {};
@@ -87,7 +80,7 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/downvote/{songId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            path: `/party/downvote/{songId}`.replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -99,16 +92,42 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * votes a song down so it is play later/not at all
      */
-    async v1PartyPartyIdDownvoteSongIdPost(requestParameters: V1PartyPartyIdDownvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdDownvoteSongIdPostRaw(requestParameters, initOverrides);
+    async partyDownvoteSongIdPost(requestParameters: PartyDownvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyDownvoteSongIdPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Returns all parties of the curent user
+     */
+    async partyGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsParty>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/party`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsPartyFromJSON(jsonValue));
+    }
+
+    /**
+     * Returns all parties of the curent user
+     */
+    async partyGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsParty> {
+        const response = await this.partyGetRaw(initOverrides);
+        return await response.value();
     }
 
     /**
      * Creates an invite link for a party
      */
-    async v1PartyPartyIdInviteLinkGetRaw(requestParameters: V1PartyPartyIdInviteLinkGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async partyInviteLinkGetRaw(requestParameters: PartyInviteLinkGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdInviteLinkGet.');
+            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling partyInviteLinkGet.');
         }
 
         const queryParameters: any = {};
@@ -116,7 +135,7 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/inviteLink`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
+            path: `/party/inviteLink`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -132,21 +151,21 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Creates an invite link for a party
      */
-    async v1PartyPartyIdInviteLinkGet(requestParameters: V1PartyPartyIdInviteLinkGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
-        const response = await this.v1PartyPartyIdInviteLinkGetRaw(requestParameters, initOverrides);
+    async partyInviteLinkGet(requestParameters: PartyInviteLinkGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+        const response = await this.partyInviteLinkGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Invites a user to a party
      */
-    async v1PartyPartyIdInviteUserIdPostRaw(requestParameters: V1PartyPartyIdInviteUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async partyInviteUserIdPostRaw(requestParameters: PartyInviteUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdInviteUserIdPost.');
+            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling partyInviteUserIdPost.');
         }
 
         if (requestParameters.userId === null || requestParameters.userId === undefined) {
-            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling v1PartyPartyIdInviteUserIdPost.');
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling partyInviteUserIdPost.');
         }
 
         const queryParameters: any = {};
@@ -154,7 +173,7 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/invite/{userId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
+            path: `/party/invite/{userId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -166,49 +185,16 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Invites a user to a party
      */
-    async v1PartyPartyIdInviteUserIdPost(requestParameters: V1PartyPartyIdInviteUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdInviteUserIdPostRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * Joins a party
-     */
-    async v1PartyPartyIdJoinPostRaw(requestParameters: V1PartyPartyIdJoinPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdJoinPost.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/v1/party/{partyId}/join`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Joins a party
-     */
-    async v1PartyPartyIdJoinPost(requestParameters: V1PartyPartyIdJoinPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdJoinPostRaw(requestParameters, initOverrides);
+    async partyInviteUserIdPost(requestParameters: PartyInviteUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyInviteUserIdPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * kicks a user from a party
      */
-    async v1PartyPartyIdKickUserIdPostRaw(requestParameters: V1PartyPartyIdKickUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdKickUserIdPost.');
-        }
-
+    async partyKickUserIdPostRaw(requestParameters: PartyKickUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.userId === null || requestParameters.userId === undefined) {
-            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling v1PartyPartyIdKickUserIdPost.');
+            throw new runtime.RequiredError('userId','Required parameter requestParameters.userId was null or undefined when calling partyKickUserIdPost.');
         }
 
         const queryParameters: any = {};
@@ -216,7 +202,7 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/kick/{userId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
+            path: `/party/kick/{userId}`.replace(`{${"userId"}}`, encodeURIComponent(String(requestParameters.userId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -228,24 +214,20 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * kicks a user from a party
      */
-    async v1PartyPartyIdKickUserIdPost(requestParameters: V1PartyPartyIdKickUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdKickUserIdPostRaw(requestParameters, initOverrides);
+    async partyKickUserIdPost(requestParameters: PartyKickUserIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyKickUserIdPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Leave a party
      */
-    async v1PartyPartyIdLeavePostRaw(requestParameters: V1PartyPartyIdLeavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdLeavePost.');
-        }
-
+    async partyLeavePostRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/leave`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
+            path: `/party/leave`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -257,24 +239,20 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Leave a party
      */
-    async v1PartyPartyIdLeavePost(requestParameters: V1PartyPartyIdLeavePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdLeavePostRaw(requestParameters, initOverrides);
+    async partyLeavePost(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyLeavePostRaw(initOverrides);
     }
 
     /**
      * gets the next Song
      */
-    async v1PartyPartyIdNextSongGetRaw(requestParameters: V1PartyPartyIdNextSongGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsSong>> {
-        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdNextSongGet.');
-        }
-
+    async partyNextSongGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsSong>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/nextSong`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
+            path: `/party/nextSong`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -286,17 +264,17 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * gets the next Song
      */
-    async v1PartyPartyIdNextSongGet(requestParameters: V1PartyPartyIdNextSongGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsSong> {
-        const response = await this.v1PartyPartyIdNextSongGetRaw(requestParameters, initOverrides);
+    async partyNextSongGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsSong> {
+        const response = await this.partyNextSongGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
-     * resets the parties playing state
+     * Joins a party
      */
-    async v1PartyPartyIdResetPostRaw(requestParameters: V1PartyPartyIdResetPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async partyPartyIdJoinPostRaw(requestParameters: PartyPartyIdJoinPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdResetPost.');
+            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling partyPartyIdJoinPost.');
         }
 
         const queryParameters: any = {};
@@ -304,7 +282,36 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/reset`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
+            path: `/party/{partyId}/join`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Joins a party
+     */
+    async partyPartyIdJoinPost(requestParameters: PartyPartyIdJoinPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyPartyIdJoinPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * resets the parties playing state
+     */
+    async partyPartyIdResetPostRaw(requestParameters: PartyPartyIdResetPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
+            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling partyPartyIdResetPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/party/{partyId}/reset`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -316,21 +323,21 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * resets the parties playing state
      */
-    async v1PartyPartyIdResetPost(requestParameters: V1PartyPartyIdResetPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdResetPostRaw(requestParameters, initOverrides);
+    async partyPartyIdResetPost(requestParameters: PartyPartyIdResetPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyPartyIdResetPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Adds an upvote to an song wich causes it to be played sooner. Also adds new songs to a party
      * votes a song up so it is play sooner
      */
-    async v1PartyPartyIdUpvoteSongIdPostRaw(requestParameters: V1PartyPartyIdUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async partyPartyIdUpvoteSongIdPostRaw(requestParameters: PartyPartyIdUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling v1PartyPartyIdUpvoteSongIdPost.');
+            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling partyPartyIdUpvoteSongIdPost.');
         }
 
         if (requestParameters.songId === null || requestParameters.songId === undefined) {
-            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling v1PartyPartyIdUpvoteSongIdPost.');
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling partyPartyIdUpvoteSongIdPost.');
         }
 
         const queryParameters: any = {};
@@ -338,7 +345,7 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/party/{partyId}/upvote/{songId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            path: `/party/{partyId}/upvote/{songId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -351,46 +358,20 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
      * Adds an upvote to an song wich causes it to be played sooner. Also adds new songs to a party
      * votes a song up so it is play sooner
      */
-    async v1PartyPartyIdUpvoteSongIdPost(requestParameters: V1PartyPartyIdUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1PartyPartyIdUpvoteSongIdPostRaw(requestParameters, initOverrides);
-    }
-
-    /**
-     * Returns all parties of the curent user
-     */
-    async v1PartysGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CoflnetSongVoterDBModelsParty>>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/v1/partys`,
-            method: 'GET',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(CoflnetSongVoterDBModelsPartyFromJSON));
-    }
-
-    /**
-     * Returns all parties of the curent user
-     */
-    async v1PartysGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CoflnetSongVoterDBModelsParty>> {
-        const response = await this.v1PartysGetRaw(initOverrides);
-        return await response.value();
+    async partyPartyIdUpvoteSongIdPost(requestParameters: PartyPartyIdUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyPartyIdUpvoteSongIdPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Creates a new party
      */
-    async v1PartysPostRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsParty>> {
+    async partyPostRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsParty>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/partys`,
+            path: `/party`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -402,9 +383,38 @@ export class PartyApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Creates a new party
      */
-    async v1PartysPost(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsParty> {
-        const response = await this.v1PartysPostRaw(initOverrides);
+    async partyPost(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsParty> {
+        const response = await this.partyPostRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Marks a song as played
+     */
+    async partySongSongIdPlayedPostRaw(requestParameters: PartySongSongIdPlayedPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.songId === null || requestParameters.songId === undefined) {
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling partySongSongIdPlayedPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/party/song/{songId}/played`.replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Marks a song as played
+     */
+    async partySongSongIdPlayedPost(requestParameters: PartySongSongIdPlayedPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partySongSongIdPlayedPostRaw(requestParameters, initOverrides);
     }
 
 }

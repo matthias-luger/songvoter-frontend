@@ -1,9 +1,30 @@
 import { Button, Heading } from 'native-base'
 import { StyleSheet } from 'react-native'
 import MainLayout from '../layouts/MainLayout'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
+import { useEffect, useState } from 'react'
+import { API_TOKEN, storage } from '../utils/StorageUtils'
+import { PartyController } from '../utils/ApiHelper'
+import { CoflnetSongVoterModelsParty } from '../generated'
 
 export default function App() {
+    const router = useRouter()
+
+    useEffect(() => {
+        if (storage.getString(API_TOKEN)) {
+            PartyController.partyGet()
+                .then(party => {
+                    router.push('/party-overview')
+                })
+                .catch(e => {
+                    if (e.status === 404) {
+                        // User is not in a party
+                        console.log('User is not in a party')
+                    }
+                })
+        }
+    }, [])
+
     return (
         <>
             <MainLayout>

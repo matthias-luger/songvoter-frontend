@@ -1,92 +1,93 @@
-import { GoogleSignin, GoogleSigninButton, User, statusCodes } from '@react-native-google-signin/google-signin'
-import { Box, Button, Text } from 'native-base'
 import { useEffect, useState } from 'react'
-import Toast from 'react-native-toast-message'
-import { getCurrentUserInfo, setCurrentUserInfo } from '../utils/GoogleUtils'
+import { StyleSheet, Text, Button } from 'react-native'
+import * as WebBrowser from 'expo-web-browser'
+import * as Google from 'expo-auth-session/providers/google'
 import { GoogleData } from '../types/global'
 import { AuthController } from '../utils/ApiHelper'
-import { AuthApiControllerImplApi, Configuration } from '../generated'
+import { Box } from 'native-base'
+import { makeRedirectUri, revokeAsync } from 'expo-auth-session'
+import { usePathname } from 'expo-router'
+import { API_TOKEN, storage } from '../utils/StorageUtils'
+import Toast from 'react-native-toast-message'
+WebBrowser.maybeCompleteAuthSession()
 
 interface Props {
-    onLogin(user: GoogleData)
+    onLogin(data: GoogleData)
 }
 
-export function GoogleLogin(props: Props) {
-    let [isSignedIn, setIsSignedIn] = useState(false)
+export default function GoogleLogin(props: Props) {
+    let pathname = usePathname()
+    let [apiToken, setApiToken] = useState(storage.getString(API_TOKEN))
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        androidClientId: '108545418952-2uiivcdeu35i44397itsr941s7357bob.apps.googleusercontent.com',
+        redirectUri: makeRedirectUri({
+            path: pathname
+        })
+    })
 
     useEffect(() => {
-        let userInfo = getCurrentUserInfo()
-        if (userInfo) {
-            setIsSignedIn(true)
-            if (props.onLogin) {
-                props.onLogin(userInfo)
-            }
-            return
+        if (response?.type === 'success') {
+            getApiToken(response.authentication.idToken)
         }
-        GoogleSignin.configure({ webClientId: '108545418952-7sq5bfbe3467koksr3nsfml7b4saep0n.apps.googleusercontent.com' })
-        loginSilently()
-    }, [])
+    }, [response])
 
-    async function loginSilently() {
+    async function getApiToken(idToken: string) {
         try {
-            let userInfo: GoogleData = await GoogleSignin.signInSilently()
-            setGoogleData(userInfo)
-        } catch (error) {
-            setIsSignedIn(false)
-            Toast.show({
-                type: 'error',
-                text1: error.message
-            })
-        }
-    }
-
-    async function onLogin() {
-        try {
-            await GoogleSignin.hasPlayServices()
-            let userInfo: GoogleData = await GoogleSignin.signIn()
-            setGoogleData(userInfo)
             Toast.show({
                 type: 'success',
-                text1: 'Login successful'
+                text1: 'Successfully logged in!'
             })
-        } catch (error) {
-            setIsSignedIn(false)
-            Toast.show({
-                type: 'error',
-                text1: error.message
-            })
-        }
-    }
-
-    async function setGoogleData(userInfo: User) {
-        try {
-            let googleData: GoogleData = { ...userInfo }
-            let response = await AuthController.v1AuthGooglePost({
+            let response = await AuthController.authGooglePost({
                 coflnetSongVoterModelsAuthToken: {
-                    token: userInfo.idToken
+                    token: idToken
                 }
             })
-            googleData.serverToken = response.token
-            setCurrentUserInfo(googleData)
-            if (props.onLogin) {
-                props.onLogin(googleData)
-            }
-            setIsSignedIn(true)
+            storage.set(API_TOKEN, response.token)
+            setApiToken(response.token)
         } catch (e) {
-            console.error(e)
+            Toast.show({
+                type: 'error',
+                text1: e?.message || e
+            })
         }
     }
 
     return (
         <Box>
-            {!isSignedIn ? (
-                <GoogleSigninButton
-                    style={{ width: 192, height: 48 }}
-                    size={GoogleSigninButton.Size.Wide}
-                    color={GoogleSigninButton.Color.Dark}
-                    onPress={onLogin}
+            {!apiToken ? (
+                <Button
+                    title="Sign in with Google"
+                    disabled={!request}
+                    onPress={() => {
+                        promptAsync()
+                    }}
                 />
-            ) : null}
+            ) : (
+                <Button
+                    title="Logout"
+                    onPress={() => {
+                        setApiToken(null)
+                        storage.delete(API_TOKEN)
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Logged out!'
+                        })
+                    }}
+                />
+            )}
         </Box>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    text: {
+        fontSize: 20,
+        fontWeight: 'bold'
+    }
+})

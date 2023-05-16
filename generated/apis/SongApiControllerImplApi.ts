@@ -25,15 +25,15 @@ import {
     CoflnetSongVoterModelsSongCreationToJSON,
 } from '../models';
 
-export interface V1SongSongIdGetRequest {
+export interface SongSongIdGetRequest {
     songId: string;
 }
 
-export interface V1SongsPostRequest {
+export interface SongsPostRequest {
     coflnetSongVoterModelsSongCreation?: CoflnetSongVoterModelsSongCreation;
 }
 
-export interface V1SongsSearchGetRequest {
+export interface SongsSearchGetRequest {
     term: string;
 }
 
@@ -46,9 +46,9 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
      * Returns a single song
      * Find song by ID
      */
-    async v1SongSongIdGetRaw(requestParameters: V1SongSongIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsSong>> {
+    async songSongIdGetRaw(requestParameters: SongSongIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsSong>> {
         if (requestParameters.songId === null || requestParameters.songId === undefined) {
-            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling v1SongSongIdGet.');
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling songSongIdGet.');
         }
 
         const queryParameters: any = {};
@@ -56,7 +56,7 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/song/{songId}`.replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            path: `/song/{songId}`.replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -69,15 +69,15 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
      * Returns a single song
      * Find song by ID
      */
-    async v1SongSongIdGet(requestParameters: V1SongSongIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsSong> {
-        const response = await this.v1SongSongIdGetRaw(requestParameters, initOverrides);
+    async songSongIdGet(requestParameters: SongSongIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsSong> {
+        const response = await this.songSongIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Add a new song by url
      */
-    async v1SongsPostRaw(requestParameters: V1SongsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+    async songsPostRaw(requestParameters: SongsPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -85,7 +85,7 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
-            path: `/v1/songs`,
+            path: `/songs`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -98,16 +98,16 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Add a new song by url
      */
-    async v1SongsPost(requestParameters: V1SongsPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.v1SongsPostRaw(requestParameters, initOverrides);
+    async songsPost(requestParameters: SongsPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.songsPostRaw(requestParameters, initOverrides);
     }
 
     /**
      * Finds Song by search term
      */
-    async v1SongsSearchGetRaw(requestParameters: V1SongsSearchGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CoflnetSongVoterModelsSong>>> {
+    async songsSearchGetRaw(requestParameters: SongsSearchGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CoflnetSongVoterModelsSong>>> {
         if (requestParameters.term === null || requestParameters.term === undefined) {
-            throw new runtime.RequiredError('term','Required parameter requestParameters.term was null or undefined when calling v1SongsSearchGet.');
+            throw new runtime.RequiredError('term','Required parameter requestParameters.term was null or undefined when calling songsSearchGet.');
         }
 
         const queryParameters: any = {};
@@ -119,7 +119,7 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/v1/songs/search`,
+            path: `/songs/search`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -131,8 +131,8 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
     /**
      * Finds Song by search term
      */
-    async v1SongsSearchGet(requestParameters: V1SongsSearchGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CoflnetSongVoterModelsSong>> {
-        const response = await this.v1SongsSearchGetRaw(requestParameters, initOverrides);
+    async songsSearchGet(requestParameters: SongsSearchGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<CoflnetSongVoterModelsSong>> {
+        const response = await this.songsSearchGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
