@@ -22,6 +22,12 @@ let routes: Route[] = [
         icon: 'music-note-outline',
         selectedIcon: 'music',
         label: 'Your Songs'
+    },
+    {
+        href: '/account',
+        icon: 'account-outline',
+        selectedIcon: 'account',
+        label: 'Account'
     }
 ]
 

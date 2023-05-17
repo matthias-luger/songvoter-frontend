@@ -1,9 +1,9 @@
 import { AuthApiControllerImplApi, Configuration, PartyApiControllerImplApi } from '../generated'
-import { API_TOKEN, storage } from './StorageUtils'
+import { GOOGLE_TOKEN, storage } from './StorageUtils'
 
 function getConfiguration(): Configuration {
     console.log('test')
-    let apiToken = storage.getString(API_TOKEN)
+    let apiToken = storage.getString(GOOGLE_TOKEN)
     let config = new Configuration({
         basePath: 'https://songvoter.party',
         headers: {

@@ -7,17 +7,17 @@ import { AuthController } from '../utils/ApiHelper'
 import { Box } from 'native-base'
 import { makeRedirectUri, revokeAsync } from 'expo-auth-session'
 import { usePathname } from 'expo-router'
-import { API_TOKEN, storage } from '../utils/StorageUtils'
+import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
 import Toast from 'react-native-toast-message'
 WebBrowser.maybeCompleteAuthSession()
 
 interface Props {
-    onLogin(data: GoogleData)
+    onLogin()
 }
 
 export default function GoogleLogin(props: Props) {
     let pathname = usePathname()
-    let [apiToken, setApiToken] = useState(storage.getString(API_TOKEN))
+    let [apiToken, setApiToken] = useState(storage.getString(GOOGLE_TOKEN))
     const [request, response, promptAsync] = Google.useAuthRequest({
         androidClientId: '108545418952-2uiivcdeu35i44397itsr941s7357bob.apps.googleusercontent.com',
         redirectUri: makeRedirectUri({
@@ -42,7 +42,7 @@ export default function GoogleLogin(props: Props) {
                     token: idToken
                 }
             })
-            storage.set(API_TOKEN, response.token)
+            storage.set(GOOGLE_TOKEN, response.token)
             setApiToken(response.token)
         } catch (e) {
             Toast.show({
@@ -67,7 +67,7 @@ export default function GoogleLogin(props: Props) {
                     title="Logout"
                     onPress={() => {
                         setApiToken(null)
-                        storage.delete(API_TOKEN)
+                        storage.delete(GOOGLE_TOKEN)
                         Toast.show({
                             type: 'success',
                             text1: 'Logged out!'

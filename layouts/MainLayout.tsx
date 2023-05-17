@@ -14,7 +14,7 @@ export default function MainLayout(props) {
                     <StatusBar style="dark" />
                     <SafeAreaView>
                         <View style={styles.view}>
-                            <Box bg={'coolGray.800'} style={styles.container}>
+                            <Box backgroundColor={'#333'} style={styles.container}>
                                 {props.children}
                             </Box>
                             <Box style={styles.footer}>
@@ -34,9 +34,7 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+        flex: 1
     },
     footer: {}
 })
