@@ -10,6 +10,11 @@ module.exports = function (api) {
                     globals: ['__scanCodes']
                 }
             ]
-        ]
+        ],
+        env: {
+            production: {
+                plugins: ['react-native-paper/babel']
+            }
+        }
     }
 }

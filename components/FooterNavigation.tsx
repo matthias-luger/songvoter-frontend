@@ -1,16 +1,13 @@
-import React, { useState } from 'react'
-import { Box, Text, Heading, VStack, FormControl, Input, Button, Icon, HStack, Center, Pressable } from 'native-base'
+import React, { useEffect, useState } from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Link, usePathname, useRouter } from 'expo-router'
+import { Keyboard, Pressable, View } from 'react-native'
+import { Button, Text, useTheme } from 'react-native-paper'
+import { globalStyles } from '../styles/globalStyles'
+import { EventRegister } from 'react-native-event-listeners'
+import { NavigationEvents } from '../types/events.d'
 
-interface Route {
-    href: string
-    icon: keyof typeof MaterialCommunityIcons.glyphMap
-    selectedIcon: keyof typeof MaterialCommunityIcons.glyphMap
-    label: string
-}
-
-let routes: Route[] = [
+const DEFAULT_ROUTES: Route[] = [
     {
         href: '/',
         icon: 'home-outline',
@@ -20,7 +17,7 @@ let routes: Route[] = [
     {
         href: '/your-songs',
         icon: 'music-note-outline',
-        selectedIcon: 'music',
+        selectedIcon: 'music-note',
         label: 'Your Songs'
     },
     {
@@ -31,28 +28,61 @@ let routes: Route[] = [
     }
 ]
 
-export function FooterNavigation() {
+interface Route {
+    href: string
+    icon: keyof typeof MaterialCommunityIcons.glyphMap
+    selectedIcon: keyof typeof MaterialCommunityIcons.glyphMap
+    label: string
+}
+
+export function FooterNavigation(props) {
     let pathname = usePathname()
+    let theme = useTheme()
+    let [routes, setRoutes] = useState<Route[]>([...DEFAULT_ROUTES])
+    let [hidden, setHidden] = useState(false)
+
+    useEffect(() => {
+        let addListener = EventRegister.addEventListener(NavigationEvents.ADD_NAVIGATION_TAB, function (newTab) {
+            setRoutes([...routes, newTab])
+        })
+        let removeListener = EventRegister.addEventListener(NavigationEvents.ADD_NAVIGATION_TAB, function (href) {
+            setRoutes(routes.filter(route => route.href !== href))
+        })
+        let keyboardWillShowSub = Keyboard.addListener('keyboardDidShow', () => {
+            setHidden(true)
+        })
+        let keyboardWillHideSub = Keyboard.addListener('keyboardDidHide', () => {
+            setHidden(false)
+        })
+
+        return () => {
+            if (typeof addListener === 'string') {
+                EventRegister.removeEventListener(addListener)
+            }
+            if (typeof removeListener === 'string') {
+                EventRegister.removeEventListener(removeListener)
+            }
+            keyboardWillHideSub.remove()
+            keyboardWillShowSub.remove()
+        }
+    }, [])
+
+    if (hidden) {
+        return <></>
+    }
 
     return (
-        <Box safeAreaBottom bg="white" width="100%">
-            <HStack bg="indigo.600" safeAreaBottom shadow={6}>
-                {routes.map(route => (
-                    <Link href={route.href} replace key={route.href} asChild style={{ flex: 1, paddingTop: 6, paddingBottom: 6 }}>
-                        <Pressable>
-                            <Center>
-                                <Icon
-                                    mb="1"
-                                    as={<MaterialCommunityIcons name={pathname === route.href ? route.selectedIcon : route.icon} />}
-                                    color="white"
-                                    size="sm"
-                                />
-                                <Text style={{ color: 'white', fontSize: 18 }}>{route.label}</Text>
-                            </Center>
-                        </Pressable>
-                    </Link>
-                ))}
-            </HStack>
-        </Box>
+        <View style={{ ...globalStyles.surfaceVariant, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+            {routes.map(route => (
+                <Link href={route.href} replace key={route.href} asChild style={{ flex: 1 }}>
+                    <Pressable>
+                        <View style={globalStyles.horizontalCenter}>
+                            <MaterialCommunityIcons name={pathname === route.href ? route.selectedIcon : route.icon} size={25} />
+                            <Text style={{ fontSize: 18, color: theme.colors.primary }}>{route.label}</Text>
+                        </View>
+                    </Pressable>
+                </Link>
+            ))}
+        </View>
     )
 }

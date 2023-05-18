@@ -1,11 +1,10 @@
-import { Button, Heading } from 'native-base'
 import MainLayout from '../layouts/MainLayout'
-import { StyleSheet } from 'react-native'
 import { useEffect, useState } from 'react'
-import { QRCodeScanner } from '../components/QRCodeScanner'
 import { CoflnetSongVoterModelsParty } from '../generated'
-import { PartyController } from '../utils/ApiHelper'
+import { PartyController } from '../utils/ApiUtils'
 import { useRouter } from 'expo-router'
+import { Button } from 'react-native-paper'
+import HeaderText from '../components/HeaderText'
 
 export default function App() {
     const router = useRouter()
@@ -31,21 +30,9 @@ export default function App() {
     return (
         <>
             <MainLayout>
-                <Heading size="xl" style={styles.heading}>
-                    Party {party?.name}
-                </Heading>
-                <Button onTouchEnd={leaveParty}>Leave</Button>
+                <HeaderText text={`Party ${party?.name}`} />
+                <Button onPress={leaveParty}>Leave</Button>
             </MainLayout>
         </>
     )
 }
-
-const styles = StyleSheet.create({
-    button: {
-        marginTop: 20,
-        width: '50%'
-    },
-    heading: {
-        color: '#555'
-    }
-})

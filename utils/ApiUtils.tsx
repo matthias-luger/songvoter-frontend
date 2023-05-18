@@ -2,7 +2,6 @@ import { AuthApiControllerImplApi, Configuration, PartyApiControllerImplApi } fr
 import { GOOGLE_TOKEN, storage } from './StorageUtils'
 
 function getConfiguration(): Configuration {
-    console.log('test')
     let apiToken = storage.getString(GOOGLE_TOKEN)
     let config = new Configuration({
         basePath: 'https://songvoter.party',
@@ -13,7 +12,6 @@ function getConfiguration(): Configuration {
     if (apiToken) {
         config.headers.Authorization = `Bearer ${apiToken}`
     }
-    console.log(config)
     return config
 }
 

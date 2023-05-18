@@ -1,21 +1,23 @@
 import { useEffect, useState } from 'react'
-import { StyleSheet, Text, Button } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
 import { GoogleData } from '../types/global'
-import { AuthController } from '../utils/ApiHelper'
-import { Box } from 'native-base'
-import { makeRedirectUri, revokeAsync } from 'expo-auth-session'
+import { AuthController } from '../utils/ApiUtils'
+import { makeRedirectUri } from 'expo-auth-session'
 import { usePathname } from 'expo-router'
 import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
 import Toast from 'react-native-toast-message'
+import { Button, useTheme } from 'react-native-paper'
+import { globalStyles } from '../styles/globalStyles'
 WebBrowser.maybeCompleteAuthSession()
 
 interface Props {
-    onLogin()
+    onAfterLogin(token: string)
 }
 
 export default function GoogleLogin(props: Props) {
+    let theme = useTheme()
     let pathname = usePathname()
     let [apiToken, setApiToken] = useState(storage.getString(GOOGLE_TOKEN))
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -44,6 +46,7 @@ export default function GoogleLogin(props: Props) {
             })
             storage.set(GOOGLE_TOKEN, response.token)
             setApiToken(response.token)
+            props.onAfterLogin(response.token)
         } catch (e) {
             Toast.show({
                 type: 'error',
@@ -53,18 +56,22 @@ export default function GoogleLogin(props: Props) {
     }
 
     return (
-        <Box>
+        <View>
             {!apiToken ? (
                 <Button
-                    title="Sign in with Google"
+                    style={globalStyles.primaryElement}
+                    textColor={theme.colors.onPrimary}
                     disabled={!request}
                     onPress={() => {
                         promptAsync()
                     }}
-                />
+                >
+                    Sign in with Google
+                </Button>
             ) : (
                 <Button
-                    title="Logout"
+                    style={globalStyles.primaryElement}
+                    textColor={theme.colors.onPrimary}
                     onPress={() => {
                         setApiToken(null)
                         storage.delete(GOOGLE_TOKEN)
@@ -73,9 +80,11 @@ export default function GoogleLogin(props: Props) {
                             text1: 'Logged out!'
                         })
                     }}
-                />
+                >
+                    Logout
+                </Button>
             )}
-        </Box>
+        </View>
     )
 }
 

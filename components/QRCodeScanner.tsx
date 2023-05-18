@@ -1,6 +1,6 @@
 import * as React from 'react'
-
 import { StyleSheet, Text } from 'react-native'
+import { ActivityIndicator } from 'react-native-paper'
 import { useCameraDevices, useFrameProcessor } from 'react-native-vision-camera'
 import { Camera } from 'react-native-vision-camera'
 import { Barcode, BarcodeFormat, scanBarcodes } from 'vision-camera-code-scanner'
@@ -30,20 +30,16 @@ export function QRCodeScanner(props: Props) {
         })()
     }, [])
 
+    if (!device && hasPermission) {
+        return <ActivityIndicator />
+    }
+
     return (
         device != null &&
         hasPermission && (
             <>
-                <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} frameProcessor={frameProcessor} frameProcessorFps={5} />
+                <Camera style={{ flex: 1 }} device={device} isActive={true} frameProcessor={frameProcessor} frameProcessorFps={5} />
             </>
         )
     )
 }
-
-const styles = StyleSheet.create({
-    barcodeTextURL: {
-        fontSize: 20,
-        color: 'white',
-        fontWeight: 'bold'
-    }
-})

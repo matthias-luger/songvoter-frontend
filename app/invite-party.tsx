@@ -1,41 +1,51 @@
-import { Button, Center, Heading, Text } from 'native-base'
+import { Button, Text, useTheme } from 'react-native-paper'
 import MainLayout from '../layouts/MainLayout'
-import { StyleSheet } from 'react-native'
+import { Keyboard, StyleSheet, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import QRCode from 'react-native-qrcode-svg'
-import { PartyController } from '../utils/ApiHelper'
+import { PartyController } from '../utils/ApiUtils'
 import { CoflnetSongVoterDBModelsParty } from '../generated'
+import { globalStyles } from '../styles/globalStyles'
+import { showErrorToast } from '../utils/ToastUtils'
+import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
+import HeaderText from '../components/HeaderText'
 
 export default function App() {
+    let theme = useTheme()
     let [party, setParty] = useState<CoflnetSongVoterDBModelsParty>()
     let [inviteLink, setInviteLink] = useState('https://songvoter.party')
 
     useEffect(() => {
-        PartyController.partyPost().then(party => {
-            setParty(party)
-            PartyController.partyInviteLinkGet({
-                partyId: party.id.toString()
-            }).then(partyLink => {
-                setInviteLink(partyLink)
-            }).catch(e => {
-                setInviteLink("No invite link :(")
-            })
-        })
+        loadPartyLink()
     }, [])
+
+    async function loadPartyLink() {
+        try {
+            let party = await PartyController.partyPost()
+            setParty(party)
+            let link = await PartyController.partyInviteLinkGet({
+                partyId: party.id.toString()
+            })
+            setInviteLink(link)
+        } catch (e) {
+            console.error(JSON.stringify(e))
+            showErrorToast(e)
+        }
+    }
 
     return (
         <>
             <MainLayout>
-                <Heading size="xl" style={styles.heading}>
-                    Invite People to your party
-                </Heading>
-                <QRCode value={inviteLink} />
-                <Center>
-                    <Text style={styles.joinCode} size={24}>
-                        <Text style={{ fontWeight: '800' }}>Code: </Text>
-                        {inviteLink}
-                    </Text>
-                </Center>
+                <View style={{ ...globalStyles.fullCenterContainer }}>
+                    <HeaderText text="Invite people to your party" />
+                    <QRCode value={inviteLink} />
+                    <View>
+                        <Text style={styles.joinCode}>
+                            <Text style={{ fontWeight: '800' }}>Code: </Text>
+                            {inviteLink}
+                        </Text>
+                    </View>
+                </View>
             </MainLayout>
         </>
     )
@@ -45,10 +55,6 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 20,
         width: '50%'
-    },
-    heading: {
-        color: '#555',
-        marginBottom: 20
     },
     joinCode: {
         marginTop: 15,

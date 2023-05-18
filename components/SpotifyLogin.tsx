@@ -1,11 +1,12 @@
 import * as React from 'react'
 import * as WebBrowser from 'expo-web-browser'
 import { ResponseType, makeRedirectUri, useAuthRequest } from 'expo-auth-session'
-import { Button } from 'react-native'
 import { usePathname } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { SPOTIFY_AUTH_OBJECT, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { SpotifyAuthentication } from '../types/global'
+import { Button, Text, useTheme } from 'react-native-paper'
+import { globalStyles } from '../styles/globalStyles'
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -16,12 +17,13 @@ const discovery = {
 }
 
 interface Props {
-    onAfterSpotifyLogin?(spotifyAuth: SpotifyAuthentication)
+    onAfterLogin?(accessToken: string)
 }
 
 export default function SpotifyLogin(props: Props) {
-    let [spotifyAuth, setSpotifyAuth] = useState<SpotifyAuthentication>()
+    let [spotifyToken, setSpotifyToken] = useState<string>(storage.getString(SPOTIFY_TOKEN))
     let pathname = usePathname()
+    let theme = useTheme()
     const [request, response, promptAsync] = useAuthRequest(
         {
             responseType: ResponseType.Token,
@@ -38,26 +40,49 @@ export default function SpotifyLogin(props: Props) {
     )
 
     useEffect(() => {
-        let auth = storage.getString(SPOTIFY_TOKEN)
-        if (auth) {
-            setSpotifyAuth(JSON.parse(auth))
+        let authObjectString = storage.getString(SPOTIFY_AUTH_OBJECT)
+        if (authObjectString) {
+            let authObect: SpotifyAuthentication = JSON.parse(authObjectString)
+            if (authObect.issuedAt + authObect.expiresIn * 1000 > Date.now()) {
+                setSpotifyToken(null)
+                storage.delete(SPOTIFY_AUTH_OBJECT)
+                storage.delete(SPOTIFY_TOKEN)
+            }
         }
     }, [])
 
     useEffect(() => {
         if (response?.type === 'success') {
-            storage.set(SPOTIFY_TOKEN, JSON.stringify(response.authentication))
-            props.onAfterSpotifyLogin(response.authentication)
+            storage.set(SPOTIFY_TOKEN, response.authentication.accessToken)
+            storage.set(SPOTIFY_AUTH_OBJECT, JSON.stringify(response.authentication))
+            setSpotifyToken(response.authentication.accessToken)
+            props.onAfterLogin(response.authentication.accessToken)
         }
     }, [response])
 
-    return !spotifyAuth ? (
+    return !spotifyToken ? (
         <Button
+            style={globalStyles.primaryElement}
+            textColor={theme.colors.onPrimary}
             disabled={!request}
-            title="Spotify Login"
             onPress={() => {
                 promptAsync()
             }}
-        />
-    ) : null
+        >
+            Spotify Login
+        </Button>
+    ) : (
+        <Button
+            style={globalStyles.primaryElement}
+            textColor={theme.colors.onPrimary}
+            disabled={!request}
+            onPress={() => {
+                setSpotifyToken(null)
+                storage.delete(SPOTIFY_AUTH_OBJECT)
+                storage.delete(SPOTIFY_TOKEN)
+            }}
+        >
+            Logout
+        </Button>
+    )
 }

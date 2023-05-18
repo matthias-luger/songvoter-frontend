@@ -1,0 +1,4 @@
+export enum NavigationEvents {
+    ADD_NAVIGATION_TAB = 'ADD_NAVIGATION_TAB',
+    REMOVE_NAVIGATION_TAB = 'REMOVE_NAVIGATION_TAB'
+}
