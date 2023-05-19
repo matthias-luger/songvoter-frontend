@@ -7,10 +7,10 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "web": "expo start --web",
-    "generate:api": "npx openapi-generator-cli generate -i https://songvoter.party/openapi/0.0.1/openapi.json -g typescript-fetch -o generated"
+    "generate:api": "npx openapi-generator-cli generate -i https://songvoter.party/openapi/0.0.1/openapi.json -g typescript-fetch -o generated",
+    "build:android": "eas build --platform android --profile production  --local"
   },
   "dependencies": {
-    "@pchmn/expo-material3-theme": "^1.0.1",
     "@react-native-google-signin/google-signin": "^9.0.2",
     "@types/react": "~18.0.27",
     "expo": "~48.0.15",
@@ -36,6 +36,8 @@
     "react-native-toast-message": "^2.1.6",
     "react-native-vision-camera": "^2.15.4",
     "react-native-web": "~0.18.10",
+    "react-native-webview": "11.26.0",
+    "react-native-youtube-iframe": "^2.2.2",
     "typescript": "^5.0.4",
     "vision-camera-code-scanner": "^0.2.0"
   },

@@ -2,11 +2,9 @@ import { Text, useTheme } from 'react-native-paper'
 import MainLayout from '../layouts/MainLayout'
 import { StyleSheet, View } from 'react-native'
 import { useEffect, useState } from 'react'
-import { QRCodeScanner } from '../components/QRCodeScanner'
 import { GOOGLE_TOKEN, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import GoogleLogin from '../components/GoogleLogin'
 import SpotifyLogin from '../components/SpotifyLogin'
-import { globalStyles } from '../styles/globalStyles'
 import HeaderText from '../components/HeaderText'
 
 export default function App() {
