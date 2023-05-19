@@ -21,6 +21,7 @@ export default function App() {
     }, [])
 
     async function checkIfUserIsInParty() {
+        setIsLoading(false)
         if (!storage.getString(GOOGLE_TOKEN)) {
             setIsLoading(false)
             return

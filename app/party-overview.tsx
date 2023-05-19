@@ -5,6 +5,7 @@ import { PartyController } from '../utils/ApiUtils'
 import { useRouter } from 'expo-router'
 import { Button } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
+import { showErrorToast } from '../utils/ToastUtils'
 
 export default function App() {
     const router = useRouter()
@@ -23,8 +24,12 @@ export default function App() {
     }, [])
 
     async function leaveParty() {
-        await PartyController.partyLeavePost()
-        router.push('/')
+        try {
+            await PartyController.partyLeavePost()
+            router.push('/')
+        } catch (e) {
+            showErrorToast(e)
+        }
     }
 
     return (

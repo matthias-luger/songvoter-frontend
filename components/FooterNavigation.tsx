@@ -72,13 +72,13 @@ export function FooterNavigation(props) {
     }
 
     return (
-        <View style={{ ...globalStyles.surfaceVariant, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={{ backgroundColor: theme.colors.secondaryContainer, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
             {routes.map(route => (
                 <Link href={route.href} replace key={route.href} asChild style={{ flex: 1 }}>
                     <Pressable>
                         <View style={globalStyles.horizontalCenter}>
                             <MaterialCommunityIcons name={pathname === route.href ? route.selectedIcon : route.icon} size={25} />
-                            <Text style={{ fontSize: 18, color: theme.colors.primary }}>{route.label}</Text>
+                            <Text style={{ fontSize: 18, color: theme.colors.onSecondaryContainer }}>{route.label}</Text>
                         </View>
                     </Pressable>
                 </Link>

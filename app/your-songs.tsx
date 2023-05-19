@@ -1,12 +1,14 @@
 import MainLayout from '../layouts/MainLayout'
 import { useState } from 'react'
 import { ScrollView, StyleSheet, View, Image } from 'react-native'
-import { FAB, List, Modal, Portal, Text } from 'react-native-paper'
+import { FAB, IconButton, List, Modal, Portal, Text } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import AddSong from '../components/AddSong'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { formatTime } from '../utils/Formatter'
 import HeaderText from '../components/HeaderText'
+import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { showErrorToast } from '../utils/ToastUtils'
 
 export default function YourSongs() {
     let [songs, setSongs] = useState<SpotifyApi.TrackObjectFull[]>([])
@@ -20,6 +22,28 @@ export default function YourSongs() {
             text2: song.name
         })
         setSongs([...songs, song])
+    }
+
+    async function playSong(song: SpotifyApi.TrackObjectFull) {
+        try {
+            await fetch(`https://api.spotify.com/v1/me/player/play`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    uris: [song.uri],
+                    position_ms: 0,
+                    offset: {
+                        position: 0
+                    }
+                }),
+                headers: {
+                    Authorization: `Bearer ${storage.getString(SPOTIFY_TOKEN)}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+        } catch (e) {
+            console.error(JSON.stringify(e))
+            showErrorToast(e)
+        }
     }
 
     return (
@@ -43,6 +67,7 @@ export default function YourSongs() {
                                 </View>
                             }
                             left={() => <Image style={{ width: 64 }} source={{ uri: song.album.images[0]?.url }} />}
+                            right={() => <IconButton icon="play" mode="outlined" iconColor={'lime'} size={20} onPress={() => playSong(song)} />}
                         />
                     )
                 })}

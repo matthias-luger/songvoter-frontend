@@ -1,21 +1,22 @@
 import { StyleSheet } from 'react-native'
 import { MD3DarkTheme } from 'react-native-paper'
+import { myTheme } from '../index'
 
 export let globalStyles = StyleSheet.create({
     primaryElement: {
-        backgroundColor: MD3DarkTheme.colors.primary,
-        color: MD3DarkTheme.colors.onPrimary
+        backgroundColor: myTheme.colors.primary,
+        color: myTheme.colors.onPrimary
     },
     container: {
-        backgroundColor: MD3DarkTheme.colors.background
+        backgroundColor: myTheme.colors.background
     },
     horizontalCenter: {
         display: 'flex',
         alignItems: 'center'
     },
     surfaceVariant: {
-        color: MD3DarkTheme.colors.onSurfaceVariant,
-        backgroundColor: MD3DarkTheme.colors.surfaceVariant
+        color: myTheme.colors.onSurfaceVariant,
+        backgroundColor: myTheme.colors.surfaceVariant
     },
     fullCenterContainer: {
         alignItems: 'center',
@@ -24,7 +25,7 @@ export let globalStyles = StyleSheet.create({
     },
     fullModalContainer: {
         flex: 1,
-        backgroundColor: MD3DarkTheme.colors.background,
+        backgroundColor: myTheme.colors.background,
         padding: 20
     }
 })
