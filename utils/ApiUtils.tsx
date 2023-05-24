@@ -1,4 +1,5 @@
-import { AuthApiControllerImplApi, Configuration, PartyApiControllerImplApi } from '../generated'
+import { AuthApiControllerImplApi, Configuration, SongApiControllerImplApi } from '../generated'
+import { PartyApiControllerImplApi } from '../generated/apis/PartyApiControllerImplApi'
 import { GOOGLE_TOKEN, storage } from './StorageUtils'
 
 function getConfiguration(): Configuration {
@@ -17,3 +18,4 @@ function getConfiguration(): Configuration {
 
 export let AuthController = new AuthApiControllerImplApi(getConfiguration())
 export let PartyController = new PartyApiControllerImplApi(getConfiguration())
+export let SongController = new SongApiControllerImplApi(getConfiguration())

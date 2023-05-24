@@ -3,7 +3,6 @@ import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { showErrorToast } from '../utils/ToastUtils'
 import { useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
-import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { formatTime } from '../utils/Formatter'
 
 interface Props {
@@ -29,6 +28,7 @@ export default function AddSong(props: Props) {
         if (!searchText) {
             return
         }
+
         try {
             let response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(searchText)}&type=track&limit=20`, {
                 method: 'GET',

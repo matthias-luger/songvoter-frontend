@@ -32,6 +32,12 @@ export interface CoflnetSongVoterModelsParty {
      */
     name?: string | null;
     /**
+     * The id of the creator
+     * @type {string}
+     * @memberof CoflnetSongVoterModelsParty
+     */
+    ownerId?: string | null;
+    /**
      * Gets or Sets Members
      * @type {Array<string>}
      * @memberof CoflnetSongVoterModelsParty
@@ -60,6 +66,7 @@ export function CoflnetSongVoterModelsPartyFromJSONTyped(json: any, ignoreDiscri
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'name': !exists(json, 'name') ? undefined : json['name'],
+        'ownerId': !exists(json, 'ownerId') ? undefined : json['ownerId'],
         'members': !exists(json, 'members') ? undefined : json['members'],
     };
 }
@@ -75,6 +82,7 @@ export function CoflnetSongVoterModelsPartyToJSON(value?: CoflnetSongVoterModels
         
         'id': value.id,
         'name': value.name,
+        'ownerId': value.ownerId,
         'members': value.members,
     };
 }

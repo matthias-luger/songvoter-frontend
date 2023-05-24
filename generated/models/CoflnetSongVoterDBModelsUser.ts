@@ -13,6 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { CoflnetSongVoterDBModelsOauth2Token } from './CoflnetSongVoterDBModelsOauth2Token';
+import {
+    CoflnetSongVoterDBModelsOauth2TokenFromJSON,
+    CoflnetSongVoterDBModelsOauth2TokenFromJSONTyped,
+    CoflnetSongVoterDBModelsOauth2TokenToJSON,
+} from './CoflnetSongVoterDBModelsOauth2Token';
 import type { CoflnetSongVoterDBModelsParty } from './CoflnetSongVoterDBModelsParty';
 import {
     CoflnetSongVoterDBModelsPartyFromJSON,
@@ -51,23 +57,29 @@ export interface CoflnetSongVoterDBModelsUser {
      */
     googleId?: string | null;
     /**
-     * 
+     * The songs this user upvoted
      * @type {Array<CoflnetSongVoterDBModelsPartySong>}
      * @memberof CoflnetSongVoterDBModelsUser
      */
     upvotes?: Array<CoflnetSongVoterDBModelsPartySong> | null;
     /**
-     * 
+     * The songs this user downvoted
      * @type {Array<CoflnetSongVoterDBModelsPartySong>}
      * @memberof CoflnetSongVoterDBModelsUser
      */
     downvotes?: Array<CoflnetSongVoterDBModelsPartySong> | null;
     /**
-     * 
+     * The parties this user is a member of
      * @type {Array<CoflnetSongVoterDBModelsParty>}
      * @memberof CoflnetSongVoterDBModelsUser
      */
     parties?: Array<CoflnetSongVoterDBModelsParty> | null;
+    /**
+     * The tokens to platforms a user can login with
+     * @type {Array<CoflnetSongVoterDBModelsOauth2Token>}
+     * @memberof CoflnetSongVoterDBModelsUser
+     */
+    tokens?: Array<CoflnetSongVoterDBModelsOauth2Token> | null;
 }
 
 /**
@@ -95,6 +107,7 @@ export function CoflnetSongVoterDBModelsUserFromJSONTyped(json: any, ignoreDiscr
         'upvotes': !exists(json, 'upvotes') ? undefined : (json['upvotes'] === null ? null : (json['upvotes'] as Array<any>).map(CoflnetSongVoterDBModelsPartySongFromJSON)),
         'downvotes': !exists(json, 'downvotes') ? undefined : (json['downvotes'] === null ? null : (json['downvotes'] as Array<any>).map(CoflnetSongVoterDBModelsPartySongFromJSON)),
         'parties': !exists(json, 'parties') ? undefined : (json['parties'] === null ? null : (json['parties'] as Array<any>).map(CoflnetSongVoterDBModelsPartyFromJSON)),
+        'tokens': !exists(json, 'tokens') ? undefined : (json['tokens'] === null ? null : (json['tokens'] as Array<any>).map(CoflnetSongVoterDBModelsOauth2TokenFromJSON)),
     };
 }
 
@@ -113,6 +126,7 @@ export function CoflnetSongVoterDBModelsUserToJSON(value?: CoflnetSongVoterDBMod
         'upvotes': value.upvotes === undefined ? undefined : (value.upvotes === null ? null : (value.upvotes as Array<any>).map(CoflnetSongVoterDBModelsPartySongToJSON)),
         'downvotes': value.downvotes === undefined ? undefined : (value.downvotes === null ? null : (value.downvotes as Array<any>).map(CoflnetSongVoterDBModelsPartySongToJSON)),
         'parties': value.parties === undefined ? undefined : (value.parties === null ? null : (value.parties as Array<any>).map(CoflnetSongVoterDBModelsPartyToJSON)),
+        'tokens': value.tokens === undefined ? undefined : (value.tokens === null ? null : (value.tokens as Array<any>).map(CoflnetSongVoterDBModelsOauth2TokenToJSON)),
     };
 }
 

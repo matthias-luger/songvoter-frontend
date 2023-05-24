@@ -4,4 +4,3 @@ export const storage = new MMKV()
 
 export const GOOGLE_TOKEN = 'apiToken'
 export const SPOTIFY_TOKEN = 'spotifyToken'
-export const SPOTIFY_AUTH_OBJECT = 'spotifyAuthObject'

@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CoflnetSongVoterDBModelsExternalSongPlatforms } from './CoflnetSongVoterDBModelsExternalSongPlatforms';
+import type { CoflnetSongVoterDBModelsPlatforms } from './CoflnetSongVoterDBModelsPlatforms';
 import {
-    CoflnetSongVoterDBModelsExternalSongPlatformsFromJSON,
-    CoflnetSongVoterDBModelsExternalSongPlatformsFromJSONTyped,
-    CoflnetSongVoterDBModelsExternalSongPlatformsToJSON,
-} from './CoflnetSongVoterDBModelsExternalSongPlatforms';
+    CoflnetSongVoterDBModelsPlatformsFromJSON,
+    CoflnetSongVoterDBModelsPlatformsFromJSONTyped,
+    CoflnetSongVoterDBModelsPlatformsToJSON,
+} from './CoflnetSongVoterDBModelsPlatforms';
 
 /**
  * 
@@ -34,10 +34,10 @@ export interface CoflnetSongVoterDBModelsExternalSong {
     id?: number;
     /**
      * 
-     * @type {CoflnetSongVoterDBModelsExternalSongPlatforms}
+     * @type {CoflnetSongVoterDBModelsPlatforms}
      * @memberof CoflnetSongVoterDBModelsExternalSong
      */
-    platform?: CoflnetSongVoterDBModelsExternalSongPlatforms;
+    platform?: CoflnetSongVoterDBModelsPlatforms;
     /**
      * 
      * @type {string}
@@ -62,6 +62,12 @@ export interface CoflnetSongVoterDBModelsExternalSong {
      * @memberof CoflnetSongVoterDBModelsExternalSong
      */
     externalId?: string | null;
+    /**
+     * how long the song plays
+     * @type {string}
+     * @memberof CoflnetSongVoterDBModelsExternalSong
+     */
+    duration?: string;
 }
 
 /**
@@ -84,11 +90,12 @@ export function CoflnetSongVoterDBModelsExternalSongFromJSONTyped(json: any, ign
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'platform': !exists(json, 'platform') ? undefined : CoflnetSongVoterDBModelsExternalSongPlatformsFromJSON(json['platform']),
+        'platform': !exists(json, 'platform') ? undefined : CoflnetSongVoterDBModelsPlatformsFromJSON(json['platform']),
         'title': !exists(json, 'title') ? undefined : json['title'],
         'artist': !exists(json, 'artist') ? undefined : json['artist'],
         'thumbnailUrl': !exists(json, 'thumbnailUrl') ? undefined : json['thumbnailUrl'],
         'externalId': !exists(json, 'externalId') ? undefined : json['externalId'],
+        'duration': !exists(json, 'duration') ? undefined : json['duration'],
     };
 }
 
@@ -102,11 +109,12 @@ export function CoflnetSongVoterDBModelsExternalSongToJSON(value?: CoflnetSongVo
     return {
         
         'id': value.id,
-        'platform': CoflnetSongVoterDBModelsExternalSongPlatformsToJSON(value.platform),
+        'platform': CoflnetSongVoterDBModelsPlatformsToJSON(value.platform),
         'title': value.title,
         'artist': value.artist,
         'thumbnailUrl': value.thumbnailUrl,
         'externalId': value.externalId,
+        'duration': value.duration,
     };
 }
 

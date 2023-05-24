@@ -2,14 +2,14 @@ import { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
-import { GoogleData } from '../types/global'
 import { AuthController } from '../utils/ApiUtils'
-import { makeRedirectUri } from 'expo-auth-session'
+import { ResponseType, makeRedirectUri } from 'expo-auth-session'
 import { usePathname } from 'expo-router'
 import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
 import Toast from 'react-native-toast-message'
 import { Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
+import { showErrorToast } from '../utils/ToastUtils'
 WebBrowser.maybeCompleteAuthSession()
 
 interface Props {
@@ -21,6 +21,7 @@ export default function GoogleLogin(props: Props) {
     let pathname = usePathname()
     let [apiToken, setApiToken] = useState(storage.getString(GOOGLE_TOKEN))
     const [request, response, promptAsync] = Google.useAuthRequest({
+        responseType: ResponseType.Code,
         androidClientId: '108545418952-2uiivcdeu35i44397itsr941s7357bob.apps.googleusercontent.com',
         redirectUri: makeRedirectUri({
             path: pathname
@@ -29,29 +30,26 @@ export default function GoogleLogin(props: Props) {
 
     useEffect(() => {
         if (response?.type === 'success') {
-            getApiToken(response.authentication.idToken)
+            getApiToken(response.params.code)
         }
     }, [response])
 
-    async function getApiToken(idToken: string) {
+    async function getApiToken(code: string) {
         try {
-            Toast.show({
-                type: 'success',
-                text1: 'Successfully logged in!'
-            })
-            let response = await AuthController.authGooglePost({
-                coflnetSongVoterModelsAuthToken: {
-                    token: idToken
+            let response = await AuthController.authGoogleCodePost({
+                coflnetSongVoterControllersAuthApiControllerImplAuthCode: {
+                    code: code
                 }
             })
             storage.set(GOOGLE_TOKEN, response.token)
             setApiToken(response.token)
             props.onAfterLogin(response.token)
-        } catch (e) {
             Toast.show({
-                type: 'error',
-                text1: e?.message || e
+                type: 'success',
+                text1: 'Successfully logged in!'
             })
+        } catch (e) {
+            showErrorToast(e)
         }
     }
 
