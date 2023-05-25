@@ -9,6 +9,7 @@ export * from './CoflnetSongVoterDBModelsPlatforms';
 export * from './CoflnetSongVoterDBModelsPlaylist';
 export * from './CoflnetSongVoterDBModelsSong';
 export * from './CoflnetSongVoterDBModelsUser';
+export * from './CoflnetSongVoterModelsAuthRefreshToken';
 export * from './CoflnetSongVoterModelsAuthToken';
 export * from './CoflnetSongVoterModelsExternalSong';
 export * from './CoflnetSongVoterModelsExternalSongPlatformEnum';

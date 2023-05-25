@@ -1,31 +1,30 @@
 import MainLayout from '../layouts/MainLayout'
 import { Link, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
-import { PartyController } from '../utils/ApiUtils'
+import { GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
 import { View, StyleSheet } from 'react-native'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
 import HeaderText from '../components/HeaderText'
+import { getPartyController } from '../utils/ApiUtils'
 
 export default function App() {
     const router = useRouter()
     let theme = useTheme()
-    let [isLoading, setIsLoading] = useState(storage.getString(GOOGLE_TOKEN) !== undefined)
+    let [isLoading, setIsLoading] = useState(storage.contains(GOOGLE_AUTH_OBJECT))
 
     useEffect(() => {
         checkIfUserIsInParty()
     }, [])
 
     async function checkIfUserIsInParty() {
-        setIsLoading(false)
-        if (!storage.getString(GOOGLE_TOKEN)) {
-            setIsLoading(false)
+        if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
             return
         }
         try {
-            let party = await PartyController.partyGet()
+            let partyController = await getPartyController()
+            let party = await partyController.partyGet()
             if (party) {
                 router.push('/party-overview')
             }

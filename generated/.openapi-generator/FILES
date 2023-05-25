@@ -14,6 +14,7 @@ models/CoflnetSongVoterDBModelsPlatforms.ts
 models/CoflnetSongVoterDBModelsPlaylist.ts
 models/CoflnetSongVoterDBModelsSong.ts
 models/CoflnetSongVoterDBModelsUser.ts
+models/CoflnetSongVoterModelsAuthRefreshToken.ts
 models/CoflnetSongVoterModelsAuthToken.ts
 models/CoflnetSongVoterModelsExternalSong.ts
 models/CoflnetSongVoterModelsExternalSongPlatformEnum.ts

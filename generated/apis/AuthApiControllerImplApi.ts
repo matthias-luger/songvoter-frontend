@@ -16,21 +16,20 @@
 import * as runtime from '../runtime';
 import type {
   CoflnetSongVoterControllersAuthApiControllerImplAuthCode,
+  CoflnetSongVoterModelsAuthRefreshToken,
   CoflnetSongVoterModelsAuthToken,
 } from '../models';
 import {
     CoflnetSongVoterControllersAuthApiControllerImplAuthCodeFromJSON,
     CoflnetSongVoterControllersAuthApiControllerImplAuthCodeToJSON,
+    CoflnetSongVoterModelsAuthRefreshTokenFromJSON,
+    CoflnetSongVoterModelsAuthRefreshTokenToJSON,
     CoflnetSongVoterModelsAuthTokenFromJSON,
     CoflnetSongVoterModelsAuthTokenToJSON,
 } from '../models';
 
-export interface AuthGoogleCodePostRequest {
-    coflnetSongVoterControllersAuthApiControllerImplAuthCode?: CoflnetSongVoterControllersAuthApiControllerImplAuthCode;
-}
-
 export interface AuthGooglePostRequest {
-    coflnetSongVoterModelsAuthToken?: CoflnetSongVoterModelsAuthToken;
+    coflnetSongVoterModelsAuthRefreshToken?: CoflnetSongVoterModelsAuthRefreshToken;
 }
 
 export interface AuthSpotifyCodePostRequest {
@@ -55,39 +54,7 @@ export interface DbPostRequest {
 export class AuthApiControllerImplApi extends runtime.BaseAPI {
 
     /**
-     * Exchange a google auth code for a songvoter token
-     * Google auth code for server side auth
-     */
-    async authGoogleCodePostRaw(requestParameters: AuthGoogleCodePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsAuthToken>> {
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json';
-
-        const response = await this.request({
-            path: `/auth/google/code`,
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-            body: CoflnetSongVoterControllersAuthApiControllerImplAuthCodeToJSON(requestParameters.coflnetSongVoterControllersAuthApiControllerImplAuthCode),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsAuthTokenFromJSON(jsonValue));
-    }
-
-    /**
-     * Exchange a google auth code for a songvoter token
-     * Google auth code for server side auth
-     */
-    async authGoogleCodePost(requestParameters: AuthGoogleCodePostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsAuthToken> {
-        const response = await this.authGoogleCodePostRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
-     * Exchange a google identity token for a songvoter token
-     * Authenticate with google
+     * Stores google auth token server side
      */
     async authGooglePostRaw(requestParameters: AuthGooglePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsAuthToken>> {
         const queryParameters: any = {};
@@ -101,15 +68,14 @@ export class AuthApiControllerImplApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: CoflnetSongVoterModelsAuthTokenToJSON(requestParameters.coflnetSongVoterModelsAuthToken),
+            body: CoflnetSongVoterModelsAuthRefreshTokenToJSON(requestParameters.coflnetSongVoterModelsAuthRefreshToken),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsAuthTokenFromJSON(jsonValue));
     }
 
     /**
-     * Exchange a google identity token for a songvoter token
-     * Authenticate with google
+     * Stores google auth token server side
      */
     async authGooglePost(requestParameters: AuthGooglePostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsAuthToken> {
         const response = await this.authGooglePostRaw(requestParameters, initOverrides);

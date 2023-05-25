@@ -3,12 +3,11 @@ import MainLayout from '../layouts/MainLayout'
 import { Keyboard, StyleSheet, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import QRCode from 'react-native-qrcode-svg'
-import { PartyController } from '../utils/ApiUtils'
 import { CoflnetSongVoterDBModelsParty } from '../generated'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
-import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
 import HeaderText from '../components/HeaderText'
+import { getPartyController } from '../utils/ApiUtils'
 
 export default function App() {
     let theme = useTheme()
@@ -21,9 +20,10 @@ export default function App() {
 
     async function loadPartyLink() {
         try {
-            let party = await PartyController.partyPost()
+            let partyController = await getPartyController()
+            let party = await partyController.partyPost()
             setParty(party)
-            let link = await PartyController.partyInviteLinkGet({
+            let link = await partyController.partyInviteLinkGet({
                 partyId: party.id.toString()
             })
             setInviteLink(link)

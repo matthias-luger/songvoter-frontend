@@ -14,7 +14,7 @@
 
 import { exists, mapValues } from '../runtime';
 /**
- * 
+ * Authenticate with google
  * @export
  * @interface CoflnetSongVoterControllersAuthApiControllerImplAuthCode
  */

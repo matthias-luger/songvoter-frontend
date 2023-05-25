@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react'
 import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { Button, Text, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
-import { AuthController } from '../utils/ApiUtils'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { showErrorToast } from '../utils/ToastUtils'
+import { getAuthController } from '../utils/ApiUtils'
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -50,7 +50,8 @@ export default function SpotifyLogin(props: Props) {
 
     async function serversideAuthentication(spotifyCode: string) {
         try {
-            let { token } = await AuthController.authSpotifyCodePost({
+            let authController = await getAuthController()
+            let { token } = await authController.authSpotifyCodePost({
                 coflnetSongVoterControllersAuthApiControllerImplAuthCode: {
                     code: spotifyCode
                 }

@@ -2,27 +2,31 @@ import { useEffect, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
-import { AuthController } from '../utils/ApiUtils'
-import { ResponseType, makeRedirectUri } from 'expo-auth-session'
+import { AuthSessionResult, ResponseType, TokenResponse, TokenResponseConfig, makeRedirectUri } from 'expo-auth-session'
 import { usePathname } from 'expo-router'
-import { GOOGLE_TOKEN, storage } from '../utils/StorageUtils'
+import { GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import Toast from 'react-native-toast-message'
 import { Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
+import { getAuthController } from '../utils/ApiUtils'
 WebBrowser.maybeCompleteAuthSession()
 
 interface Props {
-    onAfterLogin(token: string)
+    onAfterLogin?(token: TokenResponseConfig)
 }
+
+export const clientId = '366589988548-reag2f35a49fa2cavc4lnl5k1p8n1brd.apps.googleusercontent.com'
 
 export default function GoogleLogin(props: Props) {
     let theme = useTheme()
     let pathname = usePathname()
-    let [apiToken, setApiToken] = useState(storage.getString(GOOGLE_TOKEN))
+    let [authObject, setAuthObject] = useState<TokenResponseConfig>(
+        storage.contains(GOOGLE_AUTH_OBJECT) ? JSON.parse(storage.getString(GOOGLE_AUTH_OBJECT)) : null
+    )
     const [request, response, promptAsync] = Google.useAuthRequest({
         responseType: ResponseType.Code,
-        androidClientId: '108545418952-2uiivcdeu35i44397itsr941s7357bob.apps.googleusercontent.com',
+        androidClientId: clientId,
         redirectUri: makeRedirectUri({
             path: pathname
         })
@@ -30,24 +34,37 @@ export default function GoogleLogin(props: Props) {
 
     useEffect(() => {
         if (response?.type === 'success') {
-            getApiToken(response.params.code)
+            handleGoogleSuccessResponse(response)
+        } else if (response?.type === 'error') {
+            showErrorToast(response.error)
         }
     }, [response])
 
-    async function getApiToken(code: string) {
+    async function handleGoogleSuccessResponse(response: Extract<AuthSessionResult, { type: 'error' | 'success' }>) {
         try {
-            let response = await AuthController.authGoogleCodePost({
-                coflnetSongVoterControllersAuthApiControllerImplAuthCode: {
-                    code: code
+            let tokenResponse = new TokenResponse(response.authentication)
+            console.log(tokenResponse.accessToken)
+
+            let authController = await getAuthController()
+            let accessTokenResponse = await authController.authGooglePost({
+                coflnetSongVoterModelsAuthRefreshToken: {
+                    token: tokenResponse.idToken,
+                    accessToken: tokenResponse.accessToken,
+                    refreshToken: tokenResponse.refreshToken
                 }
             })
-            storage.set(GOOGLE_TOKEN, response.token)
-            setApiToken(response.token)
-            props.onAfterLogin(response.token)
+            console.log(accessTokenResponse)
+            tokenResponse.accessToken = accessTokenResponse.token
+
+            setAuthObject(tokenResponse)
+            storage.set(GOOGLE_AUTH_OBJECT, JSON.stringify(tokenResponse.getRequestConfig()))
             Toast.show({
                 type: 'success',
                 text1: 'Successfully logged in!'
             })
+            if (props.onAfterLogin) {
+                props.onAfterLogin(tokenResponse)
+            }
         } catch (e) {
             showErrorToast(e)
         }
@@ -55,7 +72,7 @@ export default function GoogleLogin(props: Props) {
 
     return (
         <View>
-            {!apiToken ? (
+            {!authObject ? (
                 <Button
                     style={globalStyles.primaryElement}
                     textColor={theme.colors.onPrimary}
@@ -71,8 +88,8 @@ export default function GoogleLogin(props: Props) {
                     style={globalStyles.primaryElement}
                     textColor={theme.colors.onPrimary}
                     onPress={() => {
-                        setApiToken(null)
-                        storage.delete(GOOGLE_TOKEN)
+                        setAuthObject(null)
+                        storage.delete(GOOGLE_AUTH_OBJECT)
                         Toast.show({
                             type: 'success',
                             text1: 'Logged out!'
