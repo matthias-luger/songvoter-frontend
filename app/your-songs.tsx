@@ -1,5 +1,5 @@
 import MainLayout from '../layouts/MainLayout'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View, Image } from 'react-native'
 import { FAB, IconButton, List, Modal, Portal, Text } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
@@ -9,95 +9,72 @@ import { formatTime } from '../utils/Formatter'
 import HeaderText from '../components/HeaderText'
 import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { showErrorToast } from '../utils/ToastUtils'
+import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../generated'
+import SongListElement from '../components/SongListElement'
+import { getListController } from '../utils/ApiUtils'
 
 export default function YourSongs() {
-    let [songs, setSongs] = useState<SpotifyApi.TrackObjectFull[]>([])
+    let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>([])
     let [showAddSongModal, setShowAddSongModal] = useState(false)
 
-    function onSongAdded(song: SpotifyApi.TrackObjectFull) {
+    useEffect(() => {
+        loadPlaylists()
+    }, [])
+
+    async function loadPlaylists() {
+        let listController = await getListController()
+        let playlists = await listController.listsGet()
+        console.log(JSON.stringify(playlists))
+
+        if (playlists.length === 0) {
+            await listController.listsPost({
+                coflnetSongVoterModelsPlayList: {
+                    title: 'Default Playlist',
+                    songs: []
+                }
+            })
+            playlists = await listController.listsGet()
+        }
+        setPlaylists(playlists)
+    }
+
+    async function onSongAdded(song: CoflnetSongVoterModelsSong) {
+        console.log(
+            'song: ' +
+                JSON.stringify({
+                    listId: playlists[0].id,
+                    body: song.id
+                })
+        )
+        try {
+            let listController = await getListController()
+            await listController.listsListIdSongsPost({
+                listId: playlists[0].id,
+                body: song.id
+            })
+        } catch (e) {
+            showErrorToast(e)
+        }
         setShowAddSongModal(false)
         Toast.show({
             type: 'success',
             text1: 'Song added',
-            text2: song.name
+            text2: song.title
         })
-        setSongs([...songs, song])
     }
 
-    async function playSong(song: SpotifyApi.TrackObjectFull) {
-        try {
-            let devicesResponse = await fetch(`https://api.spotify.com/v1/me/player/devices`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${storage.getString(SPOTIFY_TOKEN)}`,
-                    'Content-Type': 'application/json'
-                }
-            })
-            let { devices }: { devices: SpotifyApi.UserDevice[] } = await devicesResponse.json()
-
-            if (devices.length === 0) {
-                Toast.show({
-                    type: 'info',
-                    text1: `No active Spotify device found`,
-                    text2: `Please try starting Spotify`
-                })
-                return
-            }
-
-            let deviceToUse = devices.filter(device => device.is_active)[0] || devices[0]
-
-            let playResponse = await fetch(`https://api.spotify.com/v1/me/player/play?${deviceToUse ? 'device_id=' + deviceToUse.id : null}`, {
-                method: 'PUT',
-                body: JSON.stringify({
-                    uris: [song.uri],
-                    position_ms: 0,
-                    offset: {
-                        position: 0
-                    }
-                }),
-                headers: {
-                    Authorization: `Bearer ${storage.getString(SPOTIFY_TOKEN)}`,
-                    'Content-Type': 'application/json'
-                }
-            })
-            if (playResponse.status !== 204) {
-                Toast.show({
-                    type: 'error',
-                    text1: `Couldn't start Spotify playback (Status ${playResponse.status})`
-                })
-            }
-        } catch (e) {
-            console.error(JSON.stringify(e))
-            showErrorToast(e)
-        }
-    }
+    /*
+    
+            <ScrollView>
+                {playlists[0].songs?.map(song => (
+                    <SongListElement song={song} clickElement={<IconButton icon="play" mode="outlined" iconColor={'lime'} size={20} />} />
+                ))}
+            </ScrollView>
+    */
 
     return (
         <MainLayout>
             <HeaderText text="Your Songs" />
-            <ScrollView>
-                {songs.map(song => {
-                    return (
-                        <List.Item
-                            key={song.id}
-                            title={song.name}
-                            descriptionEllipsizeMode={'middle'}
-                            description={
-                                <View>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 200 }}>
-                                        {song.artists.map(artist => artist.name).join(' • ')}
-                                    </Text>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 200 }}>
-                                        {formatTime(song.duration_ms)} min
-                                    </Text>
-                                </View>
-                            }
-                            left={() => <Image style={{ width: 64 }} source={{ uri: song.album.images[0]?.url }} />}
-                            right={() => <IconButton icon="play" mode="outlined" iconColor={'lime'} size={20} onPress={() => playSong(song)} />}
-                        />
-                    )
-                })}
-            </ScrollView>
             <FAB
                 icon="plus"
                 label="Add song"

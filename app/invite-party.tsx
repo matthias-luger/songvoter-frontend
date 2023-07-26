@@ -23,10 +23,8 @@ export default function App() {
             let partyController = await getPartyController()
             let party = await partyController.partyPost()
             setParty(party)
-            let link = await partyController.partyInviteLinkGet({
-                partyId: party.id.toString()
-            })
-            setInviteLink(link)
+            let link = await partyController.partyInviteLinkGet()
+            setInviteLink(link.link)
         } catch (e) {
             console.error(JSON.stringify(e))
             showErrorToast(e)
@@ -41,7 +39,7 @@ export default function App() {
                     <QRCode value={inviteLink} />
                     <View>
                         <Text style={styles.joinCode}>
-                            <Text style={{ fontWeight: '800' }}>Code: </Text>
+                            <Text style={{ fontWeight: '800' }}>Invite: </Text>
                             {inviteLink}
                         </Text>
                     </View>

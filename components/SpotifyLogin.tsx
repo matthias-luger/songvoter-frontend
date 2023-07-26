@@ -34,9 +34,10 @@ export default function SpotifyLogin(props: Props) {
             // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
             // this must be set to false
             usePKCE: false,
-            redirectUri: makeRedirectUri({
-                path: pathname.replace('/', '')
-            })
+            redirectUri:
+                makeRedirectUri({
+                    path: pathname.replace('/', '')
+                }) + '/'
         },
         discovery
     )
@@ -53,9 +54,14 @@ export default function SpotifyLogin(props: Props) {
             let authController = await getAuthController()
             let { token } = await authController.authSpotifyCodePost({
                 coflnetSongVoterControllersAuthApiControllerImplAuthCode: {
-                    code: spotifyCode
+                    code: spotifyCode,
+                    redirectUri:
+                        makeRedirectUri({
+                            path: pathname.replace('/', '')
+                        }) + '/'
                 }
             })
+            console.log("Spotify Token: " + token)
             storage.set(SPOTIFY_TOKEN, token)
             setSpotifyToken(token)
             props.onAfterLogin(token)

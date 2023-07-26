@@ -4,13 +4,16 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
 import { formatTime } from '../utils/Formatter'
+import { getSongController } from '../utils/ApiUtils'
+import { CoflnetSongVoterModelsSong } from '../generated'
+import SongListElement from './SongListElement'
 
 interface Props {
-    onAddSong(song: SpotifyApi.TrackObjectFull)
+    onAddSong(song: CoflnetSongVoterModelsSong)
 }
 
 export default function AddSong(props: Props) {
-    let [results, setResults] = useState<SpotifyApi.TrackObjectFull[]>([])
+    let [results, setResults] = useState<CoflnetSongVoterModelsSong[]>([])
 
     function debounce(func, delay) {
         let timeoutId
@@ -30,6 +33,13 @@ export default function AddSong(props: Props) {
         }
 
         try {
+            let controller = await getSongController()
+            let results = await controller.songsSearchGet({
+                term: searchText
+            })
+            console.log(JSON.stringify(results))
+            setResults(results)
+            /*
             let response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(searchText)}&type=track&limit=20`, {
                 method: 'GET',
                 headers: {
@@ -38,6 +48,7 @@ export default function AddSong(props: Props) {
             })
             let result = await response.json()
             setResults(result.tracks?.items || [])
+            */
         } catch (e) {
             console.error(JSON.stringify(e))
             showErrorToast(e)
@@ -55,27 +66,12 @@ export default function AddSong(props: Props) {
                 }}
             />
             <ScrollView>
-                {results.map(result => {
-                    return (
-                        <List.Item
-                            key={result.id}
-                            title={result.name}
-                            descriptionEllipsizeMode={'middle'}
-                            description={
-                                <View>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 200 }}>
-                                        {result.artists.map(artist => artist.name).join(' • ')}
-                                    </Text>
-                                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ width: 200 }}>
-                                        {formatTime(result.duration_ms)} min
-                                    </Text>
-                                </View>
-                            }
-                            left={() => <Image style={{ width: 64 }} source={{ uri: result.album.images[0]?.url }} />}
-                            right={() => <IconButton icon="plus" mode="outlined" iconColor={'lime'} size={20} onPress={() => props.onAddSong(result)} />}
-                        />
-                    )
-                })}
+                {results.map(result => (
+                    <SongListElement
+                        song={result}
+                        clickElement={<IconButton icon="plus" mode="outlined" iconColor={'lime'} size={20} onPress={() => props.onAddSong(result)} />}
+                    />
+                ))}
             </ScrollView>
         </>
     )

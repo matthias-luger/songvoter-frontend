@@ -25,6 +25,12 @@ export interface CoflnetSongVoterControllersAuthApiControllerImplAuthCode {
      * @memberof CoflnetSongVoterControllersAuthApiControllerImplAuthCode
      */
     code?: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof CoflnetSongVoterControllersAuthApiControllerImplAuthCode
+     */
+    redirectUri?: string | null;
 }
 
 /**
@@ -47,6 +53,7 @@ export function CoflnetSongVoterControllersAuthApiControllerImplAuthCodeFromJSON
     return {
         
         'code': !exists(json, 'code') ? undefined : json['code'],
+        'redirectUri': !exists(json, 'redirectUri') ? undefined : json['redirectUri'],
     };
 }
 
@@ -60,6 +67,7 @@ export function CoflnetSongVoterControllersAuthApiControllerImplAuthCodeToJSON(v
     return {
         
         'code': value.code,
+        'redirectUri': value.redirectUri,
     };
 }
 
