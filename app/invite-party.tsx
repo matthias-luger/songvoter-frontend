@@ -1,34 +1,52 @@
-import { Button, Text, useTheme } from 'react-native-paper'
+import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper'
 import MainLayout from '../layouts/MainLayout'
 import { Keyboard, StyleSheet, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import QRCode from 'react-native-qrcode-svg'
-import { CoflnetSongVoterDBModelsParty } from '../generated'
+import { CoflnetSongVoterDBModelsParty, CoflnetSongVoterModelsParty } from '../generated'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
 import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
+import { useRouter } from 'expo-router'
 
 export default function App() {
-    let theme = useTheme()
-    let [party, setParty] = useState<CoflnetSongVoterDBModelsParty>()
+    let router = useRouter()
     let [inviteLink, setInviteLink] = useState('https://songvoter.party')
+    let [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         loadPartyLink()
     }, [])
 
     async function loadPartyLink() {
+        let partyController = await getPartyController()
+        setIsLoading(true)
         try {
-            let partyController = await getPartyController()
-            let party = await partyController.partyPost()
-            setParty(party)
+            // see if there is a party
+            let party = await partyController.partyGet()
             let link = await partyController.partyInviteLinkGet()
             setInviteLink(link.link)
         } catch (e) {
-            console.error(JSON.stringify(e))
+            if (e.response?.status === 404) {
+                try {
+                    let newParty = await partyController.partyPost()
+                    console.log(JSON.stringify(newParty))
+                    let link = await partyController.partyInviteLinkGet()
+                    setInviteLink(link.link)
+                } catch (e) {
+                    showErrorToast(e)
+                }
+                return
+            }
             showErrorToast(e)
+        } finally {
+            setIsLoading(false)
         }
+    }
+
+    function navigateToOverview() {
+        router.push('/party-overview')
     }
 
     return (
@@ -36,13 +54,20 @@ export default function App() {
             <MainLayout>
                 <View style={{ ...globalStyles.fullCenterContainer }}>
                     <HeaderText text="Invite people to your party" />
-                    <QRCode value={inviteLink} />
-                    <View>
-                        <Text style={styles.joinCode}>
-                            <Text style={{ fontWeight: '800' }}>Invite: </Text>
-                            {inviteLink}
-                        </Text>
-                    </View>
+                    {isLoading ? (
+                        <ActivityIndicator size="large" />
+                    ) : (
+                        <>
+                            <QRCode value={inviteLink} />
+                            <View>
+                                <Text style={styles.joinCode}>
+                                    <Text style={{ fontWeight: '800' }}>Invite: </Text>
+                                    {inviteLink}
+                                </Text>
+                                <Button onPress={navigateToOverview}>To overview</Button>
+                            </View>
+                        </>
+                    )}
                 </View>
             </MainLayout>
         </>

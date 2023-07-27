@@ -39,16 +39,6 @@ export default function AddSong(props: Props) {
             })
             console.log(JSON.stringify(results))
             setResults(results)
-            /*
-            let response = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(searchText)}&type=track&limit=20`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${storage.getString(SPOTIFY_TOKEN)}`
-                }
-            })
-            let result = await response.json()
-            setResults(result.tracks?.items || [])
-            */
         } catch (e) {
             console.error(JSON.stringify(e))
             showErrorToast(e)

@@ -5,9 +5,7 @@ import { ActivityIndicator, FAB, IconButton, List, Modal, Portal, Text } from 'r
 import { globalStyles } from '../styles/globalStyles'
 import AddSong from '../components/AddSong'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
-import { formatTime } from '../utils/Formatter'
 import HeaderText from '../components/HeaderText'
-import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { showErrorToast } from '../utils/ToastUtils'
 import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../generated'
 import SongListElement from '../components/SongListElement'
@@ -31,7 +29,7 @@ export default function YourSongs() {
 
             if (playlists.length === 0) {
                 await listController.listsPost({
-                    coflnetSongVoterModelsPlayList: {
+                    coflnetSongVoterModelsPlayListCreate: {
                         title: 'Default Playlist',
                         songs: []
                     }
@@ -66,19 +64,39 @@ export default function YourSongs() {
         loadPlaylists()
     }
 
-    /*
-    
-            <ScrollView>
-                {playlists[0].songs?.map(song => (
-                    <SongListElement song={song} clickElement={<IconButton icon="play" mode="outlined" iconColor={'lime'} size={20} />} />
-                ))}
-            </ScrollView>
-    */
+    async function removeSong(song: CoflnetSongVoterModelsSong) {
+        try {
+            let listController = await getListController()
+            await listController.listsListIdSongsSongIdDelete({
+                listId: playlists[0].id,
+                songId: song.id
+            })
+            Toast.show({
+                type: 'success',
+                text1: 'Song removed',
+                text2: song.title
+            })
+            loadPlaylists()
+        } catch (e) {
+            console.log(JSON.stringify(e))
+            showErrorToast(e)
+        }
+    }
 
     return (
         <MainLayout>
             <HeaderText text="Your Songs" />
             {isLoading ? <ActivityIndicator size="large" /> : null}
+            <ScrollView>
+                {playlists && playlists.length > 0
+                    ? playlists[0].songs?.map(song => (
+                          <SongListElement
+                              song={song}
+                              clickElement={<IconButton icon="delete" iconColor={'red'} size={20} onPress={() => removeSong(song)} />}
+                          />
+                      ))
+                    : null}
+            </ScrollView>
             <FAB
                 icon="plus"
                 label="Add song"

@@ -1,5 +1,5 @@
 import { TokenResponse, TokenResponseConfig } from 'expo-auth-session'
-import { AuthApiControllerImplApi, Configuration, ListApiControllerImplApi, PartyApi, SongApiControllerImplApi } from '../generated'
+import { AuthApiControllerImplApi, Configuration, ListApiControllerImplApi, PartyApi, SongApiControllerImplApi, UserApi } from '../generated'
 import { GOOGLE_AUTH_OBJECT, storage } from './StorageUtils'
 import { clientId } from '../components/GoogleLogin'
 
@@ -47,3 +47,4 @@ export let getAuthController = async () => new AuthApiControllerImplApi(await ge
 export let getPartyController = async () => new PartyApi(await getConfiguration())
 export let getSongController = async () => new SongApiControllerImplApi(await getConfiguration())
 export let getListController = async () => new ListApiControllerImplApi(await getConfiguration())
+export let getUserController = async () => new UserApi(await getConfiguration())

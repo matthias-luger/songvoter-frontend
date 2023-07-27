@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { CoflnetSongVoterModelsSong } from './CoflnetSongVoterModelsSong';
+import {
+    CoflnetSongVoterModelsSongFromJSON,
+    CoflnetSongVoterModelsSongFromJSONTyped,
+    CoflnetSongVoterModelsSongToJSON,
+} from './CoflnetSongVoterModelsSong';
+
 /**
  * 
  * @export
@@ -33,10 +40,10 @@ export interface CoflnetSongVoterModelsPlayList {
     title?: string | null;
     /**
      * Gets or Sets Songs
-     * @type {Array<string>}
+     * @type {Array<CoflnetSongVoterModelsSong>}
      * @memberof CoflnetSongVoterModelsPlayList
      */
-    songs?: Array<string> | null;
+    songs?: Array<CoflnetSongVoterModelsSong> | null;
 }
 
 /**
@@ -60,7 +67,7 @@ export function CoflnetSongVoterModelsPlayListFromJSONTyped(json: any, ignoreDis
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'title': !exists(json, 'title') ? undefined : json['title'],
-        'songs': !exists(json, 'songs') ? undefined : json['songs'],
+        'songs': !exists(json, 'songs') ? undefined : (json['songs'] === null ? null : (json['songs'] as Array<any>).map(CoflnetSongVoterModelsSongFromJSON)),
     };
 }
 
@@ -75,7 +82,7 @@ export function CoflnetSongVoterModelsPlayListToJSON(value?: CoflnetSongVoterMod
         
         'id': value.id,
         'title': value.title,
-        'songs': value.songs,
+        'songs': value.songs === undefined ? undefined : (value.songs === null ? null : (value.songs as Array<any>).map(CoflnetSongVoterModelsSongToJSON)),
     };
 }
 
