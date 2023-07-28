@@ -17,12 +17,15 @@ import * as runtime from '../runtime';
 import type {
   CoflnetSongVoterModelsPlayList,
   CoflnetSongVoterModelsPlayListCreate,
+  CoflnetSongVoterModelsSongId,
 } from '../models';
 import {
     CoflnetSongVoterModelsPlayListFromJSON,
     CoflnetSongVoterModelsPlayListToJSON,
     CoflnetSongVoterModelsPlayListCreateFromJSON,
     CoflnetSongVoterModelsPlayListCreateToJSON,
+    CoflnetSongVoterModelsSongIdFromJSON,
+    CoflnetSongVoterModelsSongIdToJSON,
 } from '../models';
 
 export interface ListsListIdGetRequest {
@@ -31,7 +34,7 @@ export interface ListsListIdGetRequest {
 
 export interface ListsListIdSongsPostRequest {
     listId: string;
-    body?: string;
+    coflnetSongVoterModelsSongId?: CoflnetSongVoterModelsSongId;
 }
 
 export interface ListsListIdSongsSongIdDeleteRequest {
@@ -125,7 +128,7 @@ export class ListApiControllerImplApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: requestParameters.body as any,
+            body: CoflnetSongVoterModelsSongIdToJSON(requestParameters.coflnetSongVoterModelsSongId),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsPlayListFromJSON(jsonValue));

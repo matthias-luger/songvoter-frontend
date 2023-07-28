@@ -31,7 +31,6 @@ export default function App() {
             if (e.response?.status === 404) {
                 try {
                     let newParty = await partyController.partyPost()
-                    console.log(JSON.stringify(newParty))
                     let link = await partyController.partyInviteLinkGet()
                     setInviteLink(link.link)
                 } catch (e) {

@@ -264,6 +264,7 @@ export class PartyApi extends runtime.BaseAPI {
      */
     async partyNextSongGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsSong> {
         const response = await this.partyNextSongGetRaw(initOverrides);
+        console.log("test: " + response.raw)
         return await response.value();
     }
 

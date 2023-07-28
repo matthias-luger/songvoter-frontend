@@ -16,10 +16,13 @@
 import * as runtime from '../runtime';
 import type {
   CoflnetSongVoterDBModelsUser,
+  CoflnetSongVoterModelsUserInfo,
 } from '../models';
 import {
     CoflnetSongVoterDBModelsUserFromJSON,
     CoflnetSongVoterDBModelsUserToJSON,
+    CoflnetSongVoterModelsUserInfoFromJSON,
+    CoflnetSongVoterModelsUserInfoToJSON,
 } from '../models';
 
 export interface UserNamePostRequest {
@@ -30,6 +33,30 @@ export interface UserNamePostRequest {
  * 
  */
 export class UserApi extends runtime.BaseAPI {
+
+    /**
+     */
+    async userInfoGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsUserInfo>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/user/info`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsUserInfoFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async userInfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsUserInfo> {
+        const response = await this.userInfoGetRaw(initOverrides);
+        return await response.value();
+    }
 
     /**
      * Updates the display name of the current user

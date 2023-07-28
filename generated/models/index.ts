@@ -22,3 +22,5 @@ export * from './CoflnetSongVoterModelsPlayListCreate';
 export * from './CoflnetSongVoterModelsSong';
 export * from './CoflnetSongVoterModelsSongCreation';
 export * from './CoflnetSongVoterModelsSongCreationPlatformEnum';
+export * from './CoflnetSongVoterModelsSongId';
+export * from './CoflnetSongVoterModelsUserInfo';

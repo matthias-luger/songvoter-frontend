@@ -27,5 +27,7 @@ models/CoflnetSongVoterModelsPlayListCreate.ts
 models/CoflnetSongVoterModelsSong.ts
 models/CoflnetSongVoterModelsSongCreation.ts
 models/CoflnetSongVoterModelsSongCreationPlatformEnum.ts
+models/CoflnetSongVoterModelsSongId.ts
+models/CoflnetSongVoterModelsUserInfo.ts
 models/index.ts
 runtime.ts

@@ -49,7 +49,9 @@ export default function YourSongs() {
             let listController = await getListController()
             await listController.listsListIdSongsPost({
                 listId: playlists[0].id,
-                body: song.id
+                coflnetSongVoterModelsSongId: {
+                    id: song.id
+                }
             })
         } catch (e) {
             showErrorToast(e)

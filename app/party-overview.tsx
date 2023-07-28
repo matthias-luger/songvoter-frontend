@@ -8,6 +8,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { getListController, getPartyController } from '../utils/ApiUtils'
 import { playSpotifySong } from '../utils/SpotifyUtils'
 import SongListElement from '../components/SongListElement'
+import YoutubePlayer from '../components/YoutubePlayer'
 
 export default function App() {
     const router = useRouter()
@@ -25,10 +26,8 @@ export default function App() {
         try {
             let partyController = await getPartyController()
             let s = await partyController.partyPlaylistGet()
-            console.log("Songs: " + JSON.stringify(s))
             setPlaylist(s)
         } catch (e) {
-            console.log("t")
             console.log(JSON.stringify(e))
             showErrorToast(e)
         }
@@ -51,7 +50,9 @@ export default function App() {
             let partyController = await getPartyController()
             let song = await partyController.partyNextSongGet()
             setCurrentSong(song)
-            playSpotifySong(song.externalSongs[0].externalId)
+            if (song.externalSongs[0].platform === 'spotify') {
+                playSpotifySong(song.externalSongs[0].externalId)
+            }
         } catch (e) {
             showErrorToast(e)
         }
@@ -89,6 +90,9 @@ export default function App() {
                 <HeaderText text={party ? `Party ${party?.name}` : null} />
                 <Text>{JSON.stringify(party)}</Text>
                 <Text>Current Song: {currentSong ? currentSong.title : '-'}</Text>
+                {currentSong && currentSong.externalSongs[0].platform === 'youtube' ? (
+                    <YoutubePlayer videoId={currentSong.externalSongs[0].externalId} />
+                ) : null}
                 <Button onPress={addSongsToParty}>Add your songs to party</Button>
                 <Button onPress={showInviteCode}>Show invite Code</Button>
                 <Button onPress={leaveParty}>Leave</Button>

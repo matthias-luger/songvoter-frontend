@@ -3,9 +3,9 @@ import { showErrorToast } from './ToastUtils'
 import { getUserController } from './ApiUtils'
 
 export async function playSpotifySong(songId: string) {
-    let userController = getUserController()
-    let token = (await userController).userSpotifyTokenGet()
     try {
+        let userController = await getUserController()
+        let token = await userController.userSpotifyTokenGet()
         let devicesResponse = await fetch(`https://api.spotify.com/v1/me/player/devices`, {
             method: 'GET',
             headers: {
