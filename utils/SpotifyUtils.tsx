@@ -3,17 +3,18 @@ import { showErrorToast } from './ToastUtils'
 import { getUserController } from './ApiUtils'
 
 export async function playSpotifySong(songId: string) {
+    console.log("spotify song id : " + songId)
     try {
         let userController = await getUserController()
-        let token = await userController.userSpotifyTokenGet()
+        let token = await userController.userInfoGet()
         let devicesResponse = await fetch(`https://api.spotify.com/v1/me/player/devices`, {
             method: 'GET',
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token.spotifyToken}`,
                 'Content-Type': 'application/json'
             }
         })
-        let { devices }: { devices: SpotifyApi.UserDevice[] } = await devicesResponse.json()
+        let { devices } = await devicesResponse.json()
 
         if (devices.length === 0) {
             Toast.show({
@@ -36,10 +37,14 @@ export async function playSpotifySong(songId: string) {
                 }
             }),
             headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token.spotifyToken}`,
                 'Content-Type': 'application/json'
             }
         })
+
+        let body = await playResponse.text()
+        console.log("Body: " + body)
+
         if (playResponse.status !== 204) {
             Toast.show({
                 type: 'error',
@@ -47,7 +52,7 @@ export async function playSpotifySong(songId: string) {
             })
         }
     } catch (e) {
-        console.error(JSON.stringify(e))
+        //console.error(JSON.stringify(e))
         showErrorToast(e)
     }
 }

@@ -33,7 +33,6 @@ export default function App() {
                 // User is not in a party, do nothing
                 return
             }
-            console.error(JSON.stringify(e))
             showErrorToast(e)
         } finally {
             setIsLoading(false)

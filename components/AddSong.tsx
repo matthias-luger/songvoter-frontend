@@ -40,7 +40,6 @@ export default function AddSong(props: Props) {
             console.log(JSON.stringify(results))
             setResults(results)
         } catch (e) {
-            console.error(JSON.stringify(e))
             showErrorToast(e)
         }
     }

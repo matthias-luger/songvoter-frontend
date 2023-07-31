@@ -1,6 +1,5 @@
 import MainLayout from '../layouts/MainLayout'
 import { useEffect, useState } from 'react'
-import { CoflnetSongVoterDBModelsSong, CoflnetSongVoterModelsParty, CoflnetSongVoterModelsPartyPlaylistEntry } from '../generated'
 import { useRouter } from 'expo-router'
 import { Button, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
@@ -9,12 +8,13 @@ import { getListController, getPartyController } from '../utils/ApiUtils'
 import { playSpotifySong } from '../utils/SpotifyUtils'
 import SongListElement from '../components/SongListElement'
 import YoutubePlayer from '../components/YoutubePlayer'
+import { CoflnetSongVoterModelsParty, CoflnetSongVoterModelsPartyPlaylistEntry, CoflnetSongVoterModelsSong } from '../generated'
 
 export default function App() {
     const router = useRouter()
     let [party, setParty] = useState<CoflnetSongVoterModelsParty>()
     let [playlist, setPlaylist] = useState<CoflnetSongVoterModelsPartyPlaylistEntry[]>()
-    let [currentSong, setCurrentSong] = useState<CoflnetSongVoterDBModelsSong>()
+    let [currentSong, setCurrentSong] = useState<CoflnetSongVoterModelsSong>()
 
     useEffect(() => {
         loadParty()
@@ -27,6 +27,8 @@ export default function App() {
             let partyController = await getPartyController()
             let s = await partyController.partyPlaylistGet()
             setPlaylist(s)
+            setCurrentSong(s[0].song)
+            playSpotifySong(s[0].song.occurences[0].externalId)
         } catch (e) {
             console.log(JSON.stringify(e))
             showErrorToast(e)
@@ -50,8 +52,8 @@ export default function App() {
             let partyController = await getPartyController()
             let song = await partyController.partyNextSongGet()
             setCurrentSong(song)
-            if (song.externalSongs[0].platform === 'spotify') {
-                playSpotifySong(song.externalSongs[0].externalId)
+            if (song.occurences[0].platform === 'spotify') {
+                playSpotifySong(song.occurences[0].externalId)
             }
         } catch (e) {
             showErrorToast(e)
@@ -90,13 +92,11 @@ export default function App() {
                 <HeaderText text={party ? `Party ${party?.name}` : null} />
                 <Text>{JSON.stringify(party)}</Text>
                 <Text>Current Song: {currentSong ? currentSong.title : '-'}</Text>
-                {currentSong && currentSong.externalSongs[0].platform === 'youtube' ? (
-                    <YoutubePlayer videoId={currentSong.externalSongs[0].externalId} />
-                ) : null}
+                {currentSong && currentSong.occurences[0].platform === 'youtube' ? <YoutubePlayer videoId={currentSong.occurences[0].externalId} /> : null}
                 <Button onPress={addSongsToParty}>Add your songs to party</Button>
                 <Button onPress={showInviteCode}>Show invite Code</Button>
                 <Button onPress={leaveParty}>Leave</Button>
-                {playlist ? playlist.map(p => <SongListElement song={p.song} clickElement={null} />) : null}
+                {playlist ? playlist.map(p => <SongListElement key={p.song.id} song={p.song} clickElement={null} />) : null}
             </MainLayout>
         </>
     )

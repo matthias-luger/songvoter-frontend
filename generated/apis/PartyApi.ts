@@ -15,23 +15,20 @@
 
 import * as runtime from '../runtime';
 import type {
-  CoflnetSongVoterDBModelsParty,
-  CoflnetSongVoterDBModelsSong,
   CoflnetSongVoterModelsInvite,
   CoflnetSongVoterModelsParty,
   CoflnetSongVoterModelsPartyPlaylistEntry,
+  CoflnetSongVoterModelsSong,
 } from '../models';
 import {
-    CoflnetSongVoterDBModelsPartyFromJSON,
-    CoflnetSongVoterDBModelsPartyToJSON,
-    CoflnetSongVoterDBModelsSongFromJSON,
-    CoflnetSongVoterDBModelsSongToJSON,
     CoflnetSongVoterModelsInviteFromJSON,
     CoflnetSongVoterModelsInviteToJSON,
     CoflnetSongVoterModelsPartyFromJSON,
     CoflnetSongVoterModelsPartyToJSON,
     CoflnetSongVoterModelsPartyPlaylistEntryFromJSON,
     CoflnetSongVoterModelsPartyPlaylistEntryToJSON,
+    CoflnetSongVoterModelsSongFromJSON,
+    CoflnetSongVoterModelsSongToJSON,
 } from '../models';
 
 export interface PartyDownvoteSongIdPostRequest {
@@ -244,7 +241,7 @@ export class PartyApi extends runtime.BaseAPI {
     /**
      * gets the next Song
      */
-    async partyNextSongGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsSong>> {
+    async partyNextSongGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsSong>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -256,15 +253,14 @@ export class PartyApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterDBModelsSongFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsSongFromJSON(jsonValue));
     }
 
     /**
      * gets the next Song
      */
-    async partyNextSongGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsSong> {
+    async partyNextSongGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsSong> {
         const response = await this.partyNextSongGetRaw(initOverrides);
-        console.log("test: " + response.raw)
         return await response.value();
     }
 
@@ -388,7 +384,7 @@ export class PartyApi extends runtime.BaseAPI {
     /**
      * Creates a new party
      */
-    async partyPostRaw(requestParameters: PartyPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsParty>> {
+    async partyPostRaw(requestParameters: PartyPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsParty>> {
         const queryParameters: any = {};
 
         if (requestParameters.name !== undefined) {
@@ -404,13 +400,13 @@ export class PartyApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterDBModelsPartyFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsPartyFromJSON(jsonValue));
     }
 
     /**
      * Creates a new party
      */
-    async partyPost(requestParameters: PartyPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsParty> {
+    async partyPost(requestParameters: PartyPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsParty> {
         const response = await this.partyPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
