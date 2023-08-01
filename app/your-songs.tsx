@@ -25,9 +25,8 @@ export default function YourSongs() {
             setIsLoading(true)
             let listController = await getListController()
             let playlists = await listController.listsGet()
-            console.log(JSON.stringify(playlists))
 
-            if (playlists.length === 0) {
+            if (playlists?.length === 0) {
                 await listController.listsPost({
                     coflnetSongVoterModelsPlayListCreate: {
                         title: 'Default Playlist',
@@ -80,7 +79,6 @@ export default function YourSongs() {
             })
             loadPlaylists()
         } catch (e) {
-            console.log(JSON.stringify(e))
             showErrorToast(e)
         }
     }
@@ -93,6 +91,7 @@ export default function YourSongs() {
                 {playlists && playlists.length > 0
                     ? playlists[0].songs?.map(song => (
                           <SongListElement
+                              key={song.id}
                               song={song}
                               clickElement={<IconButton icon="delete" iconColor={'red'} size={20} onPress={() => removeSong(song)} />}
                           />

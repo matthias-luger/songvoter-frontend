@@ -1,7 +1,8 @@
 import { TokenResponse, TokenResponseConfig } from 'expo-auth-session'
 import { AuthApiControllerImplApi, Configuration, ListApiControllerImplApi, PartyApi, SongApiControllerImplApi, UserApi } from '../generated'
 import { GOOGLE_AUTH_OBJECT, storage } from './StorageUtils'
-import { clientId } from '../components/GoogleLogin'
+
+export const googleClientId = '366589988548-reag2f35a49fa2cavc4lnl5k1p8n1brd.apps.googleusercontent.com'
 
 async function getConfiguration(): Promise<Configuration> {
     let config = new Configuration({
@@ -19,7 +20,7 @@ async function getConfiguration(): Promise<Configuration> {
             storage.delete(GOOGLE_AUTH_OBJECT)
             tokenResponse = await tokenResponse.refreshAsync(
                 {
-                    clientId: clientId
+                    clientId: googleClientId
                 },
                 {
                     tokenEndpoint: 'https://oauth2.googleapis.com/token'

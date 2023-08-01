@@ -1,11 +1,11 @@
 import MainLayout from '../layouts/MainLayout'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'expo-router'
 import { Button, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
 import { getListController, getPartyController } from '../utils/ApiUtils'
-import { playSpotifySong } from '../utils/SpotifyUtils'
+import { playSpotifySong, subscribeToCurrentlyPlayingSongEnd } from '../utils/SpotifyUtils'
 import SongListElement from '../components/SongListElement'
 import YoutubePlayer from '../components/YoutubePlayer'
 import { CoflnetSongVoterModelsParty, CoflnetSongVoterModelsPartyPlaylistEntry, CoflnetSongVoterModelsSong } from '../generated'
@@ -15,11 +15,22 @@ export default function App() {
     let [party, setParty] = useState<CoflnetSongVoterModelsParty>()
     let [playlist, setPlaylist] = useState<CoflnetSongVoterModelsPartyPlaylistEntry[]>()
     let [currentSong, setCurrentSong] = useState<CoflnetSongVoterModelsSong>()
+    let currentSongRef = useRef(currentSong)
+    currentSongRef.current = currentSong
+    let cancelSongSubscriptionRef = useRef<Function>()
 
     useEffect(() => {
-        loadParty()
-        getNextSong()
-        loadSongs()
+        async function init() {
+            await Promise.all([loadParty(), loadSongs()])
+            startNextSong()
+        }
+        init()
+
+        return () => {
+            if (cancelSongSubscriptionRef.current) {
+                cancelSongSubscriptionRef.current()
+            }
+        }
     }, [])
 
     async function loadSongs() {
@@ -27,10 +38,7 @@ export default function App() {
             let partyController = await getPartyController()
             let s = await partyController.partyPlaylistGet()
             setPlaylist(s)
-            setCurrentSong(s[0].song)
-            playSpotifySong(s[0].song.occurences[0].externalId)
         } catch (e) {
-            console.log(JSON.stringify(e))
             showErrorToast(e)
         }
     }
@@ -47,14 +55,26 @@ export default function App() {
         }
     }
 
-    async function getNextSong() {
+    async function startNextSong() {
         try {
             let partyController = await getPartyController()
+            if (currentSongRef.current) {
+                await partyController.partySongSongIdPlayedPost({
+                    songId: currentSongRef.current.id
+                })
+            }
             let song = await partyController.partyNextSongGet()
             setCurrentSong(song)
             if (song.occurences[0].platform === 'spotify') {
-                playSpotifySong(song.occurences[0].externalId)
+                await playSpotifySong(song.occurences[0].externalId)
             }
+
+            // wait a bit, otherwise Spotify serves the old song
+            setTimeout(() => {
+                cancelSongSubscriptionRef.current = subscribeToCurrentlyPlayingSongEnd(() => {
+                    startNextSong()
+                })
+            }, 500)
         } catch (e) {
             showErrorToast(e)
         }
@@ -93,10 +113,10 @@ export default function App() {
                 <Text>{JSON.stringify(party)}</Text>
                 <Text>Current Song: {currentSong ? currentSong.title : '-'}</Text>
                 {currentSong && currentSong.occurences[0].platform === 'youtube' ? <YoutubePlayer videoId={currentSong.occurences[0].externalId} /> : null}
+                {playlist ? playlist.map(p => <SongListElement key={p.song.id} song={p.song} clickElement={null} />) : null}
                 <Button onPress={addSongsToParty}>Add your songs to party</Button>
                 <Button onPress={showInviteCode}>Show invite Code</Button>
                 <Button onPress={leaveParty}>Leave</Button>
-                {playlist ? playlist.map(p => <SongListElement key={p.song.id} song={p.song} clickElement={null} />) : null}
             </MainLayout>
         </>
     )

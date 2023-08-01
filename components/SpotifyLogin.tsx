@@ -44,7 +44,6 @@ export default function SpotifyLogin(props: Props) {
 
     useEffect(() => {
         if (response?.type === 'success') {
-            console.log(JSON.stringify(response))
             serversideAuthentication(response.params.code)
         }
     }, [response])
@@ -61,7 +60,6 @@ export default function SpotifyLogin(props: Props) {
                         }) + '/'
                 }
             })
-            console.log("Spotify Token: " + token)
             storage.set(SPOTIFY_TOKEN, token)
             setSpotifyToken(token)
             props.onAfterLogin(token)

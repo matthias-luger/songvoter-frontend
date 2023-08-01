@@ -9,14 +9,12 @@ import Toast from 'react-native-toast-message'
 import { Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
-import { getAuthController } from '../utils/ApiUtils'
+import { getAuthController, googleClientId } from '../utils/ApiUtils'
 WebBrowser.maybeCompleteAuthSession()
 
 interface Props {
     onAfterLogin?(token: TokenResponseConfig)
 }
-
-export const clientId = '366589988548-reag2f35a49fa2cavc4lnl5k1p8n1brd.apps.googleusercontent.com'
 
 export default function GoogleLogin(props: Props) {
     let theme = useTheme()
@@ -26,7 +24,7 @@ export default function GoogleLogin(props: Props) {
     )
     const [request, response, promptAsync] = Google.useAuthRequest({
         responseType: ResponseType.Code,
-        androidClientId: clientId,
+        androidClientId: googleClientId,
         redirectUri: makeRedirectUri({
             path: pathname
         })
@@ -43,7 +41,6 @@ export default function GoogleLogin(props: Props) {
     async function handleGoogleSuccessResponse(response: Extract<AuthSessionResult, { type: 'error' | 'success' }>) {
         try {
             let tokenResponse = new TokenResponse(response.authentication)
-            console.log(tokenResponse.accessToken)
 
             let authController = await getAuthController()
             let accessTokenResponse = await authController.authGooglePost({
@@ -53,7 +50,6 @@ export default function GoogleLogin(props: Props) {
                     refreshToken: tokenResponse.refreshToken
                 }
             })
-            console.log(accessTokenResponse)
             tokenResponse.accessToken = accessTokenResponse.token
 
             setAuthObject(tokenResponse)

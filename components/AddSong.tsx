@@ -1,9 +1,7 @@
-import { Button, IconButton, List, MD3Colors, Text, TextInput } from 'react-native-paper'
-import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { ActivityIndicator, Button, IconButton, List, MD3Colors, Text, TextInput } from 'react-native-paper'
 import { showErrorToast } from '../utils/ToastUtils'
 import { useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
-import { formatTime } from '../utils/Formatter'
 import { getSongController } from '../utils/ApiUtils'
 import { CoflnetSongVoterModelsSong } from '../generated'
 import SongListElement from './SongListElement'
@@ -14,6 +12,7 @@ interface Props {
 
 export default function AddSong(props: Props) {
     let [results, setResults] = useState<CoflnetSongVoterModelsSong[]>([])
+    let [isLoading, setIsLoading] = useState<boolean>()
 
     function debounce(func, delay) {
         let timeoutId
@@ -33,14 +32,17 @@ export default function AddSong(props: Props) {
         }
 
         try {
+            setIsLoading(true)
+            setResults([])
             let controller = await getSongController()
             let results = await controller.songsSearchGet({
                 term: searchText
             })
-            console.log(JSON.stringify(results))
             setResults(results)
         } catch (e) {
             showErrorToast(e)
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -54,14 +56,21 @@ export default function AddSong(props: Props) {
                     searchFunction(text)
                 }}
             />
-            <ScrollView>
-                {results.map(result => (
-                    <SongListElement
-                        song={result}
-                        clickElement={<IconButton icon="plus" mode="outlined" iconColor={'lime'} size={20} onPress={() => props.onAddSong(result)} />}
-                    />
-                ))}
-            </ScrollView>
+            {
+                <ScrollView>
+                    {isLoading ? (
+                        <ActivityIndicator size="large" />
+                    ) : (
+                        results.map(result => (
+                            <SongListElement
+                                key={result.id}
+                                song={result}
+                                clickElement={<IconButton icon="plus" mode="outlined" iconColor={'lime'} size={20} onPress={() => props.onAddSong(result)} />}
+                            />
+                        ))
+                    )}
+                </ScrollView>
+            }
         </>
     )
 }
