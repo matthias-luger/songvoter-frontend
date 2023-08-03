@@ -133,7 +133,8 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function): Functio
                 }, 10000)
                 return
             }
-            if (timeLeft < 500 || !currentSongData.is_playing) {
+            let isOver = currentSongData.progress_ms == 0 && currentSongData.is_playing == false
+            if (timeLeft < 500 || isOver) {
                 onSongEnd()
             } else {
                 setTimeout(timeoutFunction, timeLeft)

@@ -59,7 +59,7 @@ export default function AddSong(props: Props) {
             {
                 <ScrollView>
                     {isLoading ? (
-                        <ActivityIndicator size="large" />
+                        <ActivityIndicator size="large" style={{ marginTop: 25 }} />
                     ) : (
                         results.map(result => (
                             <SongListElement
