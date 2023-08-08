@@ -99,6 +99,12 @@ export async function getCurrentlyPlayingSongDataFromSpotify() {
     }
 }
 
+function millisToMinutesAndSeconds(millis) {
+    var minutes = Math.floor(millis / 60000)
+    var seconds = (millis % 60000) / 1000
+    return minutes + ':' + (seconds < 10 ? '0' : '') + seconds.toFixed(0)
+}
+
 export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function): Function {
     let abort = false
 
@@ -122,6 +128,8 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function): Functio
             }
             let currentSongData = await getCurrentlyPlayingSongDataFromSpotify()
             let timeLeft = currentSongData.item.duration_ms - currentSongData.progress_ms
+            console.log('CurrentSongData: ' + JSON.stringify(currentSongData))
+            console.log('Time left: ' + millisToMinutesAndSeconds(timeLeft))
             if (isNaN(timeLeft)) {
                 Toast.show({
                     type: 'error',
@@ -133,8 +141,7 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function): Functio
                 }, 10000)
                 return
             }
-            let isOver = currentSongData.progress_ms == 0 && currentSongData.is_playing == false
-            if (timeLeft < 500 || isOver) {
+            if (timeLeft < 500 || !currentSongData.is_playing) {
                 onSongEnd()
             } else {
                 setTimeout(timeoutFunction, timeLeft)

@@ -62,7 +62,9 @@ export default function SpotifyLogin(props: Props) {
             })
             storage.set(SPOTIFY_TOKEN, token)
             setSpotifyToken(token)
-            props.onAfterLogin(token)
+            if (props.onAfterLogin) {
+                props.onAfterLogin(token)
+            }
             Toast.show({
                 type: 'success',
                 text1: 'Successfully connected Spotify!'

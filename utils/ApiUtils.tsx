@@ -1,8 +1,28 @@
 import { TokenResponse, TokenResponseConfig } from 'expo-auth-session'
-import { AuthApiControllerImplApi, Configuration, ListApiControllerImplApi, PartyApi, SongApiControllerImplApi, UserApi } from '../generated'
-import { GOOGLE_AUTH_OBJECT, storage } from './StorageUtils'
+import {
+    AuthApiControllerImplApi,
+    CoflnetSongVoterModelsUserInfo,
+    Configuration,
+    ListApiControllerImplApi,
+    PartyApi,
+    SongApiControllerImplApi,
+    UserApi
+} from '../generated'
+import { GOOGLE_AUTH_OBJECT, USER_INFO, storage } from './StorageUtils'
 
 export const googleClientId = '366589988548-reag2f35a49fa2cavc4lnl5k1p8n1brd.apps.googleusercontent.com'
+
+export async function getUserInfo(): Promise<CoflnetSongVoterModelsUserInfo> {
+    let info = storage.getString(USER_INFO)
+    if (info) {
+        return JSON.parse(info) as CoflnetSongVoterModelsUserInfo
+    }
+
+    let userController = await getUserController()
+    let result = await userController.userInfoGet()
+    storage.set(USER_INFO, JSON.stringify(result))
+    return result
+}
 
 async function getConfiguration(): Promise<Configuration> {
     let config = new Configuration({
