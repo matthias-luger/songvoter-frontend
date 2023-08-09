@@ -51,6 +51,12 @@ export interface CoflnetSongVoterModelsExternalSong {
      */
     externalId: string;
     /**
+     * Gets or Sets the Duration
+     * @type {number}
+     * @memberof CoflnetSongVoterModelsExternalSong
+     */
+    duration?: number;
+    /**
      * 
      * @type {CoflnetSongVoterModelsExternalSongPlatformEnum}
      * @memberof CoflnetSongVoterModelsExternalSong
@@ -83,6 +89,7 @@ export function CoflnetSongVoterModelsExternalSongFromJSONTyped(json: any, ignor
         'artist': !exists(json, 'artist') ? undefined : json['artist'],
         'thumbnail': !exists(json, 'thumbnail') ? undefined : json['thumbnail'],
         'externalId': json['externalId'],
+        'duration': !exists(json, 'duration') ? undefined : json['duration'],
         'platform': CoflnetSongVoterModelsExternalSongPlatformEnumFromJSON(json['platform']),
     };
 }
@@ -100,6 +107,7 @@ export function CoflnetSongVoterModelsExternalSongToJSON(value?: CoflnetSongVote
         'artist': value.artist,
         'thumbnail': value.thumbnail,
         'externalId': value.externalId,
+        'duration': value.duration,
         'platform': CoflnetSongVoterModelsExternalSongPlatformEnumToJSON(value.platform),
     };
 }

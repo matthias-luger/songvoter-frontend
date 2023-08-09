@@ -93,19 +93,31 @@ export default function App() {
             if (song.occurences[0].platform === 'spotify') {
                 await BackgroundService.start(
                     async taskData => {
-                        console.log("Background Task started")
                         playSpotifySong(song.occurences[0].externalId)
                         // wait a bit, otherwise Spotify serves the old song
                         if (cancelSongSubscriptionRef.current) {
                             cancelSongSubscriptionRef.current()
                         }
-                        return new Promise(res => {
-                            setTimeout(() => {
-                                cancelSongSubscriptionRef.current = subscribeToCurrentlyPlayingSongEnd(() => {
+                        let i = 0
+                        let interval = setInterval(() => {
+                            i++
+                            BackgroundService.updateNotification({ taskDesc: 'Playing ' + song.occurences[0].title, taskTitle: (i * 10).toString() })
+                        }, 10000)
+                        await new Promise((resolve, reject) => {
+                            /**
+                             * cancelSongSubscriptionRef.current = subscribeToCurrentlyPlayingSongEnd(() => {
                                     startNextSong()
-                                    res()
+                                    i = 0
+                                    clearInterval(interval)
+                                    resolve(null)
                                 })
-                            }, 2000)
+                             */
+                            setTimeout(() => {
+                                startNextSong()
+                                i = 0
+                                clearInterval(interval)
+                                resolve(null)
+                            }, song.occurences[0].duration)
                         })
                     },
                     {
@@ -159,8 +171,7 @@ export default function App() {
             return
         }
         let controller = await getPartyController()
-        await controller.partyPartyIdUpvoteSongIdPost({
-            partyId: party.id,
+        await controller.partyUpvoteSongIdPost({
             songId: playlistEntry.song.id
         })
         setPlaylist(null)

@@ -52,16 +52,19 @@ export interface PartyPartyIdResetPostRequest {
     partyId: string;
 }
 
-export interface PartyPartyIdUpvoteSongIdPostRequest {
-    partyId: string;
-    songId: string;
-}
-
 export interface PartyPostRequest {
     name?: string;
 }
 
+export interface PartyRemoveVoteSongIdPostRequest {
+    songId: string;
+}
+
 export interface PartySongSongIdPlayedPostRequest {
+    songId: string;
+}
+
+export interface PartyUpvoteSongIdPostRequest {
     songId: string;
 }
 
@@ -323,41 +326,6 @@ export class PartyApi extends runtime.BaseAPI {
     }
 
     /**
-     * Adds an upvote to an song wich causes it to be played sooner. Also adds new songs to a party
-     * votes a song up so it is play sooner
-     */
-    async partyPartyIdUpvoteSongIdPostRaw(requestParameters: PartyPartyIdUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
-        if (requestParameters.partyId === null || requestParameters.partyId === undefined) {
-            throw new runtime.RequiredError('partyId','Required parameter requestParameters.partyId was null or undefined when calling partyPartyIdUpvoteSongIdPost.');
-        }
-
-        if (requestParameters.songId === null || requestParameters.songId === undefined) {
-            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling partyPartyIdUpvoteSongIdPost.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        const response = await this.request({
-            path: `/party/{partyId}/upvote/{songId}`.replace(`{${"partyId"}}`, encodeURIComponent(String(requestParameters.partyId))).replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
-            method: 'POST',
-            headers: headerParameters,
-            query: queryParameters,
-        }, initOverrides);
-
-        return new runtime.VoidApiResponse(response);
-    }
-
-    /**
-     * Adds an upvote to an song wich causes it to be played sooner. Also adds new songs to a party
-     * votes a song up so it is play sooner
-     */
-    async partyPartyIdUpvoteSongIdPost(requestParameters: PartyPartyIdUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
-        await this.partyPartyIdUpvoteSongIdPostRaw(requestParameters, initOverrides);
-    }
-
-    /**
      */
     async partyPlaylistGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<CoflnetSongVoterModelsPartyPlaylistEntry>>> {
         const queryParameters: any = {};
@@ -412,6 +380,35 @@ export class PartyApi extends runtime.BaseAPI {
     }
 
     /**
+     * Remove vote from song
+     */
+    async partyRemoveVoteSongIdPostRaw(requestParameters: PartyRemoveVoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.songId === null || requestParameters.songId === undefined) {
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling partyRemoveVoteSongIdPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/party/removeVote/{songId}`.replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Remove vote from song
+     */
+    async partyRemoveVoteSongIdPost(requestParameters: PartyRemoveVoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyRemoveVoteSongIdPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Marks a song as played
      */
     async partySongSongIdPlayedPostRaw(requestParameters: PartySongSongIdPlayedPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
@@ -438,6 +435,37 @@ export class PartyApi extends runtime.BaseAPI {
      */
     async partySongSongIdPlayedPost(requestParameters: PartySongSongIdPlayedPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
         await this.partySongSongIdPlayedPostRaw(requestParameters, initOverrides);
+    }
+
+    /**
+     * Adds an upvote to an song wich causes it to be played sooner. Also adds new songs to a party
+     * votes a song up so it is play sooner
+     */
+    async partyUpvoteSongIdPostRaw(requestParameters: PartyUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.songId === null || requestParameters.songId === undefined) {
+            throw new runtime.RequiredError('songId','Required parameter requestParameters.songId was null or undefined when calling partyUpvoteSongIdPost.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/party/upvote/{songId}`.replace(`{${"songId"}}`, encodeURIComponent(String(requestParameters.songId))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Adds an upvote to an song wich causes it to be played sooner. Also adds new songs to a party
+     * votes a song up so it is play sooner
+     */
+    async partyUpvoteSongIdPost(requestParameters: PartyUpvoteSongIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.partyUpvoteSongIdPostRaw(requestParameters, initOverrides);
     }
 
 }
