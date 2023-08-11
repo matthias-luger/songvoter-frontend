@@ -1,6 +1,6 @@
 import { ActivityIndicator, Button, IconButton, List, MD3Colors, Text, TextInput } from 'react-native-paper'
 import { showErrorToast } from '../utils/ToastUtils'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
 import { getSongController } from '../utils/ApiUtils'
 import { CoflnetSongVoterModelsSong } from '../generated'
@@ -13,6 +13,7 @@ interface Props {
 export default function AddSong(props: Props) {
     let [results, setResults] = useState<CoflnetSongVoterModelsSong[]>([])
     let [isLoading, setIsLoading] = useState<boolean>()
+    let searchTextRef = useRef('')
 
     function debounce(func, delay) {
         let timeoutId
@@ -30,6 +31,7 @@ export default function AddSong(props: Props) {
         if (!searchText) {
             return
         }
+        searchTextRef.current = searchText
 
         try {
             setIsLoading(true)
@@ -38,6 +40,9 @@ export default function AddSong(props: Props) {
             let results = await controller.songsSearchGet({
                 term: searchText
             })
+            if (searchText !== searchTextRef.current) {
+                return
+            }
             setResults(results)
         } catch (e) {
             showErrorToast(e)

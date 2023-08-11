@@ -63,7 +63,7 @@ export default function App() {
                                     <Text style={{ fontWeight: '800' }}>Invite: </Text>
                                     {inviteLink}
                                 </Text>
-                                <Button onPress={navigateToOverview}>To overview</Button>
+                                <Button onPress={navigateToOverview}>To Overview</Button>
                             </View>
                         </>
                     )}

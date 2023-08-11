@@ -4,23 +4,20 @@ import { default as YoutubePlayerWebview } from 'react-native-youtube-iframe'
 
 interface Props {
     videoId: string
-    autoplay?: boolean
     onVideoHasEnded?(): any
+    playing?: boolean
 }
 
 export default function YoutubePlayer(props: Props) {
-    const [playing, setPlaying] = useState(props.autoplay || false)
-
     const onStateChange = useCallback(state => {
         if (state === 'ended') {
-            setPlaying(false)
             props.onVideoHasEnded()
         }
     }, [])
 
     return (
         <View>
-            <YoutubePlayerWebview height={240} play={playing} videoId={props.videoId} onChangeState={onStateChange} />
+            <YoutubePlayerWebview height={240} play={props.playing} videoId={props.videoId} onChangeState={onStateChange} />
         </View>
     )
 }

@@ -1,16 +1,23 @@
 import MainLayout from '../layouts/MainLayout'
 import React, { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'expo-router'
-import { ActivityIndicator, Button, Text } from 'react-native-paper'
+import { ActivityIndicator, Button, Divider, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
 import { getListController, getPartyController, getUserInfo } from '../utils/ApiUtils'
-import { playSpotifySong, subscribeToCurrentlyPlayingSongEnd } from '../utils/SpotifyUtils'
+import {
+    getCurrentlyPlayingSongDataFromSpotify,
+    getSpotifyPlaybackState,
+    pauseSpotifySongPlayback,
+    playSpotifySong,
+    resumeSpotifySongPlayback,
+    subscribeToCurrentlyPlayingSongEnd
+} from '../utils/SpotifyUtils'
 import SongListElement from '../components/SongListElement'
 import YoutubePlayer from '../components/YoutubePlayer'
 import { CoflnetSongVoterModelsParty, CoflnetSongVoterModelsPartyPlaylistEntry, CoflnetSongVoterModelsSong, CoflnetSongVoterModelsUserInfo } from '../generated'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { ScrollView, View } from 'react-native'
+import { AppState, ScrollView, View, StyleSheet } from 'react-native'
 import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
 
@@ -22,27 +29,32 @@ export default function App() {
     let [party, setParty] = useState<CoflnetSongVoterModelsParty>()
     let [playlist, setPlaylist] = useState<CoflnetSongVoterModelsPartyPlaylistEntry[]>()
     let [currentSong, setCurrentSong] = useState<CoflnetSongVoterModelsSong>()
+    let [isYoutubePlayerPlaying, setIsYoutubePlayerPlaying] = useState(true)
     let currentSongRef = useRef(currentSong)
     currentSongRef.current = currentSong
+    let playlistRef = useRef(playlist)
+    playlistRef.current = playlist
     let cancelSongSubscriptionRef = useRef<Function>()
 
     useEffect(() => {
+        let subscription = AppState.addEventListener('change', async state => {
+            if (state === 'active') {
+                findCurrentlyPlayingSongOrStartNext()
+            }
+        })
         async function init() {
             await Promise.all([loadParty(), loadSongs(), loadUserInfo()])
             setInitialLoading(false)
         }
         init()
-
         return () => {
-            if (cancelSongSubscriptionRef.current) {
-                cancelSongSubscriptionRef.current()
-            }
+            subscription.remove()
         }
     }, [])
 
     useEffect(() => {
         if (!initialLoading) {
-            startNextSong()
+            findCurrentlyPlayingSongOrStartNext()
         }
     }, [initialLoading])
 
@@ -60,6 +72,7 @@ export default function App() {
             let partyController = await getPartyController()
             let s = await partyController.partyPlaylistGet()
             setPlaylist(s)
+            return s
         } catch (e) {
             showErrorToast(e)
         }
@@ -73,6 +86,23 @@ export default function App() {
         } catch (e) {
             if (e.status === 404) {
                 router.push('/')
+            }
+        }
+    }
+
+    async function findCurrentlyPlayingSongOrStartNext() {
+        let songData = await getCurrentlyPlayingSongDataFromSpotify()
+        if (!songData || !songData.is_playing) {
+            startNextSong()
+        } else {
+            if (!playlistRef.current) {
+                let songs = await loadSongs()
+                setPlaylist(songs)
+                playlistRef.current = songs
+            }
+            let song = playlistRef.current.find(playlistEntry => playlistEntry.song.occurences[0].externalId === songData.item.id)
+            if (song) {
+                setCurrentSong(song.song)
             }
         }
     }
@@ -94,30 +124,26 @@ export default function App() {
                 await BackgroundService.start(
                     async taskData => {
                         playSpotifySong(song.occurences[0].externalId)
-                        // wait a bit, otherwise Spotify serves the old song
                         if (cancelSongSubscriptionRef.current) {
                             cancelSongSubscriptionRef.current()
                         }
                         let i = 0
-                        let interval = setInterval(() => {
+                        if (BackgroundService.isRunning()) {
                             i++
-                            BackgroundService.updateNotification({ taskDesc: 'Playing ' + song.occurences[0].title, taskTitle: (i * 10).toString() })
-                        }, 10000)
+                            BackgroundService.updateNotification({
+                                taskTitle: 'Party playing ' + song.occurences[0].title
+                            })
+                        } else {
+                            console.log('Tried to update notification of not running background service')
+                        }
                         await new Promise((resolve, reject) => {
-                            /**
-                             * cancelSongSubscriptionRef.current = subscribeToCurrentlyPlayingSongEnd(() => {
-                                    startNextSong()
-                                    i = 0
-                                    clearInterval(interval)
-                                    resolve(null)
-                                })
-                             */
                             setTimeout(() => {
-                                startNextSong()
-                                i = 0
-                                clearInterval(interval)
-                                resolve(null)
-                            }, song.occurences[0].duration)
+                                cancelSongSubscriptionRef.current = subscribeToCurrentlyPlayingSongEnd(() => {
+                                    i = 0
+                                    startNextSong()
+                                    resolve(null)
+                                }, song.occurences[0].duration)
+                            }, 2000)
                         })
                     },
                     {
@@ -144,6 +170,13 @@ export default function App() {
         try {
             let partyController = await getPartyController()
             await partyController.partyLeavePost()
+            if (cancelSongSubscriptionRef.current) {
+                cancelSongSubscriptionRef.current()
+            }
+            if (BackgroundService.isRunning()) {
+                BackgroundService.stop()
+            }
+            pauseSpotifySongPlayback()
             router.push('/')
         } catch (e) {
             showErrorToast(e)
@@ -166,28 +199,67 @@ export default function App() {
         }
     }
 
+    async function togglePlayback() {
+        if (currentSong.occurences[0].platform === 'spotify') {
+            let playbackState = await getSpotifyPlaybackState()
+            if (playbackState.is_playing) {
+                await pauseSpotifySongPlayback()
+            } else {
+                await resumeSpotifySongPlayback()
+            }
+        }
+        if (currentSong.occurences[0].platform === 'youtube') {
+            setIsYoutubePlayerPlaying(!isYoutubePlayerPlaying)
+        }
+    }
+
     async function onLikeButtonPress(playlistEntry: CoflnetSongVoterModelsPartyPlaylistEntry) {
         if (playlistEntry.selfVote === 'up') {
+            removeVote(playlistEntry)
             return
         }
         let controller = await getPartyController()
         await controller.partyUpvoteSongIdPost({
             songId: playlistEntry.song.id
         })
-        setPlaylist(null)
-        loadSongs()
+        let newPlaylist = [...playlist]
+        let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
+        entry.upVotes += 1
+        entry.selfVote = 'up'
+        setPlaylist(newPlaylist)
     }
 
     async function onDislikeButtonPress(playlistEntry: CoflnetSongVoterModelsPartyPlaylistEntry) {
         if (playlistEntry.selfVote === 'down') {
+            removeVote(playlistEntry)
             return
         }
         let controller = await getPartyController()
         await controller.partyDownvoteSongIdPost({
             songId: playlistEntry.song.id
         })
-        setPlaylist(null)
-        loadSongs()
+        let newPlaylist = [...playlist]
+        let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
+        entry.selfVote = 'down'
+        entry.downVotes += 1
+        setPlaylist(newPlaylist)
+    }
+
+    async function removeVote(playlistEntry: CoflnetSongVoterModelsPartyPlaylistEntry) {
+        let controller = await getPartyController()
+        await controller.partyRemoveVoteSongIdPost({
+            songId: playlistEntry.song.id
+        })
+        let newPlaylist = [...playlist]
+        let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
+        if (entry.selfVote === 'down') {
+            entry.downVotes -= 1
+        }
+        if (entry.selfVote === 'up') {
+            entry.upVotes -= 1
+        }
+        entry.selfVote = 'none'
+        setPlaylist(newPlaylist)
     }
 
     return (
@@ -195,19 +267,24 @@ export default function App() {
             <MainLayout>
                 <ScrollView>
                     <HeaderText text={party ? `Party ${party?.name}` : null} />
+                    <Button onPress={togglePlayback}>Pause/Resume</Button>
                     {initialLoading ? (
                         <ActivityIndicator size="large" />
                     ) : (
                         <>
-                            <Text>Current Song: {currentSong ? currentSong.title : '-'}</Text>
                             {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party.ownerId ? (
-                                <YoutubePlayer autoplay videoId={currentSong.occurences[0].externalId} onVideoHasEnded={startNextSong} />
+                                <YoutubePlayer
+                                    videoId={currentSong.occurences[0].externalId}
+                                    playing={isYoutubePlayerPlaying}
+                                    onVideoHasEnded={startNextSong}
+                                />
                             ) : null}
                             {playlist
                                 ? playlist.map(p => (
                                       <SongListElement
                                           key={p.song.id}
                                           song={p.song}
+                                          selected={currentSong?.id === p.song.id}
                                           clickElement={
                                               <>
                                                   <View style={{ display: 'flex', marginRight: 15 }}>
@@ -237,10 +314,18 @@ export default function App() {
                                       />
                                   ))
                                 : null}
-                            <Button onPress={addSongsToParty}>Add your songs to party</Button>
-                            <Button onPress={showInviteCode}>Show invite Code</Button>
-                            <Button onPress={startNextSong}>Next song</Button>
-                            <Button onPress={leaveParty}>Leave</Button>
+                            <Divider />
+                            <View style={styles.buttonContainer}>
+                                <Button textColor="white" onPress={addSongsToParty} style={styles.addSongsButton}>
+                                    Add your songs
+                                </Button>
+                                <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
+                                    Show invite Code
+                                </Button>
+                            </View>
+                            <Button textColor="white" onPress={leaveParty} style={styles.leaveButton}>
+                                Leave Party
+                            </Button>
                         </>
                     )}
                 </ScrollView>
@@ -248,3 +333,26 @@ export default function App() {
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    leaveButton: {
+        width: '100%',
+        display: 'flex',
+        backgroundColor: 'red'
+    },
+    addSongsButton: {
+        width: '45%',
+        backgroundColor: 'blue'
+    },
+    inviteButton: {
+        width: '45%',
+        backgroundColor: 'blue'
+    },
+    buttonContainer: {
+        flex: 1,
+        justifyContent: 'space-evenly',
+        flexDirection: 'row',
+        marginBottom: 10,
+        marginTop: 10
+    }
+})
