@@ -1,52 +1,52 @@
 {
-    "expo": {
-        "name": "SongVoter",
-        "slug": "songvoter",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "light",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
-        },
-        "assetBundlePatterns": ["**/*"],
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.coflnet.songvoter"
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
-            "package": "com.coflnet.songvoter",
-            "googleServicesFile": "./android/app/google-services.json"
-        },
-        "plugins": [
-            "@react-native-google-signin/google-signin",
-            [
-                "react-native-vision-camera",
-                {
-                    "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
-
-                    // optionally, if you want to record audio:
-                    "enableMicrophonePermission": true,
-                    "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
-                }
-            ]
-        ],
-        "web": {
-            "bundler": "metro",
-            "favicon": "./assets/favicon.png"
-        },
-        "scheme": "com.coflnet.songvoter",
-        "extra": {
-            "eas": {
-                "projectId": "5ed28b9f-440a-484b-a86d-bc8433942b3e"
-            }
-        },
-        "owner": "ragult"
-    }
+  "expo": {
+    "name": "SongVoter",
+    "slug": "songvoter",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.coflnet.songvoter"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.coflnet.songvoter"
+    },
+    "plugins": [
+      "@react-native-google-signin/google-signin",
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "$(PRODUCT_NAME) needs access to your Camera.",
+          "enableMicrophonePermission": true,
+          "microphonePermissionText": "$(PRODUCT_NAME) needs access to your Microphone."
+        }
+      ],
+      "expo-router"
+    ],
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "com.coflnet.songvoter",
+    "extra": {
+      "eas": {
+        "projectId": "5ed28b9f-440a-484b-a86d-bc8433942b3e"
+      }
+    },
+    "owner": "ragult"
+  }
 }

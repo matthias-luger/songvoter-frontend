@@ -1,4 +1,5 @@
 import 'react-native-reanimated'
+import 'react-native-gesture-handler'
 import 'expo-router/entry'
 import { registerRootComponent } from 'expo'
 import { ExpoRoot } from 'expo-router'
@@ -58,9 +59,7 @@ export default function App() {
     return (
         <>
             <PaperProvider theme={myTheme}>
-                <SafeAreaProvider>
-                    <ExpoRoot context={ctx} />
-                </SafeAreaProvider>
+                <ExpoRoot context={ctx} />
             </PaperProvider>
             <Toast />
         </>

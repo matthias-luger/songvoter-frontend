@@ -8,14 +8,12 @@ export default function MainLayout(props) {
     return (
         <>
             <StatusBar style="dark" />
-            <SafeAreaView>
-                <View style={{ ...styles.view, ...globalStyles.container }}>
-                    <View style={{ ...styles.container }}>{props.children}</View>
-                    <View style={styles.footer}>
-                        <FooterNavigation />
-                    </View>
+            <View style={{ ...styles.view, ...globalStyles.container }}>
+                <View style={{ ...styles.container }}>{props.children}</View>
+                <View style={styles.footer}>
+                    <FooterNavigation />
                 </View>
-            </SafeAreaView>
+            </View>
         </>
     )
 }
