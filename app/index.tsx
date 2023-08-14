@@ -20,6 +20,7 @@ export default function App() {
 
     async function checkIfUserIsInParty() {
         if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
+            router.push('/google-signin')
             return
         }
         try {
