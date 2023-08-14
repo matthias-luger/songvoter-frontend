@@ -13,6 +13,7 @@ interface Props {
 export default function AddSong(props: Props) {
     let [results, setResults] = useState<CoflnetSongVoterModelsSong[]>([])
     let [isLoading, setIsLoading] = useState<boolean>()
+    let [showLongLoadingText, setShowLongLoadingText] = useState(false)
     let searchTextRef = useRef('')
 
     function debounce(func, delay) {
@@ -32,10 +33,15 @@ export default function AddSong(props: Props) {
             return
         }
         searchTextRef.current = searchText
-
+        let timeout
         try {
             setIsLoading(true)
             setResults([])
+
+            timeout = setTimeout(() => {
+                setShowLongLoadingText(true)
+            }, 3000)
+
             let controller = await getSongController()
             let results = await controller.songsSearchGet({
                 term: searchText
@@ -47,7 +53,9 @@ export default function AddSong(props: Props) {
         } catch (e) {
             showErrorToast(e)
         } finally {
+            clearTimeout(timeout)
             setIsLoading(false)
+            setShowLongLoadingText(false)
         }
     }
 
@@ -64,7 +72,15 @@ export default function AddSong(props: Props) {
             {
                 <ScrollView>
                     {isLoading ? (
-                        <ActivityIndicator size="large" style={{ marginTop: 25 }} />
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" style={{ marginTop: 25 }} />
+                            {showLongLoadingText ? (
+                                <>
+                                    <Text>Fetching new song information.</Text>
+                                    <Text>Search might take a bit longer...</Text>
+                                </>
+                            ) : null}
+                        </View>
                     ) : (
                         results.map(result => (
                             <SongListElement
@@ -79,3 +95,11 @@ export default function AddSong(props: Props) {
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        alignItems: 'center',
+        flex: 1,
+        justifyContent: 'center'
+    }
+})
