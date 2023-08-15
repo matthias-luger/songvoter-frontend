@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CoflnetSongVoterModelsSongCreationPlatformEnum } from './CoflnetSongVoterModelsSongCreationPlatformEnum';
+import type { CoflnetSongVoterModelsSongCreationSongPlatform } from './CoflnetSongVoterModelsSongCreationSongPlatform';
 import {
-    CoflnetSongVoterModelsSongCreationPlatformEnumFromJSON,
-    CoflnetSongVoterModelsSongCreationPlatformEnumFromJSONTyped,
-    CoflnetSongVoterModelsSongCreationPlatformEnumToJSON,
-} from './CoflnetSongVoterModelsSongCreationPlatformEnum';
+    CoflnetSongVoterModelsSongCreationSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongCreationSongPlatformFromJSONTyped,
+    CoflnetSongVoterModelsSongCreationSongPlatformToJSON,
+} from './CoflnetSongVoterModelsSongCreationSongPlatform';
 
 /**
  * 
@@ -34,10 +34,10 @@ export interface CoflnetSongVoterModelsSongCreation {
     externalId?: string | null;
     /**
      * 
-     * @type {CoflnetSongVoterModelsSongCreationPlatformEnum}
+     * @type {CoflnetSongVoterModelsSongCreationSongPlatform}
      * @memberof CoflnetSongVoterModelsSongCreation
      */
-    platform?: CoflnetSongVoterModelsSongCreationPlatformEnum;
+    platform?: CoflnetSongVoterModelsSongCreationSongPlatform;
 }
 
 /**
@@ -60,7 +60,7 @@ export function CoflnetSongVoterModelsSongCreationFromJSONTyped(json: any, ignor
     return {
         
         'externalId': !exists(json, 'externalId') ? undefined : json['externalId'],
-        'platform': !exists(json, 'platform') ? undefined : CoflnetSongVoterModelsSongCreationPlatformEnumFromJSON(json['platform']),
+        'platform': !exists(json, 'platform') ? undefined : CoflnetSongVoterModelsSongCreationSongPlatformFromJSON(json['platform']),
     };
 }
 
@@ -74,7 +74,7 @@ export function CoflnetSongVoterModelsSongCreationToJSON(value?: CoflnetSongVote
     return {
         
         'externalId': value.externalId,
-        'platform': CoflnetSongVoterModelsSongCreationPlatformEnumToJSON(value.platform),
+        'platform': CoflnetSongVoterModelsSongCreationSongPlatformToJSON(value.platform),
     };
 }
 

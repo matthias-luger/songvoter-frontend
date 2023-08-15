@@ -43,25 +43,10 @@ export default function YourSongs() {
         }
     }
 
-    async function onSongAdded(song: CoflnetSongVoterModelsSong) {
-        try {
-            let listController = await getListController()
-            await listController.listsListIdSongsPost({
-                listId: playlists[0].id,
-                coflnetSongVoterModelsSongId: {
-                    id: song.id
-                }
-            })
-        } catch (e) {
-            showErrorToast(e)
-        }
-        Toast.show({
-            type: 'success',
-            text1: 'Song added',
-            text2: song.title
-        })
-        setPlaylists([])
-        loadPlaylists()
+    async function onAfterSongAdded(song: CoflnetSongVoterModelsSong) {
+        let newPlaylists = [...playlists]
+        newPlaylists[0].songs.push(song)
+        setPlaylists(newPlaylists)
     }
 
     async function removeSong(song: CoflnetSongVoterModelsSong) {
@@ -105,17 +90,19 @@ export default function YourSongs() {
                     setShowAddSongModal(true)
                 }}
             />
-            <Portal>
-                <Modal
-                    visible={showAddSongModal}
-                    onDismiss={() => {
-                        setShowAddSongModal(false)
-                    }}
-                    contentContainerStyle={{ ...globalStyles.fullModalContainer }}
-                >
-                    <AddSong onAddSong={onSongAdded} />
-                </Modal>
-            </Portal>
+            {!isLoading ? (
+                <Portal>
+                    <Modal
+                        visible={showAddSongModal}
+                        onDismiss={() => {
+                            setShowAddSongModal(false)
+                        }}
+                        contentContainerStyle={{ ...globalStyles.fullModalContainer }}
+                    >
+                        <AddSong playlistId={playlists[0]?.id} onAfterSongAdded={onAfterSongAdded} />
+                    </Modal>
+                </Portal>
+            ) : null}
         </MainLayout>
     )
 }

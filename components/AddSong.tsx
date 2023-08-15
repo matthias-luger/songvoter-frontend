@@ -2,19 +2,28 @@ import { ActivityIndicator, Button, IconButton, List, MD3Colors, Text, TextInput
 import { showErrorToast } from '../utils/ToastUtils'
 import { useRef, useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
-import { getSongController } from '../utils/ApiUtils'
+import { getListController, getSongController } from '../utils/ApiUtils'
 import { CoflnetSongVoterModelsSong } from '../generated'
 import SongListElement from './SongListElement'
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 interface Props {
-    onAddSong(song: CoflnetSongVoterModelsSong)
+    playlistId: string
+    onAfterSongAdded(song: CoflnetSongVoterModelsSong)
+}
+
+interface SongListItem extends CoflnetSongVoterModelsSong {
+    addingState?: 'adding' | 'added'
 }
 
 export default function AddSong(props: Props) {
-    let [results, setResults] = useState<CoflnetSongVoterModelsSong[]>([])
+    let [results, setResults] = useState<SongListItem[]>([])
     let [isLoading, setIsLoading] = useState<boolean>()
     let [showLongLoadingText, setShowLongLoadingText] = useState(false)
     let searchTextRef = useRef('')
+
+    let resultsRef = useRef(results)
+    resultsRef.current = results
 
     function debounce(func, delay) {
         let timeoutId
@@ -59,6 +68,40 @@ export default function AddSong(props: Props) {
         }
     }
 
+    async function onAddSong(song: SongListItem) {
+        let songs = [...results]
+        let s = songs.find(s => s.id === song.id)
+        if (s) {
+            s.addingState = 'adding'
+        }
+        setResults(songs)
+        try {
+            let listController = await getListController()
+            await listController.listsListIdSongsPost({
+                listId: props.playlistId,
+                coflnetSongVoterModelsSongId: {
+                    id: song.id
+                }
+            })
+            Toast.show({
+                type: 'success',
+                text1: 'Song added',
+                text2: song.title
+            })
+            if (props.onAfterSongAdded) {
+                props.onAfterSongAdded(song)
+            }
+            let newResults = [...resultsRef.current]
+            let s = resultsRef.current.find(s => s.id === song.id)
+            if (s) {
+                s.addingState = 'added'
+            }
+            setResults(newResults)
+        } catch (e) {
+            showErrorToast(e)
+        }
+    }
+
     let searchFunction = debounce(search, 500)
 
     return (
@@ -87,7 +130,13 @@ export default function AddSong(props: Props) {
                             <SongListElement
                                 key={result.id}
                                 song={result}
-                                clickElement={<IconButton icon="plus" mode="outlined" iconColor={'lime'} size={20} onPress={() => props.onAddSong(result)} />}
+                                clickElement={
+                                    !result.addingState ? (
+                                        <IconButton icon="plus" mode="outlined" iconColor={'lime'} size={20} onPress={() => onAddSong(result)} />
+                                    ) : result.addingState === 'adding' ? (
+                                        <ActivityIndicator />
+                                    ) : null
+                                }
                             />
                         ))
                     )}

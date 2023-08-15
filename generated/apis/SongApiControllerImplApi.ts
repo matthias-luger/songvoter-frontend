@@ -17,12 +17,15 @@ import * as runtime from '../runtime';
 import type {
   CoflnetSongVoterModelsSong,
   CoflnetSongVoterModelsSongCreation,
+  CoflnetSongVoterModelsSongCreationSongPlatform,
 } from '../models';
 import {
     CoflnetSongVoterModelsSongFromJSON,
     CoflnetSongVoterModelsSongToJSON,
     CoflnetSongVoterModelsSongCreationFromJSON,
     CoflnetSongVoterModelsSongCreationToJSON,
+    CoflnetSongVoterModelsSongCreationSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongCreationSongPlatformToJSON,
 } from '../models';
 
 export interface SongSongIdGetRequest {
@@ -35,6 +38,7 @@ export interface SongsPostRequest {
 
 export interface SongsSearchGetRequest {
     term: string;
+    platforms?: CoflnetSongVoterModelsSongCreationSongPlatform;
 }
 
 /**
@@ -114,6 +118,10 @@ export class SongApiControllerImplApi extends runtime.BaseAPI {
 
         if (requestParameters.term !== undefined) {
             queryParameters['term'] = requestParameters.term;
+        }
+
+        if (requestParameters.platforms !== undefined) {
+            queryParameters['platforms'] = requestParameters.platforms;
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
