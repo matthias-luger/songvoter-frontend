@@ -1,17 +1,22 @@
 import { StatusBar } from 'expo-status-bar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { View, StyleSheet } from 'react-native'
-import { FooterNavigation } from '../components/FooterNavigation'
+import { FooterNavigation, Route } from '../components/FooterNavigation'
 import { globalStyles } from '../styles/globalStyles'
 
-export default function MainLayout(props) {
+interface Props {
+    routes?: Route[]
+    children?: JSX.Element | JSX.Element[]
+}
+
+export default function MainLayout(props: Props) {
     return (
         <>
             <StatusBar style="dark" />
             <View style={{ ...styles.view, ...globalStyles.container }}>
                 <View style={{ ...styles.container }}>{props.children}</View>
                 <View style={styles.footer}>
-                    <FooterNavigation />
+                    <FooterNavigation routes={props.routes} />
                 </View>
             </View>
         </>

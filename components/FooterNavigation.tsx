@@ -7,12 +7,13 @@ import { globalStyles } from '../styles/globalStyles'
 import { EventRegister } from 'react-native-event-listeners'
 import { NavigationEvents } from '../types/events.d'
 
-const DEFAULT_ROUTES: Route[] = [
+export const DEFAULT_ROUTES: Route[] = [
     {
         href: '/',
         icon: 'home-outline',
         selectedIcon: 'home',
-        label: 'Home'
+        label: 'Home',
+        aliasRoutes: ['/party-overview', '/create-party', '/invite-party']
     },
     {
         href: '/your-songs',
@@ -28,47 +29,26 @@ const DEFAULT_ROUTES: Route[] = [
     }
 ]
 
-interface Route {
+export interface Route {
     href: string
     icon: keyof typeof MaterialCommunityIcons.glyphMap
     selectedIcon: keyof typeof MaterialCommunityIcons.glyphMap
     label: string
+    aliasRoutes?: string[]
 }
 
-export function FooterNavigation(props) {
+interface Props {
+    routes?: Route[]
+}
+
+export function FooterNavigation(props: Props) {
     let pathname = usePathname()
     let theme = useTheme()
-    let [routes, setRoutes] = useState<Route[]>([...DEFAULT_ROUTES])
-    let [hidden, setHidden] = useState(false)
 
-    useEffect(() => {
-        let addListener = EventRegister.addEventListener(NavigationEvents.ADD_NAVIGATION_TAB, function (newTab) {
-            setRoutes([...routes, newTab])
-        })
-        let removeListener = EventRegister.addEventListener(NavigationEvents.ADD_NAVIGATION_TAB, function (href) {
-            setRoutes(routes.filter(route => route.href !== href))
-        })
-        let keyboardWillShowSub = Keyboard.addListener('keyboardDidShow', () => {
-            setHidden(true)
-        })
-        let keyboardWillHideSub = Keyboard.addListener('keyboardDidHide', () => {
-            setHidden(false)
-        })
+    let routes = props.routes || DEFAULT_ROUTES
 
-        return () => {
-            if (typeof addListener === 'string') {
-                EventRegister.removeEventListener(addListener)
-            }
-            if (typeof removeListener === 'string') {
-                EventRegister.removeEventListener(removeListener)
-            }
-            keyboardWillHideSub.remove()
-            keyboardWillShowSub.remove()
-        }
-    }, [])
-
-    if (hidden) {
-        return <></>
+    function isSelected(route: Route) {
+        return route.href === pathname || (route.aliasRoutes && route.aliasRoutes.findIndex(r => r === pathname) !== -1)
     }
 
     return (
@@ -77,7 +57,7 @@ export function FooterNavigation(props) {
                 <Link href={route.href} replace key={route.href} asChild style={{ flex: 1 }}>
                     <Pressable>
                         <View style={globalStyles.horizontalCenter}>
-                            <MaterialCommunityIcons name={pathname === route.href ? route.selectedIcon : route.icon} size={25} />
+                            <MaterialCommunityIcons name={isSelected(route) ? route.selectedIcon : route.icon} size={25} />
                             <Text style={{ fontSize: 18, color: theme.colors.onSecondaryContainer }}>{route.label}</Text>
                         </View>
                     </Pressable>

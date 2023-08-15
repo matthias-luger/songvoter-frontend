@@ -8,6 +8,8 @@ import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
 import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
+import { EventRegister } from 'react-native-event-listeners'
+import { NavigationEvents } from '../types/events.d'
 
 export default function App() {
     const router = useRouter()

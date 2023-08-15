@@ -55,7 +55,6 @@ export default function YourSongs() {
         } catch (e) {
             showErrorToast(e)
         }
-        setShowAddSongModal(false)
         Toast.show({
             type: 'success',
             text1: 'Song added',

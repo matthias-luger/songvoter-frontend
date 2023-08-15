@@ -12,7 +12,7 @@ export default function GoogleSigninPage() {
 
     return (
         <>
-            <MainLayout>
+            <MainLayout routes={[]}>
                 <View style={globalStyles.fullCenterContainer}>
                     <HeaderText text={'Login'} />
                     <GoogleLogin onAfterLogin={onAfterLogin} />

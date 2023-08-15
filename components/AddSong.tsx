@@ -68,6 +68,7 @@ export default function AddSong(props: Props) {
                 onChangeText={text => {
                     searchFunction(text)
                 }}
+                autoFocus
             />
             {
                 <ScrollView>
