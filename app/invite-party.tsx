@@ -1,14 +1,14 @@
-import { ActivityIndicator, Button, Text, useTheme } from 'react-native-paper'
+import { ActivityIndicator, Button, IconButton, Text, useTheme } from 'react-native-paper'
 import MainLayout from '../layouts/MainLayout'
-import { Keyboard, StyleSheet, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { useEffect, useState } from 'react'
 import QRCode from 'react-native-qrcode-svg'
-import { CoflnetSongVoterDBModelsParty, CoflnetSongVoterModelsParty } from '../generated'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
 import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
 import { useRouter } from 'expo-router'
+import * as Clipboard from 'expo-clipboard'
 
 export default function App() {
     let router = useRouter()
@@ -48,6 +48,10 @@ export default function App() {
         router.push('/party-overview')
     }
 
+    async function onCopyPress() {
+        await Clipboard.setStringAsync(inviteLink)
+    }
+
     return (
         <>
             <MainLayout>
@@ -57,12 +61,15 @@ export default function App() {
                         <ActivityIndicator size="large" />
                     ) : (
                         <>
-                            <QRCode value={inviteLink} />
+                            <QRCode value={inviteLink} size={200} quietZone={10} />
                             <View>
-                                <Text style={styles.joinCode}>
-                                    <Text style={{ fontWeight: '800' }}>Invite: </Text>
-                                    {inviteLink}
-                                </Text>
+                                <View style={styles.joinCodeContainer}>
+                                    <Text style={styles.joinCode}>
+                                        <Text style={{ fontWeight: '800' }}>Invite: </Text>
+                                        {inviteLink}
+                                    </Text>
+                                    <IconButton icon="content-copy" style={{ marginTop: 15 }} onPress={onCopyPress} />
+                                </View>
                                 <Button onPress={navigateToOverview}>To Overview</Button>
                             </View>
                         </>
@@ -80,7 +87,12 @@ const styles = StyleSheet.create({
     },
     joinCode: {
         marginTop: 15,
-        width: '50%',
         color: 'white'
+    },
+    joinCodeContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row'
     }
 })
