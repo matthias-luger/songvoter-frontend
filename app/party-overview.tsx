@@ -20,6 +20,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { AppState, ScrollView, View, StyleSheet } from 'react-native'
 import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
+import SongList from '../components/SongList'
 
 export default function App() {
     const router = useRouter()
@@ -176,7 +177,9 @@ export default function App() {
             if (BackgroundService.isRunning()) {
                 BackgroundService.stop()
             }
-            pauseSpotifySongPlayback()
+            if (currentSong.occurences[0].platform === 'spotify') {
+                pauseSpotifySongPlayback()
+            }
             router.push('/')
         } catch (e) {
             showErrorToast(e)
@@ -224,6 +227,9 @@ export default function App() {
         })
         let newPlaylist = [...playlist]
         let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
+        if (entry.selfVote === 'down') {
+            entry.downVotes -= 1
+        }
         entry.upVotes += 1
         entry.selfVote = 'up'
         setPlaylist(newPlaylist)
@@ -240,6 +246,9 @@ export default function App() {
         })
         let newPlaylist = [...playlist]
         let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
+        if (entry.selfVote === 'up') {
+            entry.upVotes -= 1
+        }
         entry.selfVote = 'down'
         entry.downVotes += 1
         setPlaylist(newPlaylist)
@@ -279,41 +288,40 @@ export default function App() {
                                     onVideoHasEnded={startNextSong}
                                 />
                             ) : null}
-                            {playlist
-                                ? playlist.map(p => (
-                                      <SongListElement
-                                          key={p.song.id}
-                                          song={p.song}
-                                          selected={currentSong?.id === p.song.id}
-                                          clickElement={
-                                              <>
-                                                  <View style={{ display: 'flex', marginRight: 15 }}>
-                                                      <MaterialCommunityIcons
-                                                          onPress={() => {
-                                                              onLikeButtonPress(p)
-                                                          }}
-                                                          name={p.selfVote === 'up' ? 'thumb-up' : 'thumb-up-outline'}
-                                                          color={'lime'}
-                                                          size={20}
-                                                      />
-                                                      <Text>{p.upVotes || 0}</Text>
-                                                  </View>
-                                                  <View style={{ display: 'flex' }}>
-                                                      <MaterialCommunityIcons
-                                                          onPress={() => {
-                                                              onDislikeButtonPress(p)
-                                                          }}
-                                                          name={p.selfVote === 'down' ? 'thumb-down' : 'thumb-down-outline'}
-                                                          color={'red'}
-                                                          size={20}
-                                                      />
-                                                      <Text>{p.downVotes || 0}</Text>
-                                                  </View>
-                                              </>
-                                          }
-                                      />
-                                  ))
-                                : null}
+                            <SongList
+                                songs={playlist.map(p => p.song)}
+                                playingSong={currentSong}
+                                showPlaySongButton={false}
+                                getListElementClickElement={song => {
+                                    let playlistElement = playlist.find(p => p.song.id === song.id)
+                                    return (
+                                        <>
+                                            <View style={{ display: 'flex', marginRight: 15 }}>
+                                                <MaterialCommunityIcons
+                                                    onPress={() => {
+                                                        onLikeButtonPress(playlistElement)
+                                                    }}
+                                                    name={playlistElement.selfVote === 'up' ? 'thumb-up' : 'thumb-up-outline'}
+                                                    color={'lime'}
+                                                    size={20}
+                                                />
+                                                <Text>{playlistElement.upVotes || 0}</Text>
+                                            </View>
+                                            <View style={{ display: 'flex' }}>
+                                                <MaterialCommunityIcons
+                                                    onPress={() => {
+                                                        onDislikeButtonPress(playlistElement)
+                                                    }}
+                                                    name={playlistElement.selfVote === 'down' ? 'thumb-down' : 'thumb-down-outline'}
+                                                    color={'red'}
+                                                    size={20}
+                                                />
+                                                <Text>{playlistElement.downVotes || 0}</Text>
+                                            </View>
+                                        </>
+                                    )
+                                }}
+                            />
                             <Divider />
                             <View style={styles.buttonContainer}>
                                 <Button textColor="white" onPress={addSongsToParty} style={styles.addSongsButton}>

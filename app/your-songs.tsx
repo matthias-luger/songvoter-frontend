@@ -10,6 +10,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../generated'
 import SongListElement from '../components/SongListElement'
 import { getListController } from '../utils/ApiUtils'
+import SongList from '../components/SongList'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>([])
@@ -71,17 +72,11 @@ export default function YourSongs() {
         <MainLayout>
             <HeaderText text="Your Songs" />
             {isLoading ? <ActivityIndicator size="large" /> : null}
-            <ScrollView>
-                {playlists && playlists.length > 0
-                    ? playlists[0].songs?.map(song => (
-                          <SongListElement
-                              key={song.id}
-                              song={song}
-                              clickElement={<IconButton icon="delete" iconColor={'red'} size={20} onPress={() => removeSong(song)} />}
-                          />
-                      ))
-                    : null}
-            </ScrollView>
+            <SongList
+                songs={playlists && playlists.length > 0 ? playlists[0].songs : []}
+                getListElementClickElement={song => <IconButton icon="delete" iconColor={'red'} size={20} onPress={() => removeSong(song)} />}
+                showPlaySongButton
+            />
             <FAB
                 icon="plus"
                 label="Add song"
