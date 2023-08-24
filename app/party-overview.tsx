@@ -13,7 +13,6 @@ import {
     resumeSpotifySongPlayback,
     subscribeToCurrentlyPlayingSongEnd
 } from '../utils/SpotifyUtils'
-import SongListElement from '../components/SongListElement'
 import YoutubePlayer from '../components/YoutubePlayer'
 import { CoflnetSongVoterModelsParty, CoflnetSongVoterModelsPartyPlaylistEntry, CoflnetSongVoterModelsSong, CoflnetSongVoterModelsUserInfo } from '../generated'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
@@ -21,6 +20,7 @@ import { AppState, ScrollView, View, StyleSheet } from 'react-native'
 import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
 import SongList from '../components/SongList'
+import { IS_CURRENTLY_PARTY_OWNER, storage } from '../utils/StorageUtils'
 
 export default function App() {
     const router = useRouter()
@@ -56,6 +56,9 @@ export default function App() {
     useEffect(() => {
         if (!initialLoading) {
             findCurrentlyPlayingSongOrStartNext()
+            if (userInfo.userId === party.ownerId) {
+                storage.set(IS_CURRENTLY_PARTY_OWNER, true)
+            }
         }
     }, [initialLoading])
 
@@ -177,6 +180,7 @@ export default function App() {
             if (BackgroundService.isRunning()) {
                 BackgroundService.stop()
             }
+            storage.set(IS_CURRENTLY_PARTY_OWNER, false)
             if (currentSong.occurences[0].platform === 'spotify') {
                 pauseSpotifySongPlayback()
             }

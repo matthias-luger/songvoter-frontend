@@ -11,11 +11,13 @@ import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../g
 import SongListElement from '../components/SongListElement'
 import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
+import { IS_CURRENTLY_PARTY_OWNER, storage } from '../utils/StorageUtils'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>([])
     let [showAddSongModal, setShowAddSongModal] = useState(false)
     let [isLoading, setIsLoading] = useState(false)
+    let [isCurrentlyPartyOwner] = useState(storage.getBoolean(IS_CURRENTLY_PARTY_OWNER) || false)
 
     useEffect(() => {
         loadPlaylists()
@@ -75,7 +77,7 @@ export default function YourSongs() {
             <SongList
                 songs={playlists && playlists.length > 0 ? playlists[0].songs : []}
                 getListElementClickElement={song => <IconButton icon="delete" iconColor={'red'} size={20} onPress={() => removeSong(song)} />}
-                showPlaySongButton
+                showPlaySongButton={!isCurrentlyPartyOwner}
             />
             <FAB
                 icon="plus"

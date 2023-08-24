@@ -85,6 +85,7 @@ export default function SongList(props: Props) {
         <ScrollView>
             {props.songs.map(song => (
                 <SongListElement
+                    key={song.id}
                     song={song}
                     isPlaying={isCurrentlyPlaying(song)}
                     clickElement={props.getListElementClickElement(song)}
