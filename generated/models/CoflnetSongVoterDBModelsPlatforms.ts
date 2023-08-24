@@ -20,7 +20,8 @@
 export const CoflnetSongVoterDBModelsPlatforms = {
     Unkown: 'unkown',
     Youtube: 'youtube',
-    Spotify: 'spotify'
+    Spotify: 'spotify',
+    Next: 'next'
 } as const;
 export type CoflnetSongVoterDBModelsPlatforms = typeof CoflnetSongVoterDBModelsPlatforms[keyof typeof CoflnetSongVoterDBModelsPlatforms];
 

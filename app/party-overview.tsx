@@ -90,7 +90,9 @@ export default function App() {
         } catch (e) {
             if (e.status === 404) {
                 router.push('/')
+                return
             }
+            showErrorToast(e)
         }
     }
 

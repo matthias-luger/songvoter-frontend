@@ -17,7 +17,7 @@ export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>([])
     let [showAddSongModal, setShowAddSongModal] = useState(false)
     let [isLoading, setIsLoading] = useState(false)
-    let [isCurrentlyPartyOwner] = useState(storage.getBoolean(IS_CURRENTLY_PARTY_OWNER) || false)
+    let [isCurrentlyPartyOwner] = useState(storage.getBoolean(IS_CURRENTLY_PARTY_OWNER) === true)
 
     useEffect(() => {
         loadPlaylists()
