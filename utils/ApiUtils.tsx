@@ -15,7 +15,14 @@ export const googleClientId = '366589988548-reag2f35a49fa2cavc4lnl5k1p8n1brd.app
 export async function getUserInfo(): Promise<CoflnetSongVoterModelsUserInfo> {
     let info = storage.getString(USER_INFO)
     if (info) {
-        return JSON.parse(info) as CoflnetSongVoterModelsUserInfo
+        let parsed = JSON.parse(info) as CoflnetSongVoterModelsUserInfo
+
+        if (parsed.spotifyTokenExpiration) {
+            parsed.spotifyTokenExpiration = new Date(parsed.spotifyTokenExpiration)
+        }
+        if (parsed && parsed.spotifyTokenExpiration && parsed.spotifyTokenExpiration.getTime() - new Date().getTime() > 10000) {
+            return parsed
+        }
     }
 
     let userController = await getUserController()

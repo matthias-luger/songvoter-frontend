@@ -1,11 +1,10 @@
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { showErrorToast } from './ToastUtils'
-import { getUserController } from './ApiUtils'
+import { getUserController, getUserInfo } from './ApiUtils'
 
 async function getSpotifyDevices(): Promise<any[] | null> {
     try {
-        let userController = await getUserController()
-        let token = await userController.userInfoGet()
+        let token = await getUserInfo()
         let devicesResponse = await fetch(`https://api.spotify.com/v1/me/player/devices`, {
             method: 'GET',
             headers: {
@@ -42,8 +41,7 @@ async function getSpotifyDevices(): Promise<any[] | null> {
 
 export async function getSpotifyPlaybackState() {
     try {
-        let userController = await getUserController()
-        let token = await userController.userInfoGet()
+        let token = await getUserInfo()
         let playResponse = await fetch(`https://api.spotify.com/v1/me/player`, {
             method: 'GET',
             headers: {
@@ -74,8 +72,7 @@ export async function pauseSpotifySongPlayback() {
         return
     }
     try {
-        let userController = await getUserController()
-        let token = await userController.userInfoGet()
+        let token = await getUserInfo()
         let devices = await getSpotifyDevices()
         if (!devices) {
             return
@@ -103,8 +100,7 @@ export async function pauseSpotifySongPlayback() {
 
 export async function resumeSpotifySongPlayback() {
     try {
-        let userController = await getUserController()
-        let token = await userController.userInfoGet()
+        let token = await getUserInfo()
         let devices = await getSpotifyDevices()
         if (!devices) {
             return
@@ -132,8 +128,7 @@ export async function resumeSpotifySongPlayback() {
 
 export async function playSpotifySong(songId: string) {
     try {
-        let userController = await getUserController()
-        let token = await userController.userInfoGet()
+        let token = await getUserInfo()
         let devices = await getSpotifyDevices()
         if (!devices) {
             return
@@ -170,8 +165,7 @@ export async function playSpotifySong(songId: string) {
 
 export async function getCurrentlyPlayingSongDataFromSpotify() {
     try {
-        let userController = await getUserController()
-        let token = await userController.userInfoGet()
+        let token = await getUserInfo()
         let response = await fetch(`https://api.spotify.com/v1/me/player/currently-playing`, {
             method: 'GET',
             headers: {

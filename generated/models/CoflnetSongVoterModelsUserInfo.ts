@@ -37,6 +37,12 @@ export interface CoflnetSongVoterModelsUserInfo {
      * @memberof CoflnetSongVoterModelsUserInfo
      */
     spotifyToken?: string | null;
+    /**
+     * 
+     * @type {Date}
+     * @memberof CoflnetSongVoterModelsUserInfo
+     */
+    spotifyTokenExpiration?: Date | null;
 }
 
 /**
@@ -61,6 +67,7 @@ export function CoflnetSongVoterModelsUserInfoFromJSONTyped(json: any, ignoreDis
         'userId': !exists(json, 'userId') ? undefined : json['userId'],
         'userName': !exists(json, 'userName') ? undefined : json['userName'],
         'spotifyToken': !exists(json, 'spotifyToken') ? undefined : json['spotifyToken'],
+        'spotifyTokenExpiration': !exists(json, 'spotifyTokenExpiration') ? undefined : (json['spotifyTokenExpiration'] === null ? null : new Date(json['spotifyTokenExpiration'])),
     };
 }
 
@@ -76,6 +83,7 @@ export function CoflnetSongVoterModelsUserInfoToJSON(value?: CoflnetSongVoterMod
         'userId': value.userId,
         'userName': value.userName,
         'spotifyToken': value.spotifyToken,
+        'spotifyTokenExpiration': value.spotifyTokenExpiration === undefined ? undefined : (value.spotifyTokenExpiration === null ? null : value.spotifyTokenExpiration.toISOString()),
     };
 }
 
