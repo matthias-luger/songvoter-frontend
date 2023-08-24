@@ -69,6 +69,10 @@ export async function getSpotifyPlaybackState() {
 }
 
 export async function pauseSpotifySongPlayback() {
+    let playbackState = await getSpotifyPlaybackState()
+    if (!playbackState.is_playing) {
+        return
+    }
     try {
         let userController = await getUserController()
         let token = await userController.userInfoGet()
