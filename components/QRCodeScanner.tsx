@@ -1,45 +1,68 @@
-import * as React from 'react'
-import { StyleSheet, Text } from 'react-native'
-import { ActivityIndicator } from 'react-native-paper'
-import { useCameraDevices, useFrameProcessor } from 'react-native-vision-camera'
-import { Camera } from 'react-native-vision-camera'
-import { Barcode, BarcodeFormat, scanBarcodes } from 'vision-camera-code-scanner'
+import React, { useState, useEffect } from 'react'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Camera } from 'expo-camera'
 
 interface Props {
-    onBarcodeScan?(barcode: Barcode)
+    onBarcodeScan(code: string)
 }
 
 export function QRCodeScanner(props: Props) {
-    const [hasPermission, setHasPermission] = React.useState(false)
-    const devices = useCameraDevices()
-    const device = devices.back
+    const [hasPermission, setHasPermission] = useState(null)
+    const [type, setType] = useState(Camera.Constants.Type)
 
-    const frameProcessor = useFrameProcessor(frame => {
-        'worklet'
-        const detectedBarcodes = scanBarcodes(frame, [BarcodeFormat.QR_CODE], { checkInverted: true })
-        const barcode = detectedBarcodes[0]
-        if (barcode && props.onBarcodeScan) {
-            props.onBarcodeScan(barcode)
-        }
-    }, [])
-
-    React.useEffect(() => {
+    useEffect(() => {
         ;(async () => {
-            const status = await Camera.requestCameraPermission()
-            setHasPermission(status === 'authorized')
+            const { status } = await Camera.requestCameraPermissionsAsync()
+            setHasPermission(status === 'granted')
         })()
     }, [])
 
-    if (!device && hasPermission) {
-        return <ActivityIndicator />
+    if (hasPermission === null) {
+        return <View />
     }
-
+    if (hasPermission === false) {
+        return <Text>No access to camera</Text>
+    }
     return (
-        device != null &&
-        hasPermission && (
-            <>
-                <Camera style={{ flex: 1 }} device={device} isActive={true} frameProcessor={frameProcessor} frameProcessorFps={5} />
-            </>
-        )
+        <View style={styles.container}>
+            <Camera
+                onBarCodeScanned={(...args) => {
+                    const data = args[0].data
+                    let result = JSON.stringify(data)
+                    console.log(result)
+                    if (props.onBarcodeScan) {
+                        props.onBarcodeScan(result)
+                    }
+                }}
+                barCodeScannerSettings={{
+                    barCodeTypes: ['qr']
+                }}
+                style={{ flex: 1 }}
+            />
+        </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1
+    },
+    camera: {
+        flex: 1
+    },
+    buttonContainer: {
+        flex: 1,
+        backgroundColor: 'transparent',
+        flexDirection: 'row',
+        margin: 20
+    },
+    button: {
+        flex: 0.1,
+        alignSelf: 'flex-end',
+        alignItems: 'center'
+    },
+    text: {
+        fontSize: 18,
+        color: 'white'
+    }
+})

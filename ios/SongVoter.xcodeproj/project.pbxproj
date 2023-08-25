@@ -32,6 +32,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-SongVoter/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		940F38F38E6B4AA3A8E821C2 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "SongVoter/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		382F38726EDD4E8985D38FD3 /* SongVoter-Bridging-Header.h */ = {isa = PBXFileReference; name = "SongVoter-Bridging-Header.h"; path = "SongVoter/SongVoter-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +58,7 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				940F38F38E6B4AA3A8E821C2 /* noop-file.swift */,
+				382F38726EDD4E8985D38FD3 /* SongVoter-Bridging-Header.h */,
 			);
 			name = SongVoter;
 			sourceTree = "<group>";
@@ -197,6 +199,7 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				C4F7BD90D0FE4FF38E1A2CAB /* SongVoter-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +328,7 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				CODE_SIGN_ENTITLEMENTS = SongVoter/SongVoter.entitlements;
+				SWIFT_OBJC_BRIDGING_HEADER = SongVoter/SongVoter-Bridging-Header.h;
 			};
 			name = Debug;
 		};
@@ -350,6 +354,7 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				CODE_SIGN_ENTITLEMENTS = SongVoter/SongVoter.entitlements;
+				SWIFT_OBJC_BRIDGING_HEADER = SongVoter/SongVoter-Bridging-Header.h;
 			};
 			name = Release;
 		};

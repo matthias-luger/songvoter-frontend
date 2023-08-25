@@ -30,7 +30,7 @@ export default function App() {
                 <HeaderText text="Join Party" />
                 <Text>Scan the QR-Code</Text>
                 <View style={{ height: 250 }}>
-                    <QRCodeScanner onBarcodeScan={code => onJoinParty(code.content.data as string)} />
+                    <QRCodeScanner onBarcodeScan={code => onJoinParty(code as string)} />
                 </View>
                 <Divider style={styles.divider} />
                 <Text>Or join by entering the Party ID</Text>

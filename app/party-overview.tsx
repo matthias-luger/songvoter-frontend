@@ -133,19 +133,9 @@ export default function App() {
                         if (cancelSongSubscriptionRef.current) {
                             cancelSongSubscriptionRef.current()
                         }
-                        let i = 0
-                        if (BackgroundService.isRunning()) {
-                            i++
-                            BackgroundService.updateNotification({
-                                taskTitle: 'Party playing ' + song.occurences[0].title
-                            })
-                        } else {
-                            console.log('Tried to update notification of not running background service')
-                        }
                         await new Promise((resolve, reject) => {
                             setTimeout(() => {
                                 cancelSongSubscriptionRef.current = subscribeToCurrentlyPlayingSongEnd(() => {
-                                    i = 0
                                     startNextSong()
                                     resolve(null)
                                 }, song.occurences[0].duration)
@@ -154,8 +144,8 @@ export default function App() {
                     },
                     {
                         taskName: 'Playing Song',
-                        taskTitle: 'Playing Song Title',
-                        taskDesc: 'Playing song desc',
+                        taskTitle: 'Party playing ' + song.occurences[0].title,
+                        taskDesc: '',
                         linkingURI:
                             makeRedirectUri({
                                 path: pathname.replace('/', '')
@@ -197,6 +187,7 @@ export default function App() {
     }
 
     async function addSongsToParty() {
+        return
         try {
             let listController = await getListController()
             let lists = await listController.listsGet()
