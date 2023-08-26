@@ -29,7 +29,6 @@ export function QRCodeScanner(props: Props) {
                 onBarCodeScanned={(...args) => {
                     const data = args[0].data
                     let result = JSON.stringify(data)
-                    console.log(result)
                     if (props.onBarcodeScan) {
                         props.onBarcodeScan(result)
                     }
