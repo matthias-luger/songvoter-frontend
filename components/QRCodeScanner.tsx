@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { Camera } from 'expo-camera'
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
+import { BarCodeScanner } from 'expo-barcode-scanner'
 
 interface Props {
     onBarcodeScan(code: string)
@@ -28,13 +30,12 @@ export function QRCodeScanner(props: Props) {
             <Camera
                 onBarCodeScanned={(...args) => {
                     const data = args[0].data
-                    let result = JSON.stringify(data)
                     if (props.onBarcodeScan) {
-                        props.onBarcodeScan(result)
+                        props.onBarcodeScan(data)
                     }
                 }}
                 barCodeScannerSettings={{
-                    barCodeTypes: ['qr']
+                    barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr]
                 }}
                 style={{ flex: 1 }}
             />
