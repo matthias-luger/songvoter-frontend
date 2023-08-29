@@ -7,12 +7,20 @@ import { globalStyles } from '../styles/globalStyles'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
 import { getPartyController } from '../utils/ApiUtils'
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 export default function App() {
     let theme = useTheme()
     let [joinPartyId, setJoinPartyId] = useState('')
 
     async function onJoinParty(joinUrl: string) {
+        if (!joinUrl || !joinUrl.toLocaleLowerCase().includes('songvoter.party')) {
+            Toast.show({
+                text1: 'Invalid QR-Code',
+                text2: "This QR-Code doesn't seem to be from a SongVoter party"
+            })
+            return
+        }
         let id = joinUrl.split('/invite/')[1]
         try {
             let partyController = await getPartyController()
