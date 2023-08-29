@@ -1,5 +1,5 @@
 import MainLayout from '../layouts/MainLayout'
-import { Link, useRouter } from 'expo-router'
+import { Link, Redirect, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
@@ -8,8 +8,6 @@ import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
 import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
-import { EventRegister } from 'react-native-event-listeners'
-import { NavigationEvents } from '../types/events.d'
 
 export default function App() {
     const router = useRouter()
@@ -20,9 +18,12 @@ export default function App() {
         checkIfUserIsInParty()
     }, [])
 
+    if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
+        return <Redirect href="/google-signin" />
+    }
+
     async function checkIfUserIsInParty() {
         if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
-            router.push('/google-signin')
             return
         }
         try {
