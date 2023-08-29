@@ -1,7 +1,7 @@
 import MainLayout from '../layouts/MainLayout'
 import React, { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'expo-router'
-import { ActivityIndicator, Button, Divider, Text } from 'react-native-paper'
+import { ActivityIndicator, Button, Divider, Modal, Portal, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
 import { getListController, getPartyController, getUserInfo } from '../utils/ApiUtils'
@@ -21,16 +21,20 @@ import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
 import SongList from '../components/SongList'
 import { IS_CURRENTLY_PARTY_OWNER, storage } from '../utils/StorageUtils'
+import AddSong from '../components/AddSong'
+import { globalStyles } from '../styles/globalStyles'
 
 export default function App() {
     const router = useRouter()
     let pathname = usePathname()
     let [initialLoading, setInitialLoading] = useState(true)
+    let [showLoadingIndicator, setShowLoadingIndicator] = useState(false)
     let [userInfo, setUserInfo] = useState<CoflnetSongVoterModelsUserInfo | null>()
     let [party, setParty] = useState<CoflnetSongVoterModelsParty>()
     let [playlist, setPlaylist] = useState<CoflnetSongVoterModelsPartyPlaylistEntry[]>()
     let [currentSong, setCurrentSong] = useState<CoflnetSongVoterModelsSong>()
     let [isYoutubePlayerPlaying, setIsYoutubePlayerPlaying] = useState(true)
+    let [showAddSongModal, setShowAddSongModal] = useState(false)
     let currentSongRef = useRef(currentSong)
     currentSongRef.current = currentSong
     let playlistRef = useRef(playlist)
@@ -56,7 +60,7 @@ export default function App() {
     useEffect(() => {
         if (!initialLoading) {
             findCurrentlyPlayingSongOrStartNext()
-            if (userInfo.userId === party.ownerId) {
+            if (userInfo?.userId === party.ownerId) {
                 storage.set(IS_CURRENTLY_PARTY_OWNER, true)
             }
         }
@@ -114,7 +118,7 @@ export default function App() {
     }
 
     async function startNextSong() {
-        if (userInfo.userId !== party.ownerId) {
+        if (userInfo?.userId !== party.ownerId) {
             return
         }
         try {
@@ -186,19 +190,6 @@ export default function App() {
         router.push('/invite-party')
     }
 
-    async function addSongsToParty() {
-        return
-        try {
-            let listController = await getListController()
-            let lists = await listController.listsGet()
-            await listController.listsListIdSongsPost({
-                listId: lists[0].id
-            })
-        } catch (e) {
-            showErrorToast(e)
-        }
-    }
-
     async function togglePlayback() {
         if (currentSong.occurences[0].platform === 'spotify') {
             let playbackState = await getSpotifyPlaybackState()
@@ -211,6 +202,17 @@ export default function App() {
         if (currentSong.occurences[0].platform === 'youtube') {
             setIsYoutubePlayerPlaying(!isYoutubePlayerPlaying)
         }
+    }
+
+    async function addSongToParty(song: CoflnetSongVoterModelsSong) {
+        let controller = await getPartyController()
+        await controller.partyUpvoteSongIdPost({
+            songId: song.id
+        })
+        setPlaylist([])
+        setShowLoadingIndicator(true)
+        await loadSongs()
+        setShowLoadingIndicator(false)
     }
 
     async function onLikeButtonPress(playlistEntry: CoflnetSongVoterModelsPartyPlaylistEntry) {
@@ -274,7 +276,7 @@ export default function App() {
                 <ScrollView>
                     <HeaderText text={party ? `Party ${party?.name}` : null} />
                     <Button onPress={togglePlayback}>Pause/Resume</Button>
-                    {initialLoading ? (
+                    {initialLoading || showLoadingIndicator ? (
                         <ActivityIndicator size="large" />
                     ) : (
                         <>
@@ -321,8 +323,14 @@ export default function App() {
                             />
                             <Divider />
                             <View style={styles.buttonContainer}>
-                                <Button textColor="white" onPress={addSongsToParty} style={styles.addSongsButton}>
-                                    Add your songs
+                                <Button
+                                    textColor="white"
+                                    onPress={() => {
+                                        setShowAddSongModal(true)
+                                    }}
+                                    style={styles.addSongButton}
+                                >
+                                    Add Song
                                 </Button>
                                 <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
                                     Show invite Code
@@ -334,6 +342,19 @@ export default function App() {
                         </>
                     )}
                 </ScrollView>
+                {showAddSongModal ? (
+                    <Portal>
+                        <Modal
+                            visible={showAddSongModal}
+                            onDismiss={() => {
+                                setShowAddSongModal(false)
+                            }}
+                            contentContainerStyle={{ ...globalStyles.fullModalContainer }}
+                        >
+                            <AddSong onAfterSongAdded={addSongToParty} />
+                        </Modal>
+                    </Portal>
+                ) : null}
             </MainLayout>
         </>
     )
@@ -345,7 +366,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: 'red'
     },
-    addSongsButton: {
+    addSongButton: {
         width: '45%',
         backgroundColor: 'blue'
     },

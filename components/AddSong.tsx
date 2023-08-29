@@ -8,7 +8,7 @@ import SongListElement from './SongListElement'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 interface Props {
-    playlistId: string
+    playlistId?: string
     onAfterSongAdded(song: CoflnetSongVoterModelsSong)
 }
 
@@ -76,13 +76,15 @@ export default function AddSong(props: Props) {
         }
         setResults(songs)
         try {
-            let listController = await getListController()
-            await listController.listsListIdSongsPost({
-                listId: props.playlistId,
-                coflnetSongVoterModelsSongId: {
-                    id: song.id
-                }
-            })
+            if (props.playlistId) {
+                let listController = await getListController()
+                await listController.listsListIdSongsPost({
+                    listId: props.playlistId,
+                    coflnetSongVoterModelsSongId: {
+                        id: song.id
+                    }
+                })
+            }
             Toast.show({
                 type: 'success',
                 text1: 'Song added',
