@@ -22,7 +22,6 @@ export default function App() {
             return
         }
         let id = joinUrl.split('/invite/')[1]
-        console.log("joining: " + id)
         try {
             let partyController = await getPartyController()
             await partyController.partyPartyIdJoinPost({

@@ -225,15 +225,12 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function, songDura
             }, 10000)
             return
         }
-        console.log(JSON.stringify(currentSongData))
-        console.log('timeleft: ' + timeLeft)
         if (timeLeft < 1000 || (!currentSongData.is_playing && currentSongData.progress_ms === 0)) {
             onSongEnd()
         } else {
             currentTimeout = setTimeout(timeoutFunction, timeLeft)
         }
     }
-    console.log('timeleft: ' + songDuration)
     currentTimeout = setTimeout(timeoutFunction, songDuration - 500)
 
     return () => {

@@ -101,19 +101,26 @@ export default function App() {
     }
 
     async function findCurrentlyPlayingSongOrStartNext() {
-        let songData = await getCurrentlyPlayingSongDataFromSpotify()
-        if (!songData || !songData.is_playing) {
-            startNextSong()
+        let partyController = await getPartyController()
+        let currentPartySong = await partyController.partyNextSongGet()
+
+        if (currentPartySong.occurences[0].platform === 'spotify') {
+            let songData = await getCurrentlyPlayingSongDataFromSpotify()
+            if (!songData || !songData.is_playing) {
+                startNextSong()
+            } else {
+                if (!playlistRef.current) {
+                    let songs = await loadSongs()
+                    setPlaylist(songs)
+                    playlistRef.current = songs
+                }
+                let song = playlistRef.current.find(playlistEntry => playlistEntry.song.occurences[0].externalId === songData.item.id)
+                if (song) {
+                    setCurrentSong(song.song)
+                }
+            }
         } else {
-            if (!playlistRef.current) {
-                let songs = await loadSongs()
-                setPlaylist(songs)
-                playlistRef.current = songs
-            }
-            let song = playlistRef.current.find(playlistEntry => playlistEntry.song.occurences[0].externalId === songData.item.id)
-            if (song) {
-                setCurrentSong(song.song)
-            }
+            setCurrentSong(currentPartySong)
         }
     }
 
