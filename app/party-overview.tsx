@@ -280,20 +280,16 @@ export default function App() {
     return (
         <>
             <MainLayout>
+                <HeaderText text={party ? `Party ${party?.name}` : null} />
+                <Button onPress={togglePlayback}>Pause/Resume</Button>
+                {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party.ownerId ? (
+                    <YoutubePlayer videoId={currentSong.occurences[0].externalId} playing={isYoutubePlayerPlaying} onVideoHasEnded={startNextSong} />
+                ) : null}
                 <ScrollView>
-                    <HeaderText text={party ? `Party ${party?.name}` : null} />
-                    <Button onPress={togglePlayback}>Pause/Resume</Button>
                     {initialLoading || showLoadingIndicator ? (
                         <ActivityIndicator size="large" />
                     ) : (
                         <>
-                            {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party.ownerId ? (
-                                <YoutubePlayer
-                                    videoId={currentSong.occurences[0].externalId}
-                                    playing={isYoutubePlayerPlaying}
-                                    onVideoHasEnded={startNextSong}
-                                />
-                            ) : null}
                             <SongList
                                 songs={playlist.map(p => p.song)}
                                 playingSong={currentSong}
