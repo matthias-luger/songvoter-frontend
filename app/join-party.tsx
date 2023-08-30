@@ -11,7 +11,7 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 export default function App() {
     let theme = useTheme()
-    let [joinPartyId, setJoinPartyId] = useState('')
+    let [joinPartyUrl, setJoinPartyUrl] = useState('')
 
     async function onJoinParty(joinUrl: string) {
         if (!joinUrl || !joinUrl.toLocaleLowerCase().includes('songvoter.party')) {
@@ -22,6 +22,7 @@ export default function App() {
             return
         }
         let id = joinUrl.split('/invite/')[1]
+        console.log("joining: " + id)
         try {
             let partyController = await getPartyController()
             await partyController.partyPartyIdJoinPost({
@@ -42,8 +43,8 @@ export default function App() {
                 </View>
                 <Divider style={styles.divider} />
                 <Text>Or join by entering the Party ID</Text>
-                <TextInput label="Party ID" style={styles.textInput} value={joinPartyId} onChangeText={text => setJoinPartyId(text)} />
-                <Button style={{ ...globalStyles.primaryElement, ...styles.joinButton }} textColor={theme.colors.onPrimary}>
+                <TextInput label="Party ID" style={styles.textInput} value={joinPartyUrl} onChangeText={text => setJoinPartyUrl(text)} />
+                <Button style={{ ...globalStyles.primaryElement, ...styles.joinButton }} textColor={theme.colors.onPrimary} onPress={() => {onJoinParty(joinPartyUrl)}}>
                     Join
                 </Button>
             </MainLayout>
