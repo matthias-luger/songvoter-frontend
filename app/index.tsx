@@ -60,17 +60,25 @@ export default function App() {
             <MainLayout>
                 <View style={globalStyles.fullCenterContainer}>
                     <HeaderText text="SongVoter" />
-                    <Link asChild href="/invite-party">
-                        <Button style={{ ...globalStyles.primaryElement, ...styles.button }} textColor={theme.colors.onPrimary}>
-                            Create Party
-                        </Button>
-                    </Link>
+                    <Button
+                        onPress={() => {
+                            router.push('/invite-party')
+                        }}
+                        style={{ ...globalStyles.primaryElement, ...styles.button }}
+                        textColor={theme.colors.onPrimary}
+                    >
+                        Create Party
+                    </Button>
 
-                    <Link asChild href="/join-party">
-                        <Button style={{ ...globalStyles.primaryElement, ...styles.button }} textColor={theme.colors.onPrimary}>
-                            Join Party
-                        </Button>
-                    </Link>
+                    <Button
+                        onPress={() => {
+                            router.push('/join-party')
+                        }}
+                        style={{ ...globalStyles.primaryElement, ...styles.button }}
+                        textColor={theme.colors.onPrimary}
+                    >
+                        Join Party
+                    </Button>
                 </View>
             </MainLayout>
         </>
