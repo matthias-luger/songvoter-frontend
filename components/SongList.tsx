@@ -5,7 +5,7 @@ import YoutubePlayer from './YoutubePlayer'
 import { globalStyles } from '../styles/globalStyles'
 import { pauseSpotifySongPlayback, playSpotifySong } from '../utils/SpotifyUtils'
 import SongListElement from './SongListElement'
-import { ScrollView } from 'react-native-gesture-handler'
+import { ScrollView, Image } from 'react-native'
 
 interface Props {
     songs: CoflnetSongVoterModelsSong[]
@@ -53,7 +53,7 @@ export default function SongList(props: Props) {
     function getPlayIcon(song: CoflnetSongVoterModelsSong) {
         if (!props.showPlaySongButton) {
             return isCurrentlyPlaying(song) ? (
-                <IconButton icon="equalizer" style={{ position: 'absolute', zIndex: 100, marginLeft: 22 }} iconColor="lime" />
+                <Image source={require('../assets/audio-waves.gif')} style={{ position: 'absolute', zIndex: 100, marginLeft: 28, marginTop: 10, height: 32, width: 32 }} />
             ) : null
         }
         if (isCurrentlyPlaying(song)) {
