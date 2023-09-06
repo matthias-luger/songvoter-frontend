@@ -280,7 +280,7 @@ export default function App() {
     return (
         <>
             <MainLayout>
-                <HeaderText text={party ? `Party ${party?.name}` : null} />
+                <HeaderText text={party ? `Party` : null} />
                 <Button onPress={togglePlayback}>Pause/Resume</Button>
                 {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party.ownerId ? (
                     <YoutubePlayer videoId={currentSong.occurences[0].externalId} playing={isYoutubePlayerPlaying} onVideoHasEnded={startNextSong} />

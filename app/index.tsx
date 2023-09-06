@@ -3,11 +3,12 @@ import { Link, Redirect, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
 import { GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, Linking } from 'react-native'
 import { globalStyles } from '../styles/globalStyles'
 import { showErrorToast } from '../utils/ToastUtils'
 import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
+import Toast from 'react-native-toast-message'
 
 export default function App() {
     const router = useRouter()
@@ -23,6 +24,23 @@ export default function App() {
     }
 
     async function checkIfUserIsInParty() {
+        let initialURL = await Linking.getInitialURL()
+        if (initialURL) {
+            Toast.show({
+                type: 'success',
+                text1: initialURL
+            })
+            let id = initialURL.split('/invite/')[1]
+            try {
+                let partyController = await getPartyController()
+                await partyController.partyPartyIdJoinPost({
+                    partyId: id
+                })
+            } catch (e) {
+                showErrorToast(e)
+            }
+        }
+
         if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
             return
         }
