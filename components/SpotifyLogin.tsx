@@ -8,7 +8,7 @@ import { Button, Text, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { showErrorToast } from '../utils/ToastUtils'
-import { getAuthController } from '../utils/ApiUtils'
+import { getAuthController, getUserController } from '../utils/ApiUtils'
 
 WebBrowser.maybeCompleteAuthSession()
 
@@ -90,9 +90,11 @@ export default function SpotifyLogin(props: Props) {
             style={globalStyles.primaryElement}
             textColor={theme.colors.onPrimary}
             disabled={!request}
-            onPress={() => {
+            onPress={async () => {
                 setSpotifyToken(null)
                 storage.delete(SPOTIFY_TOKEN)
+                let userController = await getUserController()
+                userController.userSpotifyDelete()
             }}
         >
             Logout
