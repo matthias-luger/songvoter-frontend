@@ -8,8 +8,10 @@ import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
 import { getPartyController } from '../utils/ApiUtils'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
+import { useRouter } from 'expo-router'
 
 export default function App() {
+    const router = useRouter()
     let theme = useTheme()
     let [joinPartyUrl, setJoinPartyUrl] = useState('')
 
@@ -27,8 +29,16 @@ export default function App() {
             await partyController.partyInviteIdJoinPost({
                 inviteId: id
             })
+            router.push('/party-overview')
         } catch (e) {
-            showErrorToast(e)
+            if (e.response?.status === 404) {
+                Toast.show({
+                    type: 'info',
+                    text1: 'Party not found!'
+                })
+            } else {
+                showErrorToast(e)
+            }
         }
     }
 
@@ -38,7 +48,7 @@ export default function App() {
                 <HeaderText text="Join Party" />
                 <Text>Scan the QR-Code</Text>
                 <View style={{ height: 250 }}>
-                    <QRCodeScanner onBarcodeScan={code => onJoinParty(code as string)} />
+                    <QRCodeScanner onBarcodeScan={code => onJoinParty(code as string)} disableAfterScan />
                 </View>
                 <Divider style={styles.divider} />
                 <Text>Or join by entering the Party ID</Text>
