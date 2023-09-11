@@ -6,11 +6,13 @@ import { BarCodeScanner } from 'expo-barcode-scanner'
 
 interface Props {
     onBarcodeScan(code: string)
+    disableAfterScan: boolean
 }
 
 export function QRCodeScanner(props: Props) {
     const [hasPermission, setHasPermission] = useState(null)
     const [type, setType] = useState(Camera.Constants.Type)
+    let [isDisabled, setIsDisabled] = useState(false)
 
     useEffect(() => {
         ;(async () => {
@@ -29,6 +31,10 @@ export function QRCodeScanner(props: Props) {
         <View style={styles.container}>
             <Camera
                 onBarCodeScanned={(...args) => {
+                    if (isDisabled) {
+                        return
+                    }
+                    setIsDisabled(true)
                     const data = args[0].data
                     if (props.onBarcodeScan) {
                         props.onBarcodeScan(data)
