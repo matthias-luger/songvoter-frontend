@@ -45,6 +45,12 @@ export interface CoflnetSongVoterDBModelsSong {
      */
     title?: string | null;
     /**
+     * Combined text for full text song search, max 200 characters
+     * @type {string}
+     * @memberof CoflnetSongVoterDBModelsSong
+     */
+    lookup?: string | null;
+    /**
      * 
      * @type {Array<CoflnetSongVoterDBModelsExternalSong>}
      * @memberof CoflnetSongVoterDBModelsSong
@@ -80,6 +86,7 @@ export function CoflnetSongVoterDBModelsSongFromJSONTyped(json: any, ignoreDiscr
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'title': !exists(json, 'title') ? undefined : json['title'],
+        'lookup': !exists(json, 'lookup') ? undefined : json['lookup'],
         'externalSongs': !exists(json, 'externalSongs') ? undefined : (json['externalSongs'] === null ? null : (json['externalSongs'] as Array<any>).map(CoflnetSongVoterDBModelsExternalSongFromJSON)),
         'playlists': !exists(json, 'playlists') ? undefined : (json['playlists'] === null ? null : (json['playlists'] as Array<any>).map(CoflnetSongVoterDBModelsPlaylistFromJSON)),
     };
@@ -96,6 +103,7 @@ export function CoflnetSongVoterDBModelsSongToJSON(value?: CoflnetSongVoterDBMod
         
         'id': value.id,
         'title': value.title,
+        'lookup': value.lookup,
         'externalSongs': value.externalSongs === undefined ? undefined : (value.externalSongs === null ? null : (value.externalSongs as Array<any>).map(CoflnetSongVoterDBModelsExternalSongToJSON)),
         'playlists': value.playlists === undefined ? undefined : (value.playlists === null ? null : (value.playlists as Array<any>).map(CoflnetSongVoterDBModelsPlaylistToJSON)),
     };

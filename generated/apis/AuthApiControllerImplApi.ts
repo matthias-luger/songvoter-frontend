@@ -28,6 +28,10 @@ import {
     CoflnetSongVoterModelsAuthTokenToJSON,
 } from '../models';
 
+export interface AuthAnonymousPostRequest {
+    nonce?: string;
+}
+
 export interface AuthGooglePostRequest {
     coflnetSongVoterModelsAuthRefreshToken?: CoflnetSongVoterModelsAuthRefreshToken;
 }
@@ -52,6 +56,36 @@ export interface DbPostRequest {
  * 
  */
 export class AuthApiControllerImplApi extends runtime.BaseAPI {
+
+    /**
+     * Sign in with anonymous user
+     */
+    async authAnonymousPostRaw(requestParameters: AuthAnonymousPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsAuthToken>> {
+        const queryParameters: any = {};
+
+        if (requestParameters.nonce !== undefined) {
+            queryParameters['nonce'] = requestParameters.nonce;
+        }
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/auth/anonymous`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsAuthTokenFromJSON(jsonValue));
+    }
+
+    /**
+     * Sign in with anonymous user
+     */
+    async authAnonymousPost(requestParameters: AuthAnonymousPostRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsAuthToken> {
+        const response = await this.authAnonymousPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Stores google auth token server side

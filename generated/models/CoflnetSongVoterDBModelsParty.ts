@@ -19,6 +19,12 @@ import {
     CoflnetSongVoterDBModelsPartySongFromJSONTyped,
     CoflnetSongVoterDBModelsPartySongToJSON,
 } from './CoflnetSongVoterDBModelsPartySong';
+import type { CoflnetSongVoterDBModelsPlatforms } from './CoflnetSongVoterDBModelsPlatforms';
+import {
+    CoflnetSongVoterDBModelsPlatformsFromJSON,
+    CoflnetSongVoterDBModelsPlatformsFromJSONTyped,
+    CoflnetSongVoterDBModelsPlatformsToJSON,
+} from './CoflnetSongVoterDBModelsPlatforms';
 import type { CoflnetSongVoterDBModelsUser } from './CoflnetSongVoterDBModelsUser';
 import {
     CoflnetSongVoterDBModelsUserFromJSON,
@@ -44,6 +50,12 @@ export interface CoflnetSongVoterDBModelsParty {
      * @memberof CoflnetSongVoterDBModelsParty
      */
     creator?: CoflnetSongVoterDBModelsUser;
+    /**
+     * 
+     * @type {CoflnetSongVoterDBModelsPlatforms}
+     * @memberof CoflnetSongVoterDBModelsParty
+     */
+    supportedPlatforms?: CoflnetSongVoterDBModelsPlatforms;
     /**
      * 
      * @type {string}
@@ -85,6 +97,7 @@ export function CoflnetSongVoterDBModelsPartyFromJSONTyped(json: any, ignoreDisc
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'creator': !exists(json, 'creator') ? undefined : CoflnetSongVoterDBModelsUserFromJSON(json['creator']),
+        'supportedPlatforms': !exists(json, 'supportedPlatforms') ? undefined : CoflnetSongVoterDBModelsPlatformsFromJSON(json['supportedPlatforms']),
         'name': !exists(json, 'name') ? undefined : json['name'],
         'members': !exists(json, 'members') ? undefined : (json['members'] === null ? null : (json['members'] as Array<any>).map(CoflnetSongVoterDBModelsUserFromJSON)),
         'songs': !exists(json, 'songs') ? undefined : (json['songs'] === null ? null : (json['songs'] as Array<any>).map(CoflnetSongVoterDBModelsPartySongFromJSON)),
@@ -102,6 +115,7 @@ export function CoflnetSongVoterDBModelsPartyToJSON(value?: CoflnetSongVoterDBMo
         
         'id': value.id,
         'creator': CoflnetSongVoterDBModelsUserToJSON(value.creator),
+        'supportedPlatforms': CoflnetSongVoterDBModelsPlatformsToJSON(value.supportedPlatforms),
         'name': value.name,
         'members': value.members === undefined ? undefined : (value.members === null ? null : (value.members as Array<any>).map(CoflnetSongVoterDBModelsUserToJSON)),
         'songs': value.songs === undefined ? undefined : (value.songs === null ? null : (value.songs as Array<any>).map(CoflnetSongVoterDBModelsPartySongToJSON)),

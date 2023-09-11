@@ -92,6 +92,32 @@ export class UserApi extends runtime.BaseAPI {
     }
 
     /**
+     * Disconnects spotify from the current user
+     */
+    async userSpotifyDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsUserInfo>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/user/spotify`,
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterModelsUserInfoFromJSON(jsonValue));
+    }
+
+    /**
+     * Disconnects spotify from the current user
+     */
+    async userSpotifyDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsUserInfo> {
+        const response = await this.userSpotifyDeleteRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Returns spotify access token to control music playback client side
      */
     async userSpotifyTokenGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {

@@ -68,6 +68,12 @@ export interface CoflnetSongVoterDBModelsExternalSong {
      * @memberof CoflnetSongVoterDBModelsExternalSong
      */
     duration?: string;
+    /**
+     * Internal metric to determine how often this song has been played and sort search
+     * @type {number}
+     * @memberof CoflnetSongVoterDBModelsExternalSong
+     */
+    playCounter?: number;
 }
 
 /**
@@ -96,6 +102,7 @@ export function CoflnetSongVoterDBModelsExternalSongFromJSONTyped(json: any, ign
         'thumbnailUrl': !exists(json, 'thumbnailUrl') ? undefined : json['thumbnailUrl'],
         'externalId': !exists(json, 'externalId') ? undefined : json['externalId'],
         'duration': !exists(json, 'duration') ? undefined : json['duration'],
+        'playCounter': !exists(json, 'playCounter') ? undefined : json['playCounter'],
     };
 }
 
@@ -115,6 +122,7 @@ export function CoflnetSongVoterDBModelsExternalSongToJSON(value?: CoflnetSongVo
         'thumbnailUrl': value.thumbnailUrl,
         'externalId': value.externalId,
         'duration': value.duration,
+        'playCounter': value.playCounter,
     };
 }
 
