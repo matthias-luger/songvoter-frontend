@@ -20,9 +20,10 @@ import { AppState, ScrollView, View, StyleSheet } from 'react-native'
 import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
 import SongList from '../components/SongList'
-import { IS_CURRENTLY_PARTY_OWNER, storage } from '../utils/StorageUtils'
+import { IS_CURRENTLY_PARTY_OWNER, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import AddSong from '../components/AddSong'
 import { globalStyles } from '../styles/globalStyles'
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 export default function App() {
     const router = useRouter()
@@ -60,7 +61,7 @@ export default function App() {
     useEffect(() => {
         if (!initialLoading) {
             findCurrentlyPlayingSongOrStartNext()
-            if (userInfo?.userId === party.ownerId) {
+            if (userInfo?.userId === party?.ownerId) {
                 storage.set(IS_CURRENTLY_PARTY_OWNER, true)
             }
         }
@@ -105,27 +106,43 @@ export default function App() {
         let currentPartySong = await partyController.partyNextSongGet()
 
         if (currentPartySong.occurences[0].platform === 'spotify') {
-            let songData = await getCurrentlyPlayingSongDataFromSpotify()
-            if (!songData || !songData.is_playing) {
-                startNextSong()
-            } else {
-                if (!playlistRef.current) {
-                    let songs = await loadSongs()
-                    setPlaylist(songs)
-                    playlistRef.current = songs
+            let id = currentPartySong.id
+            if (userInfo?.userId === party?.ownerId) {
+                if (!storage.getString(SPOTIFY_TOKEN)) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Next Song is a Spotify song, but no Spotify account is connected.',
+                        text2: 'Trying to start next song...'
+                    })
+                    startNextSong()
+                    return
                 }
-                let song = playlistRef.current.find(playlistEntry => playlistEntry.song.occurences[0].externalId === songData.item.id)
-                if (song) {
-                    setCurrentSong(song.song)
+                let songData = await getCurrentlyPlayingSongDataFromSpotify()
+                if (songData?.item) {
+                    id = songData.item.id
                 }
+                if (!songData || !songData.is_playing) {
+                    startNextSong()
+                    return
+                }
+            }
+            if (!playlistRef.current) {
+                let songs = await loadSongs()
+                setPlaylist(songs)
+                playlistRef.current = songs
+            }
+            let song = playlistRef.current.find(playlistEntry => playlistEntry.song.occurences[0].externalId === id)
+            if (song) {
+                setCurrentSong(song.song)
             }
         } else {
             setCurrentSong(currentPartySong)
         }
     }
 
+    let skipSpotifySongBecauseNoConnectedAccountCounter = 0
     async function startNextSong() {
-        if (userInfo?.userId !== party.ownerId) {
+        if (userInfo?.userId !== party?.ownerId) {
             return
         }
         try {
@@ -138,6 +155,20 @@ export default function App() {
             let song = await partyController.partyNextSongGet()
             setCurrentSong(song)
             if (song.occurences[0].platform === 'spotify') {
+                if (!storage.getString(SPOTIFY_TOKEN)) {
+                    if (skipSpotifySongBecauseNoConnectedAccountCounter > 3) {
+                        setCurrentSong(null)
+                        return
+                    }
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Next Song is a Spotify song, but no Spotify account is connected.',
+                        text2: 'Trying to start next song...'
+                    })
+                    skipSpotifySongBecauseNoConnectedAccountCounter++
+                    startNextSong()
+                    return
+                }
                 await BackgroundService.start(
                     async taskData => {
                         playSpotifySong(song.occurences[0].externalId)
@@ -184,7 +215,7 @@ export default function App() {
                 BackgroundService.stop()
             }
             storage.set(IS_CURRENTLY_PARTY_OWNER, false)
-            if (currentSong.occurences[0].platform === 'spotify') {
+            if (!!storage.getString(SPOTIFY_TOKEN) && currentSong.occurences[0].platform === 'spotify') {
                 pauseSpotifySongPlayback()
             }
             router.push('/')
@@ -198,7 +229,7 @@ export default function App() {
     }
 
     async function togglePlayback() {
-        if (currentSong.occurences[0].platform === 'spotify') {
+        if (currentSong?.occurences[0].platform === 'spotify') {
             let playbackState = await getSpotifyPlaybackState()
             if (playbackState.is_playing) {
                 await pauseSpotifySongPlayback()
@@ -206,7 +237,7 @@ export default function App() {
                 await resumeSpotifySongPlayback()
             }
         }
-        if (currentSong.occurences[0].platform === 'youtube') {
+        if (currentSong?.occurences[0].platform === 'youtube') {
             setIsYoutubePlayerPlaying(!isYoutubePlayerPlaying)
         }
     }
@@ -281,8 +312,8 @@ export default function App() {
         <>
             <MainLayout>
                 <HeaderText text={party ? `Party` : null} />
-                <Button onPress={togglePlayback}>Pause/Resume</Button>
-                {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party.ownerId ? (
+                {userInfo?.userId === party?.ownerId ? <Button onPress={togglePlayback}>Pause/Resume</Button> : null}
+                {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party?.ownerId ? (
                     <YoutubePlayer videoId={currentSong.occurences[0].externalId} playing={isYoutubePlayerPlaying} onVideoHasEnded={startNextSong} />
                 ) : null}
                 <ScrollView>
@@ -291,7 +322,7 @@ export default function App() {
                     ) : (
                         <>
                             <SongList
-                                songs={playlist.map(p => p.song)}
+                                songs={playlist ? playlist.map(p => p.song) : []}
                                 playingSong={currentSong}
                                 showPlaySongButton={false}
                                 getListElementClickElement={song => {
