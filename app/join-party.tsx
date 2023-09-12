@@ -9,6 +9,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { getPartyController } from '../utils/ApiUtils'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { useRouter } from 'expo-router'
+import { CURRRENT_PARTY, storage } from '../utils/StorageUtils'
 
 export default function App() {
     const router = useRouter()
@@ -29,6 +30,8 @@ export default function App() {
             await partyController.partyInviteIdJoinPost({
                 inviteId: id
             })
+            let party = await partyController.partyGet()
+            storage.set(CURRRENT_PARTY, JSON.stringify(party))
             router.push('/party-overview')
         } catch (e) {
             if (e.response?.status === 404) {

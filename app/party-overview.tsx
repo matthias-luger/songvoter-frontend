@@ -4,7 +4,7 @@ import { usePathname, useRouter } from 'expo-router'
 import { ActivityIndicator, Button, Divider, Modal, Portal, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
-import { getListController, getPartyController, getUserInfo } from '../utils/ApiUtils'
+import { getPartyController, getUserInfo } from '../utils/ApiUtils'
 import {
     getCurrentlyPlayingSongDataFromSpotify,
     getSpotifyPlaybackState,
@@ -20,7 +20,7 @@ import { AppState, ScrollView, View, StyleSheet } from 'react-native'
 import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
 import SongList from '../components/SongList'
-import { IS_CURRENTLY_PARTY_OWNER, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { CURRRENT_PARTY, IS_CURRENTLY_PARTY_OWNER, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import AddSong from '../components/AddSong'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
@@ -49,7 +49,12 @@ export default function App() {
             }
         })
         async function init() {
-            await Promise.all([loadParty(), loadSongs(), loadUserInfo()])
+            if (!storage.contains(CURRRENT_PARTY)) {
+                router.push('/')
+            } else {
+                setParty(JSON.parse(storage.getString(CURRRENT_PARTY)))
+                await Promise.all([loadSongs(), loadUserInfo()])
+            }
             setInitialLoading(false)
         }
         init()
@@ -83,20 +88,6 @@ export default function App() {
             setPlaylist(s)
             return s
         } catch (e) {
-            showErrorToast(e)
-        }
-    }
-
-    async function loadParty() {
-        try {
-            let partyController = await getPartyController()
-            let party = await partyController.partyGet()
-            setParty(party)
-        } catch (e) {
-            if (e.status === 404) {
-                router.push('/')
-                return
-            }
             showErrorToast(e)
         }
     }
@@ -215,6 +206,7 @@ export default function App() {
                 BackgroundService.stop()
             }
             storage.set(IS_CURRENTLY_PARTY_OWNER, false)
+            storage.delete(CURRRENT_PARTY)
             if (!!storage.getString(SPOTIFY_TOKEN) && currentSong.occurences[0].platform === 'spotify') {
                 pauseSpotifySongPlayback()
             }

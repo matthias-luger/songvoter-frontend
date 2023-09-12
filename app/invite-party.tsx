@@ -9,6 +9,7 @@ import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
 import { useRouter } from 'expo-router'
 import * as Clipboard from 'expo-clipboard'
+import { CURRRENT_PARTY, storage } from '../utils/StorageUtils'
 
 export default function App() {
     let router = useRouter()
@@ -32,6 +33,7 @@ export default function App() {
                 try {
                     let newParty = await partyController.partyPost()
                     let link = await partyController.partyInviteLinkGet()
+                    storage.set(CURRRENT_PARTY, JSON.stringify(newParty))
                     setInviteLink(link.link)
                 } catch (e) {
                     showErrorToast(e)

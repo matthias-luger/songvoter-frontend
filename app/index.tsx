@@ -1,7 +1,7 @@
 import MainLayout from '../layouts/MainLayout'
 import { Link, Redirect, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
+import { CURRRENT_PARTY, GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
 import { View, StyleSheet, Linking } from 'react-native'
 import { globalStyles } from '../styles/globalStyles'
@@ -13,7 +13,6 @@ import Toast from 'react-native-toast-message'
 export default function App() {
     const router = useRouter()
     let theme = useTheme()
-    let [isLoading, setIsLoading] = useState(storage.contains(GOOGLE_AUTH_OBJECT))
 
     useEffect(() => {
         checkIfUserIsInParty()
@@ -41,36 +40,9 @@ export default function App() {
             }
         }
 
-        if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
-            return
+        if (storage.contains(CURRRENT_PARTY)) {
+            router.push('/party-overview')
         }
-        try {
-            let partyController = await getPartyController()
-            let party = await partyController.partyGet()
-            if (party) {
-                router.push('/party-overview')
-            }
-        } catch (e) {
-            if (e.response?.status === 404) {
-                // User is not in a party, do nothing
-                return
-            }
-            showErrorToast(e)
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    if (isLoading) {
-        return (
-            <>
-                <MainLayout>
-                    <View style={globalStyles.fullCenterContainer}>
-                        <ActivityIndicator />
-                    </View>
-                </MainLayout>
-            </>
-        )
     }
 
     return (

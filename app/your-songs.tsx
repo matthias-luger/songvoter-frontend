@@ -10,7 +10,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../generated'
 import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
-import { IS_CURRENTLY_PARTY_OWNER, storage } from '../utils/StorageUtils'
+import { IS_CURRENTLY_PARTY_OWNER, YOUR_SONGS, storage } from '../utils/StorageUtils'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>([])
@@ -22,8 +22,13 @@ export default function YourSongs() {
         loadPlaylists()
     }, [])
 
-    async function loadPlaylists() {
+    async function loadPlaylists(forceFreshReload: boolean = false) {
         try {
+            if (storage.contains(YOUR_SONGS) && !forceFreshReload) {
+                let storedSongs = storage.getString(YOUR_SONGS)
+                setPlaylists(JSON.parse(storedSongs))
+                return
+            }
             setIsLoading(true)
             let listController = await getListController()
             let playlists = await listController.listsGet()
@@ -37,6 +42,7 @@ export default function YourSongs() {
                 })
                 playlists = await listController.listsGet()
             }
+            storage.set(YOUR_SONGS, JSON.stringify(playlists))
             setPlaylists(playlists)
         } catch (e) {
             showErrorToast(e)
@@ -48,6 +54,7 @@ export default function YourSongs() {
     async function onAfterSongAdded(song: CoflnetSongVoterModelsSong) {
         let newPlaylists = [...playlists]
         newPlaylists[0].songs.push(song)
+        storage.set(YOUR_SONGS, JSON.stringify(playlists))
         setPlaylists(newPlaylists)
     }
 
@@ -63,7 +70,7 @@ export default function YourSongs() {
                 text1: 'Song removed',
                 text2: song.title
             })
-            loadPlaylists()
+            loadPlaylists(true)
         } catch (e) {
             showErrorToast(e)
         }
