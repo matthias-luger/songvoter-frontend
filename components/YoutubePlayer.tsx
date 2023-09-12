@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef } from 'react'
-import { View } from 'react-native'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
+import { AppState, View } from 'react-native'
 import { default as YoutubePlayerWebview } from 'react-native-youtube-iframe'
 
 interface Props {
@@ -9,6 +9,18 @@ interface Props {
 }
 
 export default function YoutubePlayer(props: Props) {
+    let [appIsActive, setAppIsActive] = useState(false)
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener('change', nextAppState => {
+            setAppIsActive(nextAppState === 'active')
+        })
+
+        return () => {
+            subscription.remove()
+        }
+    })
+
     const onStateChange = useCallback(state => {
         if (state === 'ended') {
             props.onVideoHasEnded()
@@ -17,7 +29,7 @@ export default function YoutubePlayer(props: Props) {
 
     return (
         <View>
-            <YoutubePlayerWebview height={240} play={props.playing} videoId={props.videoId} onChangeState={onStateChange} />
+            <YoutubePlayerWebview height={240} play={props.playing && appIsActive} videoId={props.videoId} onChangeState={onStateChange} />
         </View>
     )
 }
