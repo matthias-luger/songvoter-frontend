@@ -1,11 +1,14 @@
-import { ActivityIndicator, Button, IconButton, List, MD3Colors, Searchbar, Text, TextInput } from 'react-native-paper'
+import { ActivityIndicator, Button, IconButton, List, MD3Colors, Modal, Portal, Searchbar, Switch, Text, TextInput, useTheme } from 'react-native-paper'
 import { showErrorToast } from '../utils/ToastUtils'
-import { useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
 import { getListController, getSongController } from '../utils/ApiUtils'
 import { CoflnetSongVoterModelsSong } from '../generated'
 import SongListElement from './SongListElement'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
+import { globalStyles } from '../styles/globalStyles'
+import { ConfigureSearch } from './ConfigureSearch'
 
 interface Props {
     playlistId?: string
@@ -17,10 +20,12 @@ interface SongListItem extends CoflnetSongVoterModelsSong {
 }
 
 export default function AddSong(props: Props) {
+    let theme = useTheme()
     let [results, setResults] = useState<SongListItem[]>([])
     let [isLoading, setIsLoading] = useState<boolean>()
     let [showLongLoadingText, setShowLongLoadingText] = useState(false)
     let [searchText, setSearchText] = useState('')
+    let [showSelectPlatformModal, setShowSelectPlatformModal] = useState(false)
     let searchTextRef = useRef(searchText)
     searchTextRef.current = searchText
 
@@ -54,6 +59,8 @@ export default function AddSong(props: Props) {
             }, 3000)
 
             let controller = await getSongController()
+
+            // TODO: Read and set selected platforms
             let results = await controller.songsSearchGet({
                 term: searchText
             })
@@ -118,6 +125,19 @@ export default function AddSong(props: Props) {
                     setSearchText(text)
                     searchFunction(text)
                 }}
+                right={() => {
+                    return (
+                        <MaterialCommunityIcons
+                            onPress={() => {
+                                setShowSelectPlatformModal(true)
+                            }}
+                            name={'cog'}
+                            color="white"
+                            style={{ marginRight: 10 }}
+                            size={20}
+                        />
+                    )
+                }}
                 value={searchText}
                 autoFocus
             />
@@ -150,6 +170,27 @@ export default function AddSong(props: Props) {
                     )}
                 </ScrollView>
             }
+            {showSelectPlatformModal ? (
+                <Portal>
+                    <Modal
+                        visible={showSelectPlatformModal}
+                        dismissable
+                        onDismiss={() => {
+                            setShowSelectPlatformModal(false)
+                        }}
+                        contentContainerStyle={{
+                            ...globalStyles.fullModalContainer,
+                            aspectRatio: 1 / 1,
+                            maxHeight: 300,
+                            justifyContent: 'center',
+                            alignSelf: 'center',
+                            borderRadius: 5
+                        }}
+                    >
+                        <ConfigureSearch />
+                    </Modal>
+                </Portal>
+            ) : null}
         </>
     )
 }
@@ -159,5 +200,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1,
         justifyContent: 'center'
+    },
+    row: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 8,
+        paddingHorizontal: 16
     }
 })

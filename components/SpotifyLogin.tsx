@@ -83,7 +83,7 @@ export default function SpotifyLogin(props: Props) {
                 promptAsync()
             }}
         >
-            Spotify Login
+            Connect Spotify
         </Button>
     ) : (
         <Button

@@ -99,7 +99,7 @@ export default function App() {
         if (currentPartySong.occurences[0].platform === 'spotify') {
             let id = currentPartySong.id
             if (userInfo?.userId === party?.ownerId) {
-                if (!storage.getString(SPOTIFY_TOKEN)) {
+                if (!storage.contains(SPOTIFY_TOKEN)) {
                     Toast.show({
                         type: 'error',
                         text1: 'Next Song is a Spotify song, but no Spotify account is connected.',
@@ -146,7 +146,7 @@ export default function App() {
             let song = await partyController.partyNextSongGet()
             setCurrentSong(song)
             if (song.occurences[0].platform === 'spotify') {
-                if (!storage.getString(SPOTIFY_TOKEN)) {
+                if (!storage.contains(SPOTIFY_TOKEN)) {
                     if (skipSpotifySongBecauseNoConnectedAccountCounter > 3) {
                         setCurrentSong(null)
                         return
@@ -207,7 +207,7 @@ export default function App() {
             }
             storage.set(IS_CURRENTLY_PARTY_OWNER, false)
             storage.delete(CURRRENT_PARTY)
-            if (!!storage.getString(SPOTIFY_TOKEN) && currentSong.occurences[0].platform === 'spotify') {
+            if (storage.contains(SPOTIFY_TOKEN) && currentSong.occurences[0].platform === 'spotify') {
                 pauseSpotifySongPlayback()
             }
             router.push('/')
@@ -303,7 +303,7 @@ export default function App() {
     return (
         <>
             <MainLayout>
-                <HeaderText text={party ? `Party` : null} />
+                <HeaderText text={party ? party.name || `Party` : null} />
                 {userInfo?.userId === party?.ownerId ? <Button onPress={togglePlayback}>Pause/Resume</Button> : null}
                 {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party?.ownerId ? (
                     <YoutubePlayer videoId={currentSong.occurences[0].externalId} playing={isYoutubePlayerPlaying} onVideoHasEnded={startNextSong} />

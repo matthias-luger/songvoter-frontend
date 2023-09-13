@@ -52,7 +52,7 @@ export default function App() {
                     <HeaderText text="SongVoter" />
                     <Button
                         onPress={() => {
-                            router.push('/invite-party')
+                            router.push('/create-party')
                         }}
                         style={{ ...globalStyles.primaryElement, ...styles.button }}
                         textColor={theme.colors.onPrimary}

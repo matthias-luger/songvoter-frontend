@@ -10,6 +10,7 @@ import { getPartyController } from '../utils/ApiUtils'
 import { useRouter } from 'expo-router'
 import * as Clipboard from 'expo-clipboard'
 import { CURRRENT_PARTY, storage } from '../utils/StorageUtils'
+import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 export default function App() {
     let router = useRouter()
@@ -24,20 +25,15 @@ export default function App() {
         let partyController = await getPartyController()
         setIsLoading(true)
         try {
-            // see if there is a party
-            let party = await partyController.partyGet()
             let link = await partyController.partyInviteLinkGet()
             setInviteLink(link.link)
         } catch (e) {
             if (e.response?.status === 404) {
-                try {
-                    let newParty = await partyController.partyPost()
-                    let link = await partyController.partyInviteLinkGet()
-                    storage.set(CURRRENT_PARTY, JSON.stringify(newParty))
-                    setInviteLink(link.link)
-                } catch (e) {
-                    showErrorToast(e)
-                }
+                Toast.show({
+                    type: 'error',
+                    text1: 'Party not found'
+                })
+                router.push('/')
                 return
             }
             showErrorToast(e)
