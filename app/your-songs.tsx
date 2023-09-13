@@ -13,22 +13,19 @@ import SongList from '../components/SongList'
 import { IS_CURRENTLY_PARTY_OWNER, YOUR_SONGS, storage } from '../utils/StorageUtils'
 
 export default function YourSongs() {
-    let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>([])
+    let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>(storage.contains(YOUR_SONGS) ? JSON.parse(storage.getString(YOUR_SONGS)) : [])
     let [showAddSongModal, setShowAddSongModal] = useState(false)
     let [isLoading, setIsLoading] = useState(false)
     let [isCurrentlyPartyOwner] = useState(storage.getBoolean(IS_CURRENTLY_PARTY_OWNER) === true)
 
     useEffect(() => {
-        loadPlaylists()
+        if (!storage.contains(YOUR_SONGS)) {
+            loadPlaylists()
+        }
     }, [])
 
-    async function loadPlaylists(forceFreshReload: boolean = false) {
+    async function loadPlaylists() {
         try {
-            if (storage.contains(YOUR_SONGS) && !forceFreshReload) {
-                let storedSongs = storage.getString(YOUR_SONGS)
-                setPlaylists(JSON.parse(storedSongs))
-                return
-            }
             setIsLoading(true)
             let listController = await getListController()
             let playlists = await listController.listsGet()
@@ -70,7 +67,7 @@ export default function YourSongs() {
                 text1: 'Song removed',
                 text2: song.title
             })
-            loadPlaylists(true)
+            loadPlaylists()
         } catch (e) {
             showErrorToast(e)
         }
@@ -87,7 +84,7 @@ export default function YourSongs() {
             />
             <FAB
                 icon="plus"
-                label="Add song"
+                label={playlists && playlists.length > 0 && playlists[0].songs && playlists[0].songs?.length > 0 ? 'Add song' : 'Add first song'}
                 style={styles.fab}
                 onPress={() => {
                     setShowAddSongModal(true)
