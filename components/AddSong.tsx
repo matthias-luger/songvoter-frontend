@@ -1,4 +1,4 @@
-import { ActivityIndicator, Button, IconButton, List, MD3Colors, Text, TextInput } from 'react-native-paper'
+import { ActivityIndicator, Button, IconButton, List, MD3Colors, Searchbar, Text, TextInput } from 'react-native-paper'
 import { showErrorToast } from '../utils/ToastUtils'
 import { useRef, useState } from 'react'
 import { ScrollView, Image, View, StyleSheet } from 'react-native'
@@ -20,7 +20,9 @@ export default function AddSong(props: Props) {
     let [results, setResults] = useState<SongListItem[]>([])
     let [isLoading, setIsLoading] = useState<boolean>()
     let [showLongLoadingText, setShowLongLoadingText] = useState(false)
-    let searchTextRef = useRef('')
+    let [searchText, setSearchText] = useState('')
+    let searchTextRef = useRef(searchText)
+    searchTextRef.current = searchText
 
     let resultsRef = useRef(results)
     resultsRef.current = results
@@ -59,9 +61,11 @@ export default function AddSong(props: Props) {
                 return
             }
             setResults(results)
+            clearTimeout(timeout)
+            setIsLoading(false)
+            setShowLongLoadingText(false)
         } catch (e) {
             showErrorToast(e)
-        } finally {
             clearTimeout(timeout)
             setIsLoading(false)
             setShowLongLoadingText(false)
@@ -108,11 +112,13 @@ export default function AddSong(props: Props) {
 
     return (
         <>
-            <TextInput
-                label={'Search...'}
+            <Searchbar
+                placeholder={'Search...'}
                 onChangeText={text => {
+                    setSearchText(text)
                     searchFunction(text)
                 }}
+                value={searchText}
                 autoFocus
             />
             {
