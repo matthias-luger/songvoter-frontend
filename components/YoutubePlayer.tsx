@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { AppState, View } from 'react-native'
 import { default as YoutubePlayerWebview } from 'react-native-youtube-iframe'
 

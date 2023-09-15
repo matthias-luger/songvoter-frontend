@@ -25,7 +25,7 @@ export default function App() {
         let partyController = await getPartyController()
         setIsLoading(true)
         try {
-            let link = await partyController.partyInviteLinkGet()
+            let link = await partyController.apiPartyInviteLinkGet()
             setInviteLink(link.link)
         } catch (e) {
             if (e.response?.status === 404) {

@@ -25,7 +25,7 @@ import {
     CoflnetSongVoterModelsUserInfoToJSON,
 } from '../models';
 
-export interface UserNamePostRequest {
+export interface ApiUserNamePostRequest {
     body: string;
 }
 
@@ -36,13 +36,13 @@ export class UserApi extends runtime.BaseAPI {
 
     /**
      */
-    async userInfoGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsUserInfo>> {
+    async apiUserInfoGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsUserInfo>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/user/info`,
+            path: `/api/user/info`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -53,17 +53,17 @@ export class UserApi extends runtime.BaseAPI {
 
     /**
      */
-    async userInfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsUserInfo> {
-        const response = await this.userInfoGetRaw(initOverrides);
+    async apiUserInfoGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsUserInfo> {
+        const response = await this.apiUserInfoGetRaw(initOverrides);
         return await response.value();
     }
 
     /**
      * Updates the display name of the current user
      */
-    async userNamePostRaw(requestParameters: UserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsUser>> {
+    async apiUserNamePostRaw(requestParameters: ApiUserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsUser>> {
         if (requestParameters.body === null || requestParameters.body === undefined) {
-            throw new runtime.RequiredError('body','Required parameter requestParameters.body was null or undefined when calling userNamePost.');
+            throw new runtime.RequiredError('body','Required parameter requestParameters.body was null or undefined when calling apiUserNamePost.');
         }
 
         const queryParameters: any = {};
@@ -73,7 +73,7 @@ export class UserApi extends runtime.BaseAPI {
         headerParameters['Content-Type'] = 'application/json-patch+json';
 
         const response = await this.request({
-            path: `/user/name`,
+            path: `/api/user/name`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
@@ -86,21 +86,21 @@ export class UserApi extends runtime.BaseAPI {
     /**
      * Updates the display name of the current user
      */
-    async userNamePost(requestParameters: UserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsUser> {
-        const response = await this.userNamePostRaw(requestParameters, initOverrides);
+    async apiUserNamePost(requestParameters: ApiUserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsUser> {
+        const response = await this.apiUserNamePostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
     /**
      * Disconnects spotify from the current user
      */
-    async userSpotifyDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsUserInfo>> {
+    async apiUserSpotifyDeleteRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterModelsUserInfo>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/user/spotify`,
+            path: `/api/user/spotify`,
             method: 'DELETE',
             headers: headerParameters,
             query: queryParameters,
@@ -112,21 +112,21 @@ export class UserApi extends runtime.BaseAPI {
     /**
      * Disconnects spotify from the current user
      */
-    async userSpotifyDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsUserInfo> {
-        const response = await this.userSpotifyDeleteRaw(initOverrides);
+    async apiUserSpotifyDelete(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterModelsUserInfo> {
+        const response = await this.apiUserSpotifyDeleteRaw(initOverrides);
         return await response.value();
     }
 
     /**
      * Returns spotify access token to control music playback client side
      */
-    async userSpotifyTokenGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
+    async apiUserSpotifyTokenGetRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<string>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/user/spotify/token`,
+            path: `/api/user/spotify/token`,
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
@@ -142,8 +142,8 @@ export class UserApi extends runtime.BaseAPI {
     /**
      * Returns spotify access token to control music playback client side
      */
-    async userSpotifyTokenGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
-        const response = await this.userSpotifyTokenGetRaw(initOverrides);
+    async apiUserSpotifyTokenGet(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<string> {
+        const response = await this.apiUserSpotifyTokenGetRaw(initOverrides);
         return await response.value();
     }
 

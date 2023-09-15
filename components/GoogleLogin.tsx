@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { View } from 'react-native'
 import * as WebBrowser from 'expo-web-browser'
 import * as Google from 'expo-auth-session/providers/google'
 import { AuthSessionResult, ResponseType, TokenResponse, TokenResponseConfig, makeRedirectUri } from 'expo-auth-session'
@@ -43,7 +43,7 @@ export default function GoogleLogin(props: Props) {
             let tokenResponse = new TokenResponse(response.authentication)
 
             let authController = await getAuthController()
-            let accessTokenResponse = await authController.authGooglePost({
+            let accessTokenResponse = await authController.apiAuthGooglePost({
                 coflnetSongVoterModelsAuthRefreshToken: {
                     token: tokenResponse.idToken,
                     accessToken: tokenResponse.accessToken,

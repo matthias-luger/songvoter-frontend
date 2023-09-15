@@ -4,7 +4,7 @@ import { ResponseType, makeRedirectUri, useAuthRequest } from 'expo-auth-session
 import { usePathname } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
-import { Button, Text, useTheme } from 'react-native-paper'
+import { Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { showErrorToast } from '../utils/ToastUtils'
@@ -51,7 +51,7 @@ export default function SpotifyLogin(props: Props) {
     async function serversideAuthentication(spotifyCode: string) {
         try {
             let authController = await getAuthController()
-            let { token } = await authController.authSpotifyCodePost({
+            let { token } = await authController.apiAuthSpotifyCodePost({
                 coflnetSongVoterControllersAuthApiControllerImplAuthCode: {
                     code: spotifyCode,
                     redirectUri:
@@ -94,7 +94,7 @@ export default function SpotifyLogin(props: Props) {
                 setSpotifyToken(null)
                 storage.delete(SPOTIFY_TOKEN)
                 let userController = await getUserController()
-                userController.userSpotifyDelete()
+                userController.apiUserSpotifyDelete()
             }}
         >
             Logout

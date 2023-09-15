@@ -28,16 +28,16 @@ export default function YourSongs() {
         try {
             setIsLoading(true)
             let listController = await getListController()
-            let playlists = await listController.listsGet()
+            let playlists = await listController.apiListsGet()
 
             if (playlists?.length === 0) {
-                await listController.listsPost({
+                await listController.apiListsPost({
                     coflnetSongVoterModelsPlayListCreate: {
                         title: 'Default Playlist',
                         songs: []
                     }
                 })
-                playlists = await listController.listsGet()
+                playlists = await listController.apiListsGet()
             }
             storage.set(YOUR_SONGS, JSON.stringify(playlists))
             setPlaylists(playlists)
@@ -58,7 +58,7 @@ export default function YourSongs() {
     async function removeSong(song: CoflnetSongVoterModelsSong) {
         try {
             let listController = await getListController()
-            await listController.listsListIdSongsSongIdDelete({
+            await listController.apiListsListIdSongsSongIdDelete({
                 listId: playlists[0].id,
                 songId: song.id
             })

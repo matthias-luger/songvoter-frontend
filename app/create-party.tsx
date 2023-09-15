@@ -32,7 +32,7 @@ export default function App() {
         try {
             let partyController = await getPartyController()
             // TODO: Set selected platform(s)
-            let newParty = await partyController.partyPost({
+            let newParty = await partyController.apiPartyPost({
                 name: partyTitle
             })
             storage.set(CURRRENT_PARTY, JSON.stringify(newParty))

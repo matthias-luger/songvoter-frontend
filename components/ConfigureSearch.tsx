@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
-import { Keyboard, Pressable, View, StyleSheet } from 'react-native'
-import { Button, Switch, Text, useTheme } from 'react-native-paper'
+import React, { useState } from 'react'
+import { View, StyleSheet } from 'react-native'
+import { Switch, Text, useTheme } from 'react-native-paper'
 import { PLATFORMS_USED_IN_SEARCH, storage } from '../utils/StorageUtils'
 
 export function ConfigureSearch() {

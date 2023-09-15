@@ -84,7 +84,7 @@ export default function App() {
     async function loadSongs() {
         try {
             let partyController = await getPartyController()
-            let s = await partyController.partyPlaylistGet()
+            let s = await partyController.apiPartyPlaylistGet()
             setPlaylist(s)
             return s
         } catch (e) {
@@ -94,7 +94,7 @@ export default function App() {
 
     async function findCurrentlyPlayingSongOrStartNext() {
         let partyController = await getPartyController()
-        let currentPartySong = await partyController.partyNextSongGet()
+        let currentPartySong = await partyController.apiPartyNextSongGet()
 
         if (currentPartySong.occurences[0].platform === 'spotify') {
             let id = currentPartySong.id
@@ -139,11 +139,11 @@ export default function App() {
         try {
             let partyController = await getPartyController()
             if (currentSongRef.current) {
-                await partyController.partySongSongIdPlayedPost({
+                await partyController.apiPartySongSongIdPlayedPost({
                     songId: currentSongRef.current.id
                 })
             }
-            let song = await partyController.partyNextSongGet()
+            let song = await partyController.apiPartyNextSongGet()
             setCurrentSong(song)
             if (song.occurences[0].platform === 'spotify') {
                 if (!storage.contains(SPOTIFY_TOKEN)) {
@@ -198,7 +198,7 @@ export default function App() {
     async function leaveParty() {
         try {
             let partyController = await getPartyController()
-            await partyController.partyLeavePost()
+            await partyController.apiPartyLeavePost()
             if (cancelSongSubscriptionRef.current) {
                 cancelSongSubscriptionRef.current()
             }
@@ -236,7 +236,7 @@ export default function App() {
 
     async function addSongToParty(song: CoflnetSongVoterModelsSong) {
         let controller = await getPartyController()
-        await controller.partyUpvoteSongIdPost({
+        await controller.apiPartyUpvoteSongIdPost({
             songId: song.id
         })
         setPlaylist([])
@@ -251,7 +251,7 @@ export default function App() {
             return
         }
         let controller = await getPartyController()
-        await controller.partyUpvoteSongIdPost({
+        await controller.apiPartyUpvoteSongIdPost({
             songId: playlistEntry.song.id
         })
         let newPlaylist = [...playlist]
@@ -270,7 +270,7 @@ export default function App() {
             return
         }
         let controller = await getPartyController()
-        await controller.partyDownvoteSongIdPost({
+        await controller.apiPartyDownvoteSongIdPost({
             songId: playlistEntry.song.id
         })
         let newPlaylist = [...playlist]
@@ -285,7 +285,7 @@ export default function App() {
 
     async function removeVote(playlistEntry: CoflnetSongVoterModelsPartyPlaylistEntry) {
         let controller = await getPartyController()
-        await controller.partyRemoveVoteSongIdPost({
+        await controller.apiPartyRemoveVoteSongIdPost({
             songId: playlistEntry.song.id
         })
         let newPlaylist = [...playlist]

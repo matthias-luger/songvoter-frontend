@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Camera } from 'expo-camera'
-import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { BarCodeScanner } from 'expo-barcode-scanner'
 
 interface Props {

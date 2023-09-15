@@ -1,13 +1,5 @@
 import { TokenResponse, TokenResponseConfig } from 'expo-auth-session'
-import {
-    AuthApiControllerImplApi,
-    CoflnetSongVoterModelsUserInfo,
-    Configuration,
-    ListApiControllerImplApi,
-    PartyApi,
-    SongApiControllerImplApi,
-    UserApi
-} from '../generated'
+import { AuthApiControllerImplApi, CoflnetSongVoterModelsUserInfo, Configuration, ListApiControllerImplApi, PartyApi, SongApiApi, UserApi } from '../generated'
 import { GOOGLE_AUTH_OBJECT, USER_INFO, storage } from './StorageUtils'
 
 export const googleClientId = '366589988548-reag2f35a49fa2cavc4lnl5k1p8n1brd.apps.googleusercontent.com'
@@ -26,7 +18,7 @@ export async function getUserInfo(): Promise<CoflnetSongVoterModelsUserInfo> {
     }
 
     let userController = await getUserController()
-    let result = await userController.userInfoGet()
+    let result = await userController.apiUserInfoGet()
     storage.set(USER_INFO, JSON.stringify(result))
     return result
 }
@@ -54,7 +46,7 @@ async function getConfiguration(): Promise<Configuration> {
                 }
             )
             let authController = await getAuthController()
-            let accessTokenResponse = await authController.authGooglePost({
+            let accessTokenResponse = await authController.apiAuthGooglePost({
                 coflnetSongVoterModelsAuthRefreshToken: {
                     token: tokenResponse.idToken,
                     accessToken: tokenResponse.accessToken,
@@ -73,6 +65,6 @@ async function getConfiguration(): Promise<Configuration> {
 
 export let getAuthController = async () => new AuthApiControllerImplApi(await getConfiguration())
 export let getPartyController = async () => new PartyApi(await getConfiguration())
-export let getSongController = async () => new SongApiControllerImplApi(await getConfiguration())
+export let getSongController = async () => new SongApiApi(await getConfiguration())
 export let getListController = async () => new ListApiControllerImplApi(await getConfiguration())
 export let getUserController = async () => new UserApi(await getConfiguration())

@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { Link, usePathname, useRouter } from 'expo-router'
-import { Keyboard, Pressable, View } from 'react-native'
-import { Button, Text, useTheme } from 'react-native-paper'
+import { Link, usePathname } from 'expo-router'
+import { Pressable, View } from 'react-native'
+import { Text, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
-import { EventRegister } from 'react-native-event-listeners'
-import { NavigationEvents } from '../types/events.d'
 
 export const DEFAULT_ROUTES: Route[] = [
     {

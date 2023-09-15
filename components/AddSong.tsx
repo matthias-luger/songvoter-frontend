@@ -1,7 +1,7 @@
-import { ActivityIndicator, Button, IconButton, List, MD3Colors, Modal, Portal, Searchbar, Switch, Text, TextInput, useTheme } from 'react-native-paper'
+import { ActivityIndicator, IconButton, Modal, Portal, Searchbar, Text, useTheme } from 'react-native-paper'
 import { showErrorToast } from '../utils/ToastUtils'
 import React, { useRef, useState } from 'react'
-import { ScrollView, Image, View, StyleSheet } from 'react-native'
+import { ScrollView, View, StyleSheet } from 'react-native'
 import { getListController, getSongController } from '../utils/ApiUtils'
 import { CoflnetSongVoterModelsSong } from '../generated'
 import SongListElement from './SongListElement'
@@ -61,7 +61,7 @@ export default function AddSong(props: Props) {
             let controller = await getSongController()
 
             // TODO: Read and set selected platforms
-            let results = await controller.songsSearchGet({
+            let results = await controller.apiSongsSearchGet({
                 term: searchText
             })
             if (searchText !== searchTextRef.current) {
@@ -89,7 +89,7 @@ export default function AddSong(props: Props) {
         try {
             if (props.playlistId) {
                 let listController = await getListController()
-                await listController.listsListIdSongsPost({
+                await listController.apiListsListIdSongsPost({
                     listId: props.playlistId,
                     coflnetSongVoterModelsSongId: {
                         id: song.id
