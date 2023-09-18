@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CoflnetSongVoterModelsSongCreationSongPlatform } from './CoflnetSongVoterModelsSongCreationSongPlatform';
+import type { CoflnetSongVoterModelsSongPlatform } from './CoflnetSongVoterModelsSongPlatform';
 import {
-    CoflnetSongVoterModelsSongCreationSongPlatformFromJSON,
-    CoflnetSongVoterModelsSongCreationSongPlatformFromJSONTyped,
-    CoflnetSongVoterModelsSongCreationSongPlatformToJSON,
-} from './CoflnetSongVoterModelsSongCreationSongPlatform';
+    CoflnetSongVoterModelsSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongPlatformFromJSONTyped,
+    CoflnetSongVoterModelsSongPlatformToJSON,
+} from './CoflnetSongVoterModelsSongPlatform';
 
 /**
  * 
@@ -34,10 +34,10 @@ export interface CoflnetSongVoterModelsSongCreation {
     externalId?: string | null;
     /**
      * 
-     * @type {CoflnetSongVoterModelsSongCreationSongPlatform}
+     * @type {CoflnetSongVoterModelsSongPlatform}
      * @memberof CoflnetSongVoterModelsSongCreation
      */
-    platform?: CoflnetSongVoterModelsSongCreationSongPlatform;
+    platform?: CoflnetSongVoterModelsSongPlatform;
 }
 
 /**
@@ -60,7 +60,7 @@ export function CoflnetSongVoterModelsSongCreationFromJSONTyped(json: any, ignor
     return {
         
         'externalId': !exists(json, 'externalId') ? undefined : json['externalId'],
-        'platform': !exists(json, 'platform') ? undefined : CoflnetSongVoterModelsSongCreationSongPlatformFromJSON(json['platform']),
+        'platform': !exists(json, 'platform') ? undefined : CoflnetSongVoterModelsSongPlatformFromJSON(json['platform']),
     };
 }
 
@@ -74,7 +74,7 @@ export function CoflnetSongVoterModelsSongCreationToJSON(value?: CoflnetSongVote
     return {
         
         'externalId': value.externalId,
-        'platform': CoflnetSongVoterModelsSongCreationSongPlatformToJSON(value.platform),
+        'platform': CoflnetSongVoterModelsSongPlatformToJSON(value.platform),
     };
 }
 

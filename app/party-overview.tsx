@@ -377,7 +377,7 @@ export default function App() {
                             }}
                             contentContainerStyle={{ ...globalStyles.fullModalContainer }}
                         >
-                            <AddSong onAfterSongAdded={addSongToParty} />
+                            <AddSong onAfterSongAdded={addSongToParty} platforms={party.platforms} />
                         </Modal>
                     </Portal>
                 ) : null}

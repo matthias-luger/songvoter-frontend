@@ -15,16 +15,14 @@
 
 import * as runtime from '../runtime';
 import type {
-  CoflnetSongVoterDBModelsPlatforms,
   CoflnetSongVoterMiddlewareApiException,
   CoflnetSongVoterModelsInvite,
   CoflnetSongVoterModelsParty,
   CoflnetSongVoterModelsPartyPlaylistEntry,
   CoflnetSongVoterModelsSong,
+  CoflnetSongVoterModelsSongPlatform,
 } from '../models';
 import {
-    CoflnetSongVoterDBModelsPlatformsFromJSON,
-    CoflnetSongVoterDBModelsPlatformsToJSON,
     CoflnetSongVoterMiddlewareApiExceptionFromJSON,
     CoflnetSongVoterMiddlewareApiExceptionToJSON,
     CoflnetSongVoterModelsInviteFromJSON,
@@ -35,6 +33,8 @@ import {
     CoflnetSongVoterModelsPartyPlaylistEntryToJSON,
     CoflnetSongVoterModelsSongFromJSON,
     CoflnetSongVoterModelsSongToJSON,
+    CoflnetSongVoterModelsSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongPlatformToJSON,
 } from '../models';
 
 export interface ApiPartyDownvoteSongIdPostRequest {
@@ -60,7 +60,7 @@ export interface ApiPartyPartyIdResetPostRequest {
 
 export interface ApiPartyPostRequest {
     name?: string;
-    supportedPlatforms?: CoflnetSongVoterDBModelsPlatforms;
+    supportedPlatforms?: Array<CoflnetSongVoterModelsSongPlatform>;
 }
 
 export interface ApiPartyRemoveVoteSongIdPostRequest {
@@ -366,7 +366,7 @@ export class PartyApi extends runtime.BaseAPI {
             queryParameters['Name'] = requestParameters.name;
         }
 
-        if (requestParameters.supportedPlatforms !== undefined) {
+        if (requestParameters.supportedPlatforms) {
             queryParameters['SupportedPlatforms'] = requestParameters.supportedPlatforms;
         }
 

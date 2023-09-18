@@ -9,6 +9,7 @@ import { getPartyController } from '../utils/ApiUtils'
 import { CURRRENT_PARTY, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { showErrorToast } from '../utils/ToastUtils'
 import { router } from 'expo-router'
+import { CoflnetSongVoterModelsSongPlatform } from '../generated'
 
 export default function App() {
     let theme = useTheme()
@@ -30,10 +31,17 @@ export default function App() {
             return
         }
         try {
+            let platforms: CoflnetSongVoterModelsSongPlatform[] = []
+            if (useYoutube) {
+                platforms.push('youtube')
+            }
+            if (useSpotify) {
+                platforms.push('spotify')
+            }
             let partyController = await getPartyController()
-            // TODO: Set selected platform(s)
             let newParty = await partyController.apiPartyPost({
-                name: partyTitle
+                name: partyTitle,
+                supportedPlatforms: platforms
             })
             storage.set(CURRRENT_PARTY, JSON.stringify(newParty))
             router.push('/invite-party')

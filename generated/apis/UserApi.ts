@@ -15,12 +15,9 @@
 
 import * as runtime from '../runtime';
 import type {
-  CoflnetSongVoterDBModelsUser,
   CoflnetSongVoterModelsUserInfo,
 } from '../models';
 import {
-    CoflnetSongVoterDBModelsUserFromJSON,
-    CoflnetSongVoterDBModelsUserToJSON,
     CoflnetSongVoterModelsUserInfoFromJSON,
     CoflnetSongVoterModelsUserInfoToJSON,
 } from '../models';
@@ -61,7 +58,7 @@ export class UserApi extends runtime.BaseAPI {
     /**
      * Updates the display name of the current user
      */
-    async apiUserNamePostRaw(requestParameters: ApiUserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CoflnetSongVoterDBModelsUser>> {
+    async apiUserNamePostRaw(requestParameters: ApiUserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<void>> {
         if (requestParameters.body === null || requestParameters.body === undefined) {
             throw new runtime.RequiredError('body','Required parameter requestParameters.body was null or undefined when calling apiUserNamePost.');
         }
@@ -80,15 +77,14 @@ export class UserApi extends runtime.BaseAPI {
             body: requestParameters.body as any,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => CoflnetSongVoterDBModelsUserFromJSON(jsonValue));
+        return new runtime.VoidApiResponse(response);
     }
 
     /**
      * Updates the display name of the current user
      */
-    async apiUserNamePost(requestParameters: ApiUserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CoflnetSongVoterDBModelsUser> {
-        const response = await this.apiUserNamePostRaw(requestParameters, initOverrides);
-        return await response.value();
+    async apiUserNamePost(requestParameters: ApiUserNamePostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<void> {
+        await this.apiUserNamePostRaw(requestParameters, initOverrides);
     }
 
     /**

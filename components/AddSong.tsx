@@ -3,7 +3,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import React, { useRef, useState } from 'react'
 import { ScrollView, View, StyleSheet } from 'react-native'
 import { getListController, getSongController } from '../utils/ApiUtils'
-import { CoflnetSongVoterModelsSong } from '../generated'
+import { CoflnetSongVoterModelsSong, CoflnetSongVoterModelsSongPlatform } from '../generated'
 import SongListElement from './SongListElement'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
@@ -13,6 +13,8 @@ import { ConfigureSearch } from './ConfigureSearch'
 interface Props {
     playlistId?: string
     onAfterSongAdded(song: CoflnetSongVoterModelsSong)
+    platforms?: CoflnetSongVoterModelsSongPlatform[]
+    showSelectPlatformButton?: boolean
 }
 
 interface SongListItem extends CoflnetSongVoterModelsSong {
@@ -26,6 +28,7 @@ export default function AddSong(props: Props) {
     let [showLongLoadingText, setShowLongLoadingText] = useState(false)
     let [searchText, setSearchText] = useState('')
     let [showSelectPlatformModal, setShowSelectPlatformModal] = useState(false)
+    let [platforms, setPlatforms] = useState(props.platforms)
     let searchTextRef = useRef(searchText)
     searchTextRef.current = searchText
 
@@ -60,9 +63,9 @@ export default function AddSong(props: Props) {
 
             let controller = await getSongController()
 
-            // TODO: Read and set selected platforms
             let results = await controller.apiSongsSearchGet({
-                term: searchText
+                term: searchText,
+                platforms: platforms
             })
             if (searchText !== searchTextRef.current) {
                 return
@@ -126,6 +129,9 @@ export default function AddSong(props: Props) {
                     searchFunction(text)
                 }}
                 right={() => {
+                    if (!props.showSelectPlatformButton) {
+                        return null
+                    }
                     return (
                         <MaterialCommunityIcons
                             onPress={() => {
@@ -187,7 +193,11 @@ export default function AddSong(props: Props) {
                             borderRadius: 5
                         }}
                     >
-                        <ConfigureSearch />
+                        <ConfigureSearch
+                            onPlatformsChange={platforms => {
+                                setPlatforms(platforms)
+                            }}
+                        />
                     </Modal>
                 </Portal>
             ) : null}

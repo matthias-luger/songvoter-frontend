@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AuthApiControllerImplApi.ts
 apis/ListApiControllerImplApi.ts
 apis/PartyApi.ts
@@ -7,19 +6,10 @@ apis/UserApi.ts
 apis/index.ts
 index.ts
 models/CoflnetSongVoterControllersAuthApiControllerImplAuthCode.ts
-models/CoflnetSongVoterDBModelsExternalSong.ts
-models/CoflnetSongVoterDBModelsOauth2Token.ts
-models/CoflnetSongVoterDBModelsParty.ts
-models/CoflnetSongVoterDBModelsPartySong.ts
-models/CoflnetSongVoterDBModelsPlatforms.ts
-models/CoflnetSongVoterDBModelsPlaylist.ts
-models/CoflnetSongVoterDBModelsSong.ts
-models/CoflnetSongVoterDBModelsUser.ts
 models/CoflnetSongVoterMiddlewareApiException.ts
 models/CoflnetSongVoterModelsAuthRefreshToken.ts
 models/CoflnetSongVoterModelsAuthToken.ts
 models/CoflnetSongVoterModelsExternalSong.ts
-models/CoflnetSongVoterModelsExternalSongPlatformEnum.ts
 models/CoflnetSongVoterModelsInvite.ts
 models/CoflnetSongVoterModelsParty.ts
 models/CoflnetSongVoterModelsPartyPlaylistEntry.ts
@@ -28,8 +18,8 @@ models/CoflnetSongVoterModelsPlayList.ts
 models/CoflnetSongVoterModelsPlayListCreate.ts
 models/CoflnetSongVoterModelsSong.ts
 models/CoflnetSongVoterModelsSongCreation.ts
-models/CoflnetSongVoterModelsSongCreationSongPlatform.ts
 models/CoflnetSongVoterModelsSongId.ts
+models/CoflnetSongVoterModelsSongPlatform.ts
 models/CoflnetSongVoterModelsUserInfo.ts
 models/SystemNetHttpStatusCode.ts
 models/index.ts

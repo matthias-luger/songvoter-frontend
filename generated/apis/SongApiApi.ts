@@ -17,15 +17,15 @@ import * as runtime from '../runtime';
 import type {
   CoflnetSongVoterModelsSong,
   CoflnetSongVoterModelsSongCreation,
-  CoflnetSongVoterModelsSongCreationSongPlatform,
+  CoflnetSongVoterModelsSongPlatform,
 } from '../models';
 import {
     CoflnetSongVoterModelsSongFromJSON,
     CoflnetSongVoterModelsSongToJSON,
     CoflnetSongVoterModelsSongCreationFromJSON,
     CoflnetSongVoterModelsSongCreationToJSON,
-    CoflnetSongVoterModelsSongCreationSongPlatformFromJSON,
-    CoflnetSongVoterModelsSongCreationSongPlatformToJSON,
+    CoflnetSongVoterModelsSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongPlatformToJSON,
 } from '../models';
 
 export interface ApiSongsPostRequest {
@@ -34,7 +34,7 @@ export interface ApiSongsPostRequest {
 
 export interface ApiSongsSearchGetRequest {
     term: string;
-    platforms?: CoflnetSongVoterModelsSongCreationSongPlatform;
+    platforms?: Array<CoflnetSongVoterModelsSongPlatform>;
 }
 
 export interface ApiSongsSongIdGetRequest {
@@ -88,7 +88,7 @@ export class SongApiApi extends runtime.BaseAPI {
             queryParameters['term'] = requestParameters.term;
         }
 
-        if (requestParameters.platforms !== undefined) {
+        if (requestParameters.platforms) {
             queryParameters['platforms'] = requestParameters.platforms;
         }
 

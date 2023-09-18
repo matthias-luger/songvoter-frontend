@@ -13,6 +13,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { CoflnetSongVoterModelsSongPlatform } from './CoflnetSongVoterModelsSongPlatform';
+import {
+    CoflnetSongVoterModelsSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongPlatformFromJSONTyped,
+    CoflnetSongVoterModelsSongPlatformToJSON,
+} from './CoflnetSongVoterModelsSongPlatform';
+
 /**
  * 
  * @export
@@ -43,6 +50,12 @@ export interface CoflnetSongVoterModelsParty {
      * @memberof CoflnetSongVoterModelsParty
      */
     members?: Array<string> | null;
+    /**
+     * Enabled Platforms
+     * @type {Array<CoflnetSongVoterModelsSongPlatform>}
+     * @memberof CoflnetSongVoterModelsParty
+     */
+    platforms?: Array<CoflnetSongVoterModelsSongPlatform> | null;
 }
 
 /**
@@ -68,6 +81,7 @@ export function CoflnetSongVoterModelsPartyFromJSONTyped(json: any, ignoreDiscri
         'name': !exists(json, 'name') ? undefined : json['name'],
         'ownerId': !exists(json, 'ownerId') ? undefined : json['ownerId'],
         'members': !exists(json, 'members') ? undefined : json['members'],
+        'platforms': !exists(json, 'platforms') ? undefined : (json['platforms'] === null ? null : (json['platforms'] as Array<any>).map(CoflnetSongVoterModelsSongPlatformFromJSON)),
     };
 }
 
@@ -84,6 +98,7 @@ export function CoflnetSongVoterModelsPartyToJSON(value?: CoflnetSongVoterModels
         'name': value.name,
         'ownerId': value.ownerId,
         'members': value.members,
+        'platforms': value.platforms === undefined ? undefined : (value.platforms === null ? null : (value.platforms as Array<any>).map(CoflnetSongVoterModelsSongPlatformToJSON)),
     };
 }
 

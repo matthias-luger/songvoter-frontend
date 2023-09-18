@@ -10,7 +10,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../generated'
 import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
-import { IS_CURRENTLY_PARTY_OWNER, YOUR_SONGS, storage } from '../utils/StorageUtils'
+import { IS_CURRENTLY_PARTY_OWNER, PLATFORMS_USED_IN_SEARCH, YOUR_SONGS, storage } from '../utils/StorageUtils'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>(storage.contains(YOUR_SONGS) ? JSON.parse(storage.getString(YOUR_SONGS)) : [])
@@ -99,7 +99,12 @@ export default function YourSongs() {
                         }}
                         contentContainerStyle={{ ...globalStyles.fullModalContainer }}
                     >
-                        <AddSong playlistId={playlists[0]?.id} onAfterSongAdded={onAfterSongAdded} />
+                        <AddSong
+                            playlistId={playlists[0]?.id}
+                            onAfterSongAdded={onAfterSongAdded}
+                            platforms={storage.contains(PLATFORMS_USED_IN_SEARCH) ? JSON.parse(storage.getString(PLATFORMS_USED_IN_SEARCH)) : null}
+                            showSelectPlatformButton
+                        />
                     </Modal>
                 </Portal>
             ) : null}

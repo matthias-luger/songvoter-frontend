@@ -13,12 +13,12 @@
  */
 
 import { exists, mapValues } from '../runtime';
-import type { CoflnetSongVoterModelsExternalSongPlatformEnum } from './CoflnetSongVoterModelsExternalSongPlatformEnum';
+import type { CoflnetSongVoterModelsSongPlatform } from './CoflnetSongVoterModelsSongPlatform';
 import {
-    CoflnetSongVoterModelsExternalSongPlatformEnumFromJSON,
-    CoflnetSongVoterModelsExternalSongPlatformEnumFromJSONTyped,
-    CoflnetSongVoterModelsExternalSongPlatformEnumToJSON,
-} from './CoflnetSongVoterModelsExternalSongPlatformEnum';
+    CoflnetSongVoterModelsSongPlatformFromJSON,
+    CoflnetSongVoterModelsSongPlatformFromJSONTyped,
+    CoflnetSongVoterModelsSongPlatformToJSON,
+} from './CoflnetSongVoterModelsSongPlatform';
 
 /**
  * 
@@ -58,10 +58,10 @@ export interface CoflnetSongVoterModelsExternalSong {
     duration?: number;
     /**
      * 
-     * @type {CoflnetSongVoterModelsExternalSongPlatformEnum}
+     * @type {CoflnetSongVoterModelsSongPlatform}
      * @memberof CoflnetSongVoterModelsExternalSong
      */
-    platform: CoflnetSongVoterModelsExternalSongPlatformEnum;
+    platform: CoflnetSongVoterModelsSongPlatform;
 }
 
 /**
@@ -90,7 +90,7 @@ export function CoflnetSongVoterModelsExternalSongFromJSONTyped(json: any, ignor
         'thumbnail': !exists(json, 'thumbnail') ? undefined : json['thumbnail'],
         'externalId': json['externalId'],
         'duration': !exists(json, 'duration') ? undefined : json['duration'],
-        'platform': CoflnetSongVoterModelsExternalSongPlatformEnumFromJSON(json['platform']),
+        'platform': CoflnetSongVoterModelsSongPlatformFromJSON(json['platform']),
     };
 }
 
@@ -108,7 +108,7 @@ export function CoflnetSongVoterModelsExternalSongToJSON(value?: CoflnetSongVote
         'thumbnail': value.thumbnail,
         'externalId': value.externalId,
         'duration': value.duration,
-        'platform': CoflnetSongVoterModelsExternalSongPlatformEnumToJSON(value.platform),
+        'platform': CoflnetSongVoterModelsSongPlatformToJSON(value.platform),
     };
 }
 

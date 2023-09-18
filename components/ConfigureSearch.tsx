@@ -2,10 +2,17 @@ import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Switch, Text, useTheme } from 'react-native-paper'
 import { PLATFORMS_USED_IN_SEARCH, storage } from '../utils/StorageUtils'
+import { CoflnetSongVoterModelsSongPlatform } from '../generated'
 
-export function ConfigureSearch() {
+interface Props {
+    onPlatformsChange?(newPlatforms: CoflnetSongVoterModelsSongPlatform[])
+}
+
+export function ConfigureSearch(props: Props) {
     let theme = useTheme()
-    let [usedPlatforms, setUsedPlatforms] = useState(storage.contains(PLATFORMS_USED_IN_SEARCH) ? JSON.parse(storage.getString(PLATFORMS_USED_IN_SEARCH)) : [])
+    let [usedPlatforms, setUsedPlatforms] = useState(
+        storage.contains(PLATFORMS_USED_IN_SEARCH) ? JSON.parse(storage.getString(PLATFORMS_USED_IN_SEARCH)) : ['youtube', 'spotify']
+    )
 
     function onPlatformChange(platform: string, activate: boolean) {
         let newUsedPlatforms = [...usedPlatforms]
@@ -18,6 +25,9 @@ export function ConfigureSearch() {
             setUsedPlatforms(newUsedPlatforms)
         }
         storage.set(PLATFORMS_USED_IN_SEARCH, JSON.stringify(newUsedPlatforms))
+        if (props.onPlatformsChange) {
+            props.onPlatformsChange(newUsedPlatforms)
+        }
     }
 
     return (
