@@ -63,10 +63,7 @@ export default function AddSong(props: Props) {
 
             let controller = await getSongController()
 
-            let results = await controller.apiSongsSearchGet({
-                term: searchText,
-                platforms: platforms
-            })
+            let results = (await controller.apiSongsSearchGet(searchText, platforms)).data
             if (searchText !== searchTextRef.current) {
                 return
             }
@@ -92,11 +89,8 @@ export default function AddSong(props: Props) {
         try {
             if (props.playlistId) {
                 let listController = await getListController()
-                await listController.apiListsListIdSongsPost({
-                    listId: props.playlistId,
-                    coflnetSongVoterModelsSongId: {
-                        id: song.id
-                    }
+                await listController.apiListsListIdSongsPost(props.playlistId, {
+                    id: song.id
                 })
             }
             Toast.show({

@@ -8,7 +8,7 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "prebuild": "expo prebuild",
-    "generate:api": "npx openapi-generator-cli generate -i https://songvoter.party/api/openapi/0.0.1/openapi.json -g typescript-fetch -o generated",
+    "generate:api": "npx openapi-generator-cli generate -i https://songvoter.party/api/openapi/0.0.1/openapi.json -g typescript-axios -o generated",
     "build:android": "eas build --platform android --profile production --local",
     "build:android-development": "eas build --platform android --profile development --local",
     "postinstall": "patch-package"
@@ -44,6 +44,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-svg": "13.9.0",
     "react-native-toast-message": "^2.1.6",
+    "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.19.6",
     "react-native-webview": "13.2.2",
     "react-native-youtube-iframe": "^2.2.2",

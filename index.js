@@ -1,6 +1,7 @@
 import 'react-native-reanimated'
 import 'react-native-gesture-handler'
 import 'expo-router/entry'
+import 'react-native-url-polyfill/auto'
 import { registerRootComponent } from 'expo'
 import { ExpoRoot } from 'expo-router'
 import { MD3DarkTheme, PaperProvider } from 'react-native-paper'

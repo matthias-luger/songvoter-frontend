@@ -9,16 +9,17 @@ export async function getUserInfo(): Promise<CoflnetSongVoterModelsUserInfo> {
     if (info) {
         let parsed = JSON.parse(info) as CoflnetSongVoterModelsUserInfo
 
+        let expiredDate
         if (parsed.spotifyTokenExpiration) {
-            parsed.spotifyTokenExpiration = new Date(parsed.spotifyTokenExpiration)
+            expiredDate = new Date(parsed.spotifyTokenExpiration)
         }
-        if (parsed && parsed.spotifyTokenExpiration && parsed.spotifyTokenExpiration.getTime() - new Date().getTime() > 10000) {
+        if (expiredDate && expiredDate.getTime() - new Date().getTime() > 10000) {
             return parsed
         }
     }
 
     let userController = await getUserController()
-    let result = await userController.apiUserInfoGet()
+    let result = (await userController.apiUserInfoGet()).data
     storage.set(USER_INFO, JSON.stringify(result))
     return result
 }
@@ -26,8 +27,10 @@ export async function getUserInfo(): Promise<CoflnetSongVoterModelsUserInfo> {
 async function getConfiguration(): Promise<Configuration> {
     let config = new Configuration({
         basePath: 'https://songvoter.party',
-        headers: {
-            'Content-Type': 'application/json'
+        baseOptions: {
+            headers: {
+                'Content-Type': 'application/json'
+            }
         }
     })
     if (storage.contains(GOOGLE_AUTH_OBJECT)) {
@@ -47,18 +50,16 @@ async function getConfiguration(): Promise<Configuration> {
             )
             let authController = await getAuthController()
             let accessTokenResponse = await authController.apiAuthGooglePost({
-                coflnetSongVoterModelsAuthRefreshToken: {
-                    token: tokenResponse.idToken,
-                    accessToken: tokenResponse.accessToken,
-                    refreshToken: tokenResponse.refreshToken
-                }
+                token: tokenResponse.idToken,
+                accessToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken
             })
-            tokenResponse.accessToken = accessTokenResponse.token
+            tokenResponse.accessToken = accessTokenResponse.data.token
             storage.set(GOOGLE_AUTH_OBJECT, JSON.stringify(tokenResponse.getRequestConfig()))
             googleAuthObject = tokenResponse.getRequestConfig()
         }
 
-        config.headers.Authorization = `Bearer ${googleAuthObject.accessToken}`
+        config.baseOptions.headers.Authorization = `Bearer ${googleAuthObject.accessToken}`
     }
     return config
 }

@@ -27,10 +27,8 @@ export default function App() {
         let id = joinUrl.split('/invite/')[1]
         try {
             let partyController = await getPartyController()
-            await partyController.apiPartyInviteIdJoinPost({
-                inviteId: id
-            })
-            let party = await partyController.apiPartyGet()
+            await partyController.apiPartyInviteIdJoinPost(id)
+            let party = (await partyController.apiPartyGet()).data
             storage.set(CURRRENT_PARTY, JSON.stringify(party))
             router.push('/party-overview')
         } catch (e) {

@@ -44,13 +44,11 @@ export default function GoogleLogin(props: Props) {
 
             let authController = await getAuthController()
             let accessTokenResponse = await authController.apiAuthGooglePost({
-                coflnetSongVoterModelsAuthRefreshToken: {
-                    token: tokenResponse.idToken,
-                    accessToken: tokenResponse.accessToken,
-                    refreshToken: tokenResponse.refreshToken
-                }
+                token: tokenResponse.idToken,
+                accessToken: tokenResponse.accessToken,
+                refreshToken: tokenResponse.refreshToken
             })
-            tokenResponse.accessToken = accessTokenResponse.token
+            tokenResponse.accessToken = accessTokenResponse.data.token
 
             setAuthObject(tokenResponse)
             storage.set(GOOGLE_AUTH_OBJECT, JSON.stringify(tokenResponse.getRequestConfig()))

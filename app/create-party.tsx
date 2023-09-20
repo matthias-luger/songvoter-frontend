@@ -30,6 +30,7 @@ export default function App() {
             setPartyTitle('')
             return
         }
+        let partyController = await getPartyController()
         try {
             let platforms: CoflnetSongVoterModelsSongPlatform[] = []
             if (useYoutube) {
@@ -38,14 +39,17 @@ export default function App() {
             if (useSpotify) {
                 platforms.push('spotify')
             }
-            let partyController = await getPartyController()
-            let newParty = await partyController.apiPartyPost({
-                name: partyTitle,
-                supportedPlatforms: platforms
-            })
+            let newParty = (await partyController.apiPartyPost(partyTitle, platforms)).data
+
             storage.set(CURRRENT_PARTY, JSON.stringify(newParty))
             router.push('/invite-party')
         } catch (e) {
+            if (e?.response?.data === 'You are already in a party, leave it first') {
+                let party = (await partyController.apiPartyGet()).data
+                storage.set(CURRRENT_PARTY, JSON.stringify(party))
+                router.push('/party-overview')
+            }
+
             showErrorToast(e)
         }
         return

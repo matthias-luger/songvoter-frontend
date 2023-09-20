@@ -26,7 +26,7 @@ export default function App() {
         setIsLoading(true)
         try {
             let link = await partyController.apiPartyInviteLinkGet()
-            setInviteLink(link.link)
+            setInviteLink(link.data.link)
         } catch (e) {
             if (e.response?.status === 404) {
                 Toast.show({

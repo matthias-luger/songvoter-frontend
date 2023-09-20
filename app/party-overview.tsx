@@ -84,7 +84,7 @@ export default function App() {
     async function loadSongs() {
         try {
             let partyController = await getPartyController()
-            let s = await partyController.apiPartyPlaylistGet()
+            let s = (await partyController.apiPartyPlaylistGet()).data
             setPlaylist(s)
             return s
         } catch (e) {
@@ -94,7 +94,7 @@ export default function App() {
 
     async function findCurrentlyPlayingSongOrStartNext() {
         let partyController = await getPartyController()
-        let currentPartySong = await partyController.apiPartyNextSongGet()
+        let currentPartySong = (await partyController.apiPartyNextSongGet()).data
 
         if (currentPartySong.occurences[0].platform === 'spotify') {
             let id = currentPartySong.id
@@ -139,11 +139,9 @@ export default function App() {
         try {
             let partyController = await getPartyController()
             if (currentSongRef.current) {
-                await partyController.apiPartySongSongIdPlayedPost({
-                    songId: currentSongRef.current.id
-                })
+                await partyController.apiPartySongSongIdPlayedPost(currentSongRef.current.id)
             }
-            let song = await partyController.apiPartyNextSongGet()
+            let song = (await partyController.apiPartyNextSongGet()).data
             setCurrentSong(song)
             if (song.occurences[0].platform === 'spotify') {
                 if (!storage.contains(SPOTIFY_TOKEN)) {
@@ -207,7 +205,7 @@ export default function App() {
             }
             storage.set(IS_CURRENTLY_PARTY_OWNER, false)
             storage.delete(CURRRENT_PARTY)
-            if (storage.contains(SPOTIFY_TOKEN) && currentSong.occurences[0].platform === 'spotify') {
+            if (storage.contains(SPOTIFY_TOKEN) && currentSong?.occurences[0].platform === 'spotify') {
                 pauseSpotifySongPlayback()
             }
             router.push('/')
@@ -236,9 +234,7 @@ export default function App() {
 
     async function addSongToParty(song: CoflnetSongVoterModelsSong) {
         let controller = await getPartyController()
-        await controller.apiPartyUpvoteSongIdPost({
-            songId: song.id
-        })
+        await controller.apiPartyUpvoteSongIdPost(song.id)
         setPlaylist([])
         setShowLoadingIndicator(true)
         await loadSongs()
@@ -251,9 +247,7 @@ export default function App() {
             return
         }
         let controller = await getPartyController()
-        await controller.apiPartyUpvoteSongIdPost({
-            songId: playlistEntry.song.id
-        })
+        await controller.apiPartyUpvoteSongIdPost(playlistEntry.song.id)
         let newPlaylist = [...playlist]
         let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
         if (entry.selfVote === 'down') {
@@ -270,9 +264,7 @@ export default function App() {
             return
         }
         let controller = await getPartyController()
-        await controller.apiPartyDownvoteSongIdPost({
-            songId: playlistEntry.song.id
-        })
+        await controller.apiPartyDownvoteSongIdPost(playlistEntry.song.id)
         let newPlaylist = [...playlist]
         let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
         if (entry.selfVote === 'up') {
@@ -285,9 +277,7 @@ export default function App() {
 
     async function removeVote(playlistEntry: CoflnetSongVoterModelsPartyPlaylistEntry) {
         let controller = await getPartyController()
-        await controller.apiPartyRemoveVoteSongIdPost({
-            songId: playlistEntry.song.id
-        })
+        await controller.apiPartyRemoveVoteSongIdPost(playlistEntry.song.id)
         let newPlaylist = [...playlist]
         let entry = newPlaylist.find(e => e.song.id === playlistEntry.song.id)
         if (entry.selfVote === 'down') {

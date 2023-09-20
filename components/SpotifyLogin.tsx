@@ -51,15 +51,15 @@ export default function SpotifyLogin(props: Props) {
     async function serversideAuthentication(spotifyCode: string) {
         try {
             let authController = await getAuthController()
-            let { token } = await authController.apiAuthSpotifyCodePost({
-                coflnetSongVoterControllersAuthApiControllerImplAuthCode: {
+            let { token } = (
+                await authController.apiAuthSpotifyCodePost({
                     code: spotifyCode,
                     redirectUri:
                         makeRedirectUri({
                             path: pathname.replace('/', '')
                         }) + '/'
-                }
-            })
+                })
+            ).data
             storage.set(SPOTIFY_TOKEN, token)
             setSpotifyToken(token)
             if (props.onAfterLogin) {

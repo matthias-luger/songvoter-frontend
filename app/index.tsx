@@ -32,9 +32,7 @@ export default function App() {
             let id = initialURL.split('/invite/')[1]
             try {
                 let partyController = await getPartyController()
-                await partyController.apiPartyInviteIdJoinPost({
-                    inviteId: id
-                })
+                await partyController.apiPartyInviteIdJoinPost(id)
             } catch (e) {
                 showErrorToast(e)
             }
