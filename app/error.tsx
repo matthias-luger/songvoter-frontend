@@ -1,7 +1,6 @@
 import { Divider, Text } from 'react-native-paper'
 import MainLayout from '../layouts/MainLayout'
 import { lastErrorObject } from '../utils/ToastUtils'
-import { View } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
 export default function Error() {
