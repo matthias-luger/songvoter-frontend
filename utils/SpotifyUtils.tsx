@@ -240,3 +240,44 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function, songDura
         abort = true
     }
 }
+
+export async function getSpotifyPlaylists() {
+    try {
+        let token = await getUserInfo()
+        let response = await fetch(`https://api.spotify.com/v1/me/playlists?limit=50`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token.spotifyToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        if (!response.ok) {
+            Toast.show({
+                type: 'error',
+                text1: `Couldn't fetch playlist information`,
+                text2: `(Status ${response.status})`
+            })
+            return
+        }
+        if (response.status === 204) {
+            return []
+        }
+
+        let data = await response.json()
+        return data.items as {
+            items: {
+                id: string
+                href: number
+                images?: { url: string; height: number; width: number }[]
+                name: string
+                tracks: {
+                    href: string
+                    total: number
+                }
+                uri: string
+            }[]
+        }
+    } catch (e) {
+        showErrorToast(e)
+    }
+}

@@ -1,6 +1,6 @@
 import { ActivityIndicator, IconButton, Modal, Portal, Searchbar, Text, useTheme } from 'react-native-paper'
 import { showErrorToast } from '../utils/ToastUtils'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ScrollView, View, StyleSheet } from 'react-native'
 import { getListController, getSongController } from '../utils/ApiUtils'
 import { CoflnetSongVoterModelsSong, CoflnetSongVoterModelsSongPlatform } from '../generated'
@@ -9,6 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { globalStyles } from '../styles/globalStyles'
 import { ConfigureSearch } from './ConfigureSearch'
+import { getSpotifyPlaylists } from '../utils/SpotifyUtils'
 
 interface Props {
     playlistId?: string
@@ -22,7 +23,6 @@ interface SongListItem extends CoflnetSongVoterModelsSong {
 }
 
 export default function AddSong(props: Props) {
-    let theme = useTheme()
     let [results, setResults] = useState<SongListItem[]>([])
     let [isLoading, setIsLoading] = useState<boolean>()
     let [showLongLoadingText, setShowLongLoadingText] = useState(false)
@@ -31,6 +31,16 @@ export default function AddSong(props: Props) {
     let [platforms, setPlatforms] = useState(props.platforms)
     let searchTextRef = useRef(searchText)
     searchTextRef.current = searchText
+
+    useEffect(() => {
+        console.log('test')
+        init()
+    }, [])
+
+    async function init() {
+        let playlists = await getSpotifyPlaylists()
+        console.log(JSON.stringify(playlists))
+    }
 
     let resultsRef = useRef(results)
     resultsRef.current = results
