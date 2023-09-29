@@ -24,6 +24,7 @@ import { CURRRENT_PARTY, IS_CURRENTLY_PARTY_OWNER, SPOTIFY_TOKEN, storage } from
 import AddSong from '../components/AddSong'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
+import AddSpotifyPlaylist from '../components/AddSpotifyPlaylist'
 
 export default function App() {
     const router = useRouter()
@@ -35,7 +36,7 @@ export default function App() {
     let [playlist, setPlaylist] = useState<CoflnetSongVoterModelsPartyPlaylistEntry[]>()
     let [currentSong, setCurrentSong] = useState<CoflnetSongVoterModelsSong>()
     let [isYoutubePlayerPlaying, setIsYoutubePlayerPlaying] = useState(true)
-    let [showAddSongModal, setShowAddSongModal] = useState(false)
+    let [modalElementToShow, setModalElementToShow] = useState(null)
     let currentSongRef = useRef(currentSong)
     currentSongRef.current = currentSong
     let playlistRef = useRef(playlist)
@@ -88,6 +89,11 @@ export default function App() {
             setPlaylist(s)
             return s
         } catch (e) {
+            if (e.response.data === 'You are not in a party') {
+                storage.delete(CURRRENT_PARTY)
+                router.push('/')
+                return
+            }
             showErrorToast(e)
         }
     }
@@ -342,11 +348,20 @@ export default function App() {
                                 <Button
                                     textColor="white"
                                     onPress={() => {
-                                        setShowAddSongModal(true)
+                                        setModalElementToShow(<AddSong onAfterSongAdded={addSongToParty} platforms={party.platforms} />)
                                     }}
                                     style={styles.addSongButton}
                                 >
                                     Add Song
+                                </Button>
+                                <Button
+                                    textColor="white"
+                                    onPress={() => {
+                                        setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={() => Promise.resolve()} />)
+                                    }}
+                                    style={styles.addPlaylistButton}
+                                >
+                                    Add Playlist
                                 </Button>
                                 <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
                                     Show invite Code
@@ -358,16 +373,16 @@ export default function App() {
                         </>
                     )}
                 </ScrollView>
-                {showAddSongModal ? (
+                {!!modalElementToShow ? (
                     <Portal>
                         <Modal
-                            visible={showAddSongModal}
+                            visible={!!modalElementToShow}
                             onDismiss={() => {
-                                setShowAddSongModal(false)
+                                setModalElementToShow(null)
                             }}
                             contentContainerStyle={{ ...globalStyles.fullModalContainer }}
                         >
-                            <AddSong onAfterSongAdded={addSongToParty} platforms={party.platforms} />
+                            {modalElementToShow}
                         </Modal>
                     </Portal>
                 ) : null}
@@ -383,11 +398,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'red'
     },
     addSongButton: {
-        width: '45%',
+        width: '30%',
+        backgroundColor: 'blue'
+    },
+    addPlaylistButton: {
+        width: '30%',
         backgroundColor: 'blue'
     },
     inviteButton: {
-        width: '45%',
+        width: '30%',
         backgroundColor: 'blue'
     },
     buttonContainer: {

@@ -241,7 +241,7 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function, songDura
     }
 }
 
-export async function getSpotifyPlaylists() {
+export async function getSpotifyPlaylists(): Promise<SpotifyPlaylist[]> {
     try {
         let token = await getUserInfo()
         let response = await fetch(`https://api.spotify.com/v1/me/playlists?limit=50`, {
@@ -264,20 +264,21 @@ export async function getSpotifyPlaylists() {
         }
 
         let data = await response.json()
-        return data.items as {
-            items: {
-                id: string
-                href: number
-                images?: { url: string; height: number; width: number }[]
-                name: string
-                tracks: {
-                    href: string
-                    total: number
-                }
-                uri: string
-            }[]
-        }
+        return data.items as SpotifyPlaylist[]
     } catch (e) {
         showErrorToast(e)
     }
+}
+
+export interface SpotifyPlaylist {
+    id: string
+    href: number
+    images?: { url: string; height: number; width: number }[]
+    name: string
+    tracks: {
+        href: string
+        total: number
+    }
+    uri: string
+    description: string
 }

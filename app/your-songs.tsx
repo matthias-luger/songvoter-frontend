@@ -11,10 +11,11 @@ import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../g
 import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
 import { IS_CURRENTLY_PARTY_OWNER, PLATFORMS_USED_IN_SEARCH, YOUR_SONGS, storage } from '../utils/StorageUtils'
+import AddSpotifyPlaylist from '../components/AddSpotifyPlaylist'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>(storage.contains(YOUR_SONGS) ? JSON.parse(storage.getString(YOUR_SONGS)) : [])
-    let [showAddSongModal, setShowAddSongModal] = useState(false)
+    let [modalElementToShow, setModalElementToShow] = useState(null)
     let [isLoading, setIsLoading] = useState(false)
     let [isCurrentlyPartyOwner] = useState(storage.getBoolean(IS_CURRENTLY_PARTY_OWNER) === true)
 
@@ -79,27 +80,37 @@ export default function YourSongs() {
             />
             <FAB
                 icon="plus"
-                label={playlists && playlists.length > 0 && playlists[0].songs && playlists[0].songs?.length > 0 ? 'Add song' : 'Add first song'}
-                style={styles.fab}
+                label={'Add Playlist'}
+                style={styles.addPlaylist}
                 onPress={() => {
-                    setShowAddSongModal(true)
+                    setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={() => Promise.resolve()} />)
                 }}
             />
-            {!isLoading ? (
-                <Portal>
-                    <Modal
-                        visible={showAddSongModal}
-                        onDismiss={() => {
-                            setShowAddSongModal(false)
-                        }}
-                        contentContainerStyle={{ ...globalStyles.fullModalContainer }}
-                    >
+            <FAB
+                icon="plus"
+                label={playlists && playlists.length > 0 && playlists[0].songs && playlists[0].songs?.length > 0 ? 'Add song' : 'Add first song'}
+                style={styles.addSong}
+                onPress={() => {
+                    setModalElementToShow(
                         <AddSong
                             playlistId={playlists[0]?.id}
                             onAfterSongAdded={onAfterSongAdded}
                             platforms={storage.contains(PLATFORMS_USED_IN_SEARCH) ? JSON.parse(storage.getString(PLATFORMS_USED_IN_SEARCH)) : null}
                             showSelectPlatformButton
                         />
+                    )
+                }}
+            />
+            {!isLoading ? (
+                <Portal>
+                    <Modal
+                        visible={!!modalElementToShow}
+                        onDismiss={() => {
+                            setModalElementToShow(null)
+                        }}
+                        contentContainerStyle={{ ...globalStyles.fullModalContainer }}
+                    >
+                        {modalElementToShow}
                     </Modal>
                 </Portal>
             ) : null}
@@ -108,10 +119,16 @@ export default function YourSongs() {
 }
 
 const styles = StyleSheet.create({
-    fab: {
+    addSong: {
         position: 'absolute',
         margin: 16,
         right: 0,
+        bottom: 0
+    },
+    addPlaylist: {
+        position: 'absolute',
+        margin: 16,
+        right: 140,
         bottom: 0
     }
 })
