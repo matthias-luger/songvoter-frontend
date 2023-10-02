@@ -4,10 +4,11 @@ import { usePathname, useRouter } from 'expo-router'
 import { ActivityIndicator, Button, Divider, Modal, Portal, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
-import { getPartyController, getUserInfo } from '../utils/ApiUtils'
+import { getListController, getPartyController, getUserInfo } from '../utils/ApiUtils'
 import {
     getCurrentlyPlayingSongDataFromSpotify,
     getSpotifyPlaybackState,
+    getSpotifyTracksForPlaylist,
     pauseSpotifySongPlayback,
     playSpotifySong,
     resumeSpotifySongPlayback,
@@ -143,11 +144,14 @@ export default function App() {
             return
         }
         try {
+            console.log('start next song')
             let partyController = await getPartyController()
             if (currentSongRef.current) {
+                console.log('current song: ' + currentSongRef.current.title)
                 await partyController.apiPartySongSongIdPlayedPost(currentSongRef.current.id)
             }
             let song = (await partyController.apiPartyNextSongGet()).data
+            console.log(song.title)
             setCurrentSong(song)
             if (song.occurences[0].platform === 'spotify') {
                 if (!storage.contains(SPOTIFY_TOKEN)) {
@@ -238,9 +242,9 @@ export default function App() {
         }
     }
 
-    async function addSongToParty(song: CoflnetSongVoterModelsSong) {
+    async function addSongToParty(songId: string) {
         let controller = await getPartyController()
-        await controller.apiPartyUpvoteSongIdPost(song.id)
+        await controller.apiPartyUpvoteSongIdPost(songId)
         setPlaylist([])
         setShowLoadingIndicator(true)
         await loadSongs()
@@ -348,7 +352,14 @@ export default function App() {
                                 <Button
                                     textColor="white"
                                     onPress={() => {
-                                        setModalElementToShow(<AddSong onAfterSongAdded={addSongToParty} platforms={party.platforms} />)
+                                        setModalElementToShow(
+                                            <AddSong
+                                                onAfterSongAdded={song => {
+                                                    addSongToParty(song.id)
+                                                }}
+                                                platforms={party.platforms}
+                                            />
+                                        )
                                     }}
                                     style={styles.addSongButton}
                                 >
@@ -357,14 +368,26 @@ export default function App() {
                                 <Button
                                     textColor="white"
                                     onPress={() => {
-                                        setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={() => Promise.resolve()} />)
+                                        setModalElementToShow(
+                                            <AddSpotifyPlaylist
+                                                onAfterPlaylistAdded={async playlist => {
+                                                    let tracks = await getSpotifyTracksForPlaylist(playlist.id)
+                                                    let partyController = await getPartyController()
+                                                    await Promise.all(tracks.map(trackEntry => partyController.apiPartyUpvoteSongIdPost(trackEntry.track.id)))
+                                                    setPlaylist([])
+                                                    setShowLoadingIndicator(true)
+                                                    await loadSongs()
+                                                    setShowLoadingIndicator(false)
+                                                }}
+                                            />
+                                        )
                                     }}
                                     style={styles.addPlaylistButton}
                                 >
                                     Add Playlist
                                 </Button>
                                 <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
-                                    Show invite Code
+                                    Invite Code
                                 </Button>
                             </View>
                             <Button textColor="white" onPress={leaveParty} style={styles.leaveButton}>

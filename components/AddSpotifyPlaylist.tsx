@@ -3,10 +3,12 @@ import { showErrorToast } from '../utils/ToastUtils'
 import React, { useEffect, useRef, useState } from 'react'
 import { ScrollView, View, StyleSheet, Image } from 'react-native'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
-import { SpotifyPlaylist, getSpotifyPlaylists } from '../utils/SpotifyUtils'
+import { SpotifyPlaylist, getSpotifyPlaylists, getSpotifyTracksForPlaylist } from '../utils/SpotifyUtils'
 import HeaderText from './HeaderText'
+import { getListController } from '../utils/ApiUtils'
 
 interface Props {
+    playlistId?: string
     onAfterPlaylistAdded(playlist: SpotifyPlaylist): Promise<void>
 }
 
@@ -40,6 +42,18 @@ export default function AddSpotifyPlaylist(props: Props) {
         }
         setPlaylists(newPlaylists)
         try {
+            if (props.playlistId) {
+                console.log(props.playlistId)
+                let tracks = await getSpotifyTracksForPlaylist(playlist.id)
+                console.log(tracks)
+                let listController = await getListController()
+                tracks.forEach(trackEntry => {
+                    listController.apiListsListIdSongsPost(props.playlistId, {
+                        id: trackEntry.track.id
+                    })
+                })
+            }
+
             if (props.onAfterPlaylistAdded) {
                 await props.onAfterPlaylistAdded(playlist)
             }

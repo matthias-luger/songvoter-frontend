@@ -241,6 +241,35 @@ export function subscribeToCurrentlyPlayingSongEnd(onSongEnd: Function, songDura
     }
 }
 
+export async function getSpotifyTracksForPlaylist(playlistId: string): Promise<SpotifyTrack[]> {
+    try {
+        let token = await getUserInfo()
+        let response = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks?limit=50`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${token.spotifyToken}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        if (!response.ok) {
+            Toast.show({
+                type: 'error',
+                text1: `Couldn't fetch tracks for playlist`,
+                text2: `(Status ${response.status})`
+            })
+            return
+        }
+        if (response.status === 204) {
+            return []
+        }
+
+        let data = await response.json()
+        return data.items as SpotifyTrack[]
+    } catch (e) {
+        showErrorToast(e)
+    }
+}
+
 export async function getSpotifyPlaylists(): Promise<SpotifyPlaylist[]> {
     try {
         let token = await getUserInfo()
@@ -281,4 +310,19 @@ export interface SpotifyPlaylist {
     }
     uri: string
     description: string
+}
+
+export interface SpotifyTrack {
+    added_at: string
+    added_by: {
+        id: string
+        uri: string
+    }
+    followers: {
+        total: number
+    }
+    track: {
+        id: string
+        name: string
+    }
 }

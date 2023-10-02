@@ -12,6 +12,7 @@ import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
 import { IS_CURRENTLY_PARTY_OWNER, PLATFORMS_USED_IN_SEARCH, YOUR_SONGS, storage } from '../utils/StorageUtils'
 import AddSpotifyPlaylist from '../components/AddSpotifyPlaylist'
+import { SpotifyPlaylist } from '../utils/SpotifyUtils'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>(storage.contains(YOUR_SONGS) ? JSON.parse(storage.getString(YOUR_SONGS)) : [])
@@ -45,6 +46,10 @@ export default function YourSongs() {
         } finally {
             setIsLoading(false)
         }
+    }
+
+    async function onAfterPlaylistAdded() {
+        loadPlaylists()
     }
 
     async function onAfterSongAdded(song: CoflnetSongVoterModelsSong) {
@@ -83,7 +88,7 @@ export default function YourSongs() {
                 label={'Add Playlist'}
                 style={styles.addPlaylist}
                 onPress={() => {
-                    setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={() => Promise.resolve()} />)
+                    setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={onAfterPlaylistAdded} playlistId={playlists[0]?.id} />)
                 }}
             />
             <FAB

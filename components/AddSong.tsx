@@ -32,16 +32,6 @@ export default function AddSong(props: Props) {
     let searchTextRef = useRef(searchText)
     searchTextRef.current = searchText
 
-    useEffect(() => {
-        console.log('test')
-        init()
-    }, [])
-
-    async function init() {
-        let playlists = await getSpotifyPlaylists()
-        console.log(JSON.stringify(playlists))
-    }
-
     let resultsRef = useRef(results)
     resultsRef.current = results
 

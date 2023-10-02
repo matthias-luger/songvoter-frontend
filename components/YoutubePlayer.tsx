@@ -9,7 +9,7 @@ interface Props {
 }
 
 export default function YoutubePlayer(props: Props) {
-    let [appIsActive, setAppIsActive] = useState(false)
+    let [appIsActive, setAppIsActive] = useState(AppState.currentState === 'active')
 
     useEffect(() => {
         const subscription = AppState.addEventListener('change', nextAppState => {
