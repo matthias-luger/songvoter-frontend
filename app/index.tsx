@@ -1,7 +1,7 @@
 import MainLayout from '../layouts/MainLayout'
 import { Link, Redirect, useRouter } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { CURRRENT_PARTY, GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
+import { CURRENT_PARTY, GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
 import { View, StyleSheet, Linking } from 'react-native'
 import { globalStyles } from '../styles/globalStyles'
@@ -15,14 +15,18 @@ export default function App() {
     let theme = useTheme()
 
     useEffect(() => {
-        checkIfUserIsInParty()
+        checkDeeplinkIfUserIsInParty()
     }, [])
 
     if (!storage.contains(GOOGLE_AUTH_OBJECT)) {
         return <Redirect href="/google-signin" />
     }
 
-    async function checkIfUserIsInParty() {
+    if (storage.contains(CURRENT_PARTY)) {
+        router.push('/party-overview')
+    }
+
+    async function checkDeeplinkIfUserIsInParty() {
         let initialURL = await Linking.getInitialURL()
         if (initialURL) {
             Toast.show({
@@ -36,10 +40,6 @@ export default function App() {
             } catch (e) {
                 showErrorToast(e)
             }
-        }
-
-        if (storage.contains(CURRRENT_PARTY)) {
-            router.push('/party-overview')
         }
     }
 
