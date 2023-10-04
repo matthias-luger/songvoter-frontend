@@ -1,6 +1,6 @@
 import MainLayout from '../layouts/MainLayout'
 import { useEffect, useState } from 'react'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { ActivityIndicator, FAB, IconButton, List, Modal, Portal, Text } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import AddSong from '../components/AddSong'
@@ -12,7 +12,6 @@ import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
 import { IS_CURRENTLY_PARTY_OWNER, PLATFORMS_USED_IN_SEARCH, YOUR_SONGS, storage } from '../utils/StorageUtils'
 import AddSpotifyPlaylist from '../components/AddSpotifyPlaylist'
-import { SpotifyPlaylist } from '../utils/SpotifyUtils'
 
 export default function YourSongs() {
     let [playlists, setPlaylists] = useState<CoflnetSongVoterModelsPlayList[]>(storage.contains(YOUR_SONGS) ? JSON.parse(storage.getString(YOUR_SONGS)) : [])
@@ -39,7 +38,7 @@ export default function YourSongs() {
                 })
                 playlists = (await listController.apiListsGet()).data
             }
-            storage.set(YOUR_SONGS, JSON.stringify(playlists))
+            storage.setWithTTL(YOUR_SONGS, JSON.stringify(playlists), 1000 * 60)
             setPlaylists(playlists)
         } catch (e) {
             showErrorToast(e)
@@ -55,7 +54,7 @@ export default function YourSongs() {
     async function onAfterSongAdded(song: CoflnetSongVoterModelsSong) {
         let newPlaylists = [...playlists]
         newPlaylists[0].songs.push(song)
-        storage.set(YOUR_SONGS, JSON.stringify(playlists))
+        storage.setWithTTL(YOUR_SONGS, JSON.stringify(playlists), 1000 * 60)
         setPlaylists(newPlaylists)
     }
 
@@ -83,29 +82,29 @@ export default function YourSongs() {
                 getListElementClickElement={song => <IconButton icon="delete" iconColor={'red'} size={20} onPress={() => removeSong(song)} />}
                 showPlaySongButton={!isCurrentlyPartyOwner}
             />
-            <FAB
-                icon="plus"
-                label={'Add Playlist'}
-                style={styles.addPlaylist}
-                onPress={() => {
-                    setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={onAfterPlaylistAdded} playlistId={playlists[0]?.id} />)
-                }}
-            />
-            <FAB
-                icon="plus"
-                label={playlists && playlists.length > 0 && playlists[0].songs && playlists[0].songs?.length > 0 ? 'Add song' : 'Add first song'}
-                style={styles.addSong}
-                onPress={() => {
-                    setModalElementToShow(
-                        <AddSong
-                            playlistId={playlists[0]?.id}
-                            onAfterSongAdded={onAfterSongAdded}
-                            platforms={storage.contains(PLATFORMS_USED_IN_SEARCH) ? JSON.parse(storage.getString(PLATFORMS_USED_IN_SEARCH)) : null}
-                            showSelectPlatformButton
-                        />
-                    )
-                }}
-            />
+            <View style={styles.buttonContainer}>
+                <FAB
+                    icon="plus"
+                    label={playlists && playlists.length > 0 && playlists[0].songs && playlists[0].songs?.length > 0 ? 'Add song' : 'Add first song'}
+                    onPress={() => {
+                        setModalElementToShow(
+                            <AddSong
+                                playlistId={playlists[0]?.id}
+                                onAfterSongAdded={onAfterSongAdded}
+                                platforms={storage.contains(PLATFORMS_USED_IN_SEARCH) ? JSON.parse(storage.getString(PLATFORMS_USED_IN_SEARCH)) : null}
+                                showSelectPlatformButton
+                            />
+                        )
+                    }}
+                />
+                <FAB
+                    icon="plus"
+                    label={'Add Playlist'}
+                    onPress={() => {
+                        setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={onAfterPlaylistAdded} playlistId={playlists[0]?.id} />)
+                    }}
+                />
+            </View>
             {!isLoading ? (
                 <Portal>
                     <Modal
@@ -135,5 +134,13 @@ const styles = StyleSheet.create({
         margin: 16,
         right: 140,
         bottom: 0
+    },
+    buttonContainer: {
+        flex: 1,
+        flexDirection: 'row',
+        gap: 5,
+        position: 'absolute',
+        bottom: 10,
+        left: 10
     }
 })

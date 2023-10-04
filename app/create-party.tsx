@@ -6,7 +6,7 @@ import HeaderText from '../components/HeaderText'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import SpotifyLogin from '../components/SpotifyLogin'
 import { getPartyController } from '../utils/ApiUtils'
-import { CURRRENT_PARTY, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { CURRENT_PARTY, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { showErrorToast } from '../utils/ToastUtils'
 import { router } from 'expo-router'
 import { CoflnetSongVoterModelsSongPlatform } from '../generated'
@@ -43,13 +43,13 @@ export default function App() {
             }
             let newParty = (await partyController.apiPartyPost(partyTitle, platforms)).data
 
-            storage.set(CURRRENT_PARTY, JSON.stringify(newParty))
+            storage.set(CURRENT_PARTY, JSON.stringify(newParty))
             setIsCreatingParty(false)
             router.push('/invite-party')
         } catch (e) {
             if (e?.response?.data === 'You are already in a party, leave it first') {
                 let party = (await partyController.apiPartyGet()).data
-                storage.set(CURRRENT_PARTY, JSON.stringify(party))
+                storage.set(CURRENT_PARTY, JSON.stringify(party))
                 router.push('/party-overview')
             }
             setIsCreatingParty(false)
