@@ -4,7 +4,7 @@ import { ResponseType, makeRedirectUri, useAuthRequest } from 'expo-auth-session
 import { usePathname } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
-import { Button, useTheme } from 'react-native-paper'
+import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { showErrorToast } from '../utils/ToastUtils'
@@ -24,6 +24,7 @@ interface Props {
 
 export default function SpotifyLogin(props: Props) {
     let [spotifyToken, setSpotifyToken] = useState<string>(storage.getString(SPOTIFY_TOKEN))
+    let [isLoggingIn, setIsLoggingIn] = useState(false)
     let pathname = usePathname()
     let theme = useTheme()
     const [request, response, promptAsync] = useAuthRequest(
@@ -52,6 +53,9 @@ export default function SpotifyLogin(props: Props) {
     useEffect(() => {
         if (response?.type === 'success') {
             serversideAuthentication(response.params.code)
+        } else if (response?.type === 'error') {
+            setIsLoggingIn(false)
+            showErrorToast(response.error)
         }
     }, [response])
 
@@ -76,17 +80,20 @@ export default function SpotifyLogin(props: Props) {
                 type: 'success',
                 text1: 'Successfully connected Spotify!'
             })
+            setIsLoggingIn(false)
         } catch (e) {
+            setIsLoggingIn(false)
             showErrorToast(e)
         }
     }
 
     return !spotifyToken ? (
         <Button
-            style={globalStyles.primaryElement}
-            textColor={theme.colors.onPrimary}
-            disabled={!request}
+            mode="contained"
+            disabled={!request || isLoggingIn}
+            loading={isLoggingIn}
             onPress={() => {
+                setIsLoggingIn(true)
                 promptAsync()
             }}
         >
@@ -94,8 +101,7 @@ export default function SpotifyLogin(props: Props) {
         </Button>
     ) : (
         <Button
-            style={globalStyles.primaryElement}
-            textColor={theme.colors.onPrimary}
+            mode="contained"
             disabled={!request}
             onPress={async () => {
                 setSpotifyToken(null)

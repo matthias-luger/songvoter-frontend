@@ -49,21 +49,21 @@ export default function App() {
                 <View style={globalStyles.fullCenterContainer}>
                     <HeaderText text="SongVoter" />
                     <Button
+                        mode="contained"
                         onPress={() => {
                             router.push('/create-party')
                         }}
-                        style={{ ...globalStyles.primaryElement, ...styles.button }}
-                        textColor={theme.colors.onPrimary}
+                        style={styles.button}
                     >
                         Create Party
                     </Button>
 
                     <Button
+                        mode="contained"
                         onPress={() => {
                             router.push('/join-party')
                         }}
-                        style={{ ...globalStyles.primaryElement, ...styles.button }}
-                        textColor={theme.colors.onPrimary}
+                        style={styles.button}
                     >
                         Join Party
                     </Button>

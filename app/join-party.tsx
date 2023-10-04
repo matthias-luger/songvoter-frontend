@@ -55,8 +55,8 @@ export default function App() {
                 <Text>Or join by entering the Party ID</Text>
                 <TextInput label="Party ID" style={styles.textInput} value={joinPartyUrl} onChangeText={text => setJoinPartyUrl(text)} />
                 <Button
-                    style={{ ...globalStyles.primaryElement, ...styles.joinButton }}
-                    textColor={theme.colors.onPrimary}
+                    mode="contained"
+                    style={styles.joinButton}
                     onPress={() => {
                         onJoinParty(joinPartyUrl)
                     }}
