@@ -73,6 +73,7 @@ export default function GoogleLogin(props: Props) {
             {!authObject ? (
                 <Button
                     mode="contained"
+                    loading={isLoggingIn}
                     disabled={!request || isLoggingIn}
                     onPress={() => {
                         setIsLoggingIn(true)
