@@ -10,7 +10,7 @@ export default function Error() {
         <>
             <MainLayout>
                 <ScrollView>
-                    {error && error.response && error.response.data ? <Text>Data: {error.response.data}</Text> : null}
+                    {error && error.response && error.response.data ? <Text>Data: {JSON.stringify(error.response.data)}</Text> : null}
                     <Divider style={{ marginTop: 10, marginBottom: 10 }} />
                     <Text>{JSON.stringify(error)}</Text>
                 </ScrollView>

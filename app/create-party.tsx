@@ -1,12 +1,12 @@
 import { Button, Divider, HelperText, Switch, Text, TextInput, useTheme } from 'react-native-paper'
 import MainLayout from '../layouts/MainLayout'
 import { StyleSheet, View } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import HeaderText from '../components/HeaderText'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import SpotifyLogin from '../components/SpotifyLogin'
 import { getPartyController } from '../utils/ApiUtils'
-import { CURRRENT_PARTY, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { CURRENT_PARTY, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { showErrorToast } from '../utils/ToastUtils'
 import { router } from 'expo-router'
 import { CoflnetSongVoterModelsSongPlatform } from '../generated'
@@ -17,6 +17,7 @@ export default function App() {
     let [useYoutube, setUseYoutube] = useState(false)
     let [useSpotify, setUseSpotify] = useState(false)
     let [hasSpotifyConnected, setHasSpotifyConnected] = useState(storage.contains(SPOTIFY_TOKEN))
+    let [isCreatingParty, setIsCreatingParty] = useState(false)
 
     async function onPartyCreate() {
         if (!useYoutube && !useSpotify) {
@@ -30,6 +31,7 @@ export default function App() {
             setPartyTitle('')
             return
         }
+        setIsCreatingParty(true)
         let partyController = await getPartyController()
         try {
             let platforms: CoflnetSongVoterModelsSongPlatform[] = []
@@ -41,15 +43,16 @@ export default function App() {
             }
             let newParty = (await partyController.apiPartyPost(partyTitle, platforms)).data
 
-            storage.set(CURRRENT_PARTY, JSON.stringify(newParty))
+            storage.set(CURRENT_PARTY, JSON.stringify(newParty))
+            setIsCreatingParty(false)
             router.push('/invite-party')
         } catch (e) {
             if (e?.response?.data === 'You are already in a party, leave it first') {
                 let party = (await partyController.apiPartyGet()).data
-                storage.set(CURRRENT_PARTY, JSON.stringify(party))
+                storage.set(CURRENT_PARTY, JSON.stringify(party))
                 router.push('/party-overview')
             }
-
+            setIsCreatingParty(false)
             showErrorToast(e)
         }
         return
@@ -91,7 +94,9 @@ export default function App() {
                         <Switch value={useYoutube} onValueChange={setUseYoutube} />
                     </View>
                     <Divider />
-                    <Button onPress={onPartyCreate}>Create Party</Button>
+                    <Button mode="contained" onPress={onPartyCreate} loading={isCreatingParty} disabled={isCreatingParty}>
+                        Create Party
+                    </Button>
                 </View>
             </MainLayout>
         </>

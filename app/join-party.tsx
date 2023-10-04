@@ -9,7 +9,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { getPartyController } from '../utils/ApiUtils'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import { useRouter } from 'expo-router'
-import { CURRRENT_PARTY, storage } from '../utils/StorageUtils'
+import { CURRENT_PARTY, storage } from '../utils/StorageUtils'
 
 export default function App() {
     const router = useRouter()
@@ -29,7 +29,7 @@ export default function App() {
             let partyController = await getPartyController()
             await partyController.apiPartyInviteIdJoinPost(id)
             let party = (await partyController.apiPartyGet()).data
-            storage.set(CURRRENT_PARTY, JSON.stringify(party))
+            storage.set(CURRENT_PARTY, JSON.stringify(party))
             router.push('/party-overview')
         } catch (e) {
             if (e.response?.status === 404) {
@@ -55,8 +55,8 @@ export default function App() {
                 <Text>Or join by entering the Party ID</Text>
                 <TextInput label="Party ID" style={styles.textInput} value={joinPartyUrl} onChangeText={text => setJoinPartyUrl(text)} />
                 <Button
-                    style={{ ...globalStyles.primaryElement, ...styles.joinButton }}
-                    textColor={theme.colors.onPrimary}
+                    mode="contained"
+                    style={styles.joinButton}
                     onPress={() => {
                         onJoinParty(joinPartyUrl)
                     }}

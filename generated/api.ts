@@ -563,6 +563,40 @@ export const AuthApiControllerImplApiAxiosParamCreator = function (configuration
         },
         /**
          * 
+         * @summary Authcode oauth2 flow for google
+         * @param {CoflnetSongVoterControllersAuthApiControllerImplAuthCode} [coflnetSongVoterControllersAuthApiControllerImplAuthCode] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthGoogleCodePost: async (coflnetSongVoterControllersAuthApiControllerImplAuthCode?: CoflnetSongVoterControllersAuthApiControllerImplAuthCode, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/auth/google/code`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(coflnetSongVoterControllersAuthApiControllerImplAuthCode, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Stores google auth token server side
          * @param {CoflnetSongVoterModelsAuthRefreshToken} [coflnetSongVoterModelsAuthRefreshToken] The google refresh token
          * @param {*} [options] Override http request option.
@@ -750,6 +784,17 @@ export const AuthApiControllerImplApiFp = function(configuration?: Configuration
         },
         /**
          * 
+         * @summary Authcode oauth2 flow for google
+         * @param {CoflnetSongVoterControllersAuthApiControllerImplAuthCode} [coflnetSongVoterControllersAuthApiControllerImplAuthCode] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiAuthGoogleCodePost(coflnetSongVoterControllersAuthApiControllerImplAuthCode?: CoflnetSongVoterControllersAuthApiControllerImplAuthCode, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CoflnetSongVoterModelsAuthToken>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiAuthGoogleCodePost(coflnetSongVoterControllersAuthApiControllerImplAuthCode, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Stores google auth token server side
          * @param {CoflnetSongVoterModelsAuthRefreshToken} [coflnetSongVoterModelsAuthRefreshToken] The google refresh token
          * @param {*} [options] Override http request option.
@@ -821,6 +866,16 @@ export const AuthApiControllerImplApiFactory = function (configuration?: Configu
         },
         /**
          * 
+         * @summary Authcode oauth2 flow for google
+         * @param {CoflnetSongVoterControllersAuthApiControllerImplAuthCode} [coflnetSongVoterControllersAuthApiControllerImplAuthCode] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiAuthGoogleCodePost(coflnetSongVoterControllersAuthApiControllerImplAuthCode?: CoflnetSongVoterControllersAuthApiControllerImplAuthCode, options?: any): AxiosPromise<CoflnetSongVoterModelsAuthToken> {
+            return localVarFp.apiAuthGoogleCodePost(coflnetSongVoterControllersAuthApiControllerImplAuthCode, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Stores google auth token server side
          * @param {CoflnetSongVoterModelsAuthRefreshToken} [coflnetSongVoterModelsAuthRefreshToken] The google refresh token
          * @param {*} [options] Override http request option.
@@ -885,6 +940,18 @@ export class AuthApiControllerImplApi extends BaseAPI {
      */
     public apiAuthAnonymousPost(nonce?: string, options?: AxiosRequestConfig) {
         return AuthApiControllerImplApiFp(this.configuration).apiAuthAnonymousPost(nonce, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Authcode oauth2 flow for google
+     * @param {CoflnetSongVoterControllersAuthApiControllerImplAuthCode} [coflnetSongVoterControllersAuthApiControllerImplAuthCode] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AuthApiControllerImplApi
+     */
+    public apiAuthGoogleCodePost(coflnetSongVoterControllersAuthApiControllerImplAuthCode?: CoflnetSongVoterControllersAuthApiControllerImplAuthCode, options?: AxiosRequestConfig) {
+        return AuthApiControllerImplApiFp(this.configuration).apiAuthGoogleCodePost(coflnetSongVoterControllersAuthApiControllerImplAuthCode, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -1093,6 +1160,44 @@ export const ListApiControllerImplApiAxiosParamCreator = function (configuration
         },
         /**
          * 
+         * @summary Batch import playlist from spotify
+         * @param {string} listId 
+         * @param {Array<string>} [requestBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiListsListIdSongsSpotifyPost: async (listId: string, requestBody?: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'listId' is not null or undefined
+            assertParamExists('apiListsListIdSongsSpotifyPost', 'listId', listId)
+            const localVarPath = `/api/lists/{listId}/songs/spotify`
+                .replace(`{${"listId"}}`, encodeURIComponent(String(listId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json-patch+json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Create a new playlist
          * @param {CoflnetSongVoterModelsPlayListCreate} [coflnetSongVoterModelsPlayListCreate] An array of songIds to be added to the song
          * @param {*} [options] Override http request option.
@@ -1182,6 +1287,18 @@ export const ListApiControllerImplApiFp = function(configuration?: Configuration
         },
         /**
          * 
+         * @summary Batch import playlist from spotify
+         * @param {string} listId 
+         * @param {Array<string>} [requestBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiListsListIdSongsSpotifyPost(listId: string, requestBody?: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CoflnetSongVoterModelsPlayList>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiListsListIdSongsSpotifyPost(listId, requestBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Create a new playlist
          * @param {CoflnetSongVoterModelsPlayListCreate} [coflnetSongVoterModelsPlayListCreate] An array of songIds to be added to the song
          * @param {*} [options] Override http request option.
@@ -1241,6 +1358,17 @@ export const ListApiControllerImplApiFactory = function (configuration?: Configu
          */
         apiListsListIdSongsSongIdDelete(listId: string, songId: string, options?: any): AxiosPromise<CoflnetSongVoterModelsPlayList> {
             return localVarFp.apiListsListIdSongsSongIdDelete(listId, songId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Batch import playlist from spotify
+         * @param {string} listId 
+         * @param {Array<string>} [requestBody] 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiListsListIdSongsSpotifyPost(listId: string, requestBody?: Array<string>, options?: any): AxiosPromise<CoflnetSongVoterModelsPlayList> {
+            return localVarFp.apiListsListIdSongsSpotifyPost(listId, requestBody, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -1313,6 +1441,19 @@ export class ListApiControllerImplApi extends BaseAPI {
 
     /**
      * 
+     * @summary Batch import playlist from spotify
+     * @param {string} listId 
+     * @param {Array<string>} [requestBody] 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ListApiControllerImplApi
+     */
+    public apiListsListIdSongsSpotifyPost(listId: string, requestBody?: Array<string>, options?: AxiosRequestConfig) {
+        return ListApiControllerImplApiFp(this.configuration).apiListsListIdSongsSpotifyPost(listId, requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Create a new playlist
      * @param {CoflnetSongVoterModelsPlayListCreate} [coflnetSongVoterModelsPlayListCreate] An array of songIds to be added to the song
      * @param {*} [options] Override http request option.
@@ -1331,6 +1472,41 @@ export class ListApiControllerImplApi extends BaseAPI {
  */
 export const PartyApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @param {Array<string>} requestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiPartyAddPost: async (requestBody: Array<string>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'requestBody' is not null or undefined
+            assertParamExists('apiPartyAddPost', 'requestBody', requestBody)
+            const localVarPath = `/api/party/add`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json-patch+json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(requestBody, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary votes a song down so it is play later/not at all
@@ -1808,6 +1984,16 @@ export const PartyApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @param {Array<string>} requestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiPartyAddPost(requestBody: Array<string>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiPartyAddPost(requestBody, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary votes a song down so it is play later/not at all
          * @param {string} songId ID of the song
          * @param {*} [options] Override http request option.
@@ -1968,6 +2154,15 @@ export const PartyApiFactory = function (configuration?: Configuration, basePath
     return {
         /**
          * 
+         * @param {Array<string>} requestBody 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiPartyAddPost(requestBody: Array<string>, options?: any): AxiosPromise<void> {
+            return localVarFp.apiPartyAddPost(requestBody, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary votes a song down so it is play later/not at all
          * @param {string} songId ID of the song
          * @param {*} [options] Override http request option.
@@ -2112,6 +2307,17 @@ export const PartyApiFactory = function (configuration?: Configuration, basePath
  * @extends {BaseAPI}
  */
 export class PartyApi extends BaseAPI {
+    /**
+     * 
+     * @param {Array<string>} requestBody 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PartyApi
+     */
+    public apiPartyAddPost(requestBody: Array<string>, options?: AxiosRequestConfig) {
+        return PartyApiFp(this.configuration).apiPartyAddPost(requestBody, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary votes a song down so it is play later/not at all
@@ -2536,6 +2742,36 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
     return {
         /**
          * 
+         * @summary Deletes the current user, this action is final and cannot be undone
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiUserDelete: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/user`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2671,6 +2907,16 @@ export const UserApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Deletes the current user, this action is final and cannot be undone
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async apiUserDelete(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.apiUserDelete(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2721,6 +2967,15 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
     return {
         /**
          * 
+         * @summary Deletes the current user, this action is final and cannot be undone
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        apiUserDelete(options?: any): AxiosPromise<void> {
+            return localVarFp.apiUserDelete(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
@@ -2765,6 +3020,17 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
  * @extends {BaseAPI}
  */
 export class UserApi extends BaseAPI {
+    /**
+     * 
+     * @summary Deletes the current user, this action is final and cannot be undone
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof UserApi
+     */
+    public apiUserDelete(options?: AxiosRequestConfig) {
+        return UserApiFp(this.configuration).apiUserDelete(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {*} [options] Override http request option.

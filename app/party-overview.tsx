@@ -4,10 +4,11 @@ import { usePathname, useRouter } from 'expo-router'
 import { ActivityIndicator, Button, Divider, Modal, Portal, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
-import { getPartyController, getUserInfo } from '../utils/ApiUtils'
+import { getListController, getPartyController, getUserInfo } from '../utils/ApiUtils'
 import {
     getCurrentlyPlayingSongDataFromSpotify,
     getSpotifyPlaybackState,
+    getSpotifyTracksForPlaylist,
     pauseSpotifySongPlayback,
     playSpotifySong,
     resumeSpotifySongPlayback,
@@ -20,10 +21,11 @@ import { AppState, ScrollView, View, StyleSheet } from 'react-native'
 import BackgroundService from 'react-native-background-actions'
 import { makeRedirectUri } from 'expo-auth-session'
 import SongList from '../components/SongList'
-import { CURRRENT_PARTY, IS_CURRENTLY_PARTY_OWNER, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
+import { CURRENT_PARTY, IS_CURRENTLY_PARTY_OWNER, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import AddSong from '../components/AddSong'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
+import AddSpotifyPlaylist from '../components/AddSpotifyPlaylist'
 
 export default function App() {
     const router = useRouter()
@@ -35,7 +37,7 @@ export default function App() {
     let [playlist, setPlaylist] = useState<CoflnetSongVoterModelsPartyPlaylistEntry[]>()
     let [currentSong, setCurrentSong] = useState<CoflnetSongVoterModelsSong>()
     let [isYoutubePlayerPlaying, setIsYoutubePlayerPlaying] = useState(true)
-    let [showAddSongModal, setShowAddSongModal] = useState(false)
+    let [modalElementToShow, setModalElementToShow] = useState(null)
     let currentSongRef = useRef(currentSong)
     currentSongRef.current = currentSong
     let playlistRef = useRef(playlist)
@@ -49,10 +51,10 @@ export default function App() {
             }
         })
         async function init() {
-            if (!storage.contains(CURRRENT_PARTY)) {
+            if (!storage.contains(CURRENT_PARTY)) {
                 router.push('/')
             } else {
-                setParty(JSON.parse(storage.getString(CURRRENT_PARTY)))
+                setParty(JSON.parse(storage.getString(CURRENT_PARTY)))
                 await Promise.all([loadSongs(), loadUserInfo()])
             }
             setInitialLoading(false)
@@ -88,6 +90,11 @@ export default function App() {
             setPlaylist(s)
             return s
         } catch (e) {
+            if (e.response.data === 'You are not in a party') {
+                storage.delete(CURRENT_PARTY)
+                router.push('/')
+                return
+            }
             showErrorToast(e)
         }
     }
@@ -95,6 +102,14 @@ export default function App() {
     async function findCurrentlyPlayingSongOrStartNext() {
         let partyController = await getPartyController()
         let currentPartySong = (await partyController.apiPartyNextSongGet()).data
+
+        if (!currentPartySong) {
+            Toast.show({
+                type: 'error',
+                text1: 'No next song found!'
+            })
+            return
+        }
 
         if (currentPartySong.occurences[0].platform === 'spotify') {
             let id = currentPartySong.id
@@ -204,7 +219,7 @@ export default function App() {
                 BackgroundService.stop()
             }
             storage.set(IS_CURRENTLY_PARTY_OWNER, false)
-            storage.delete(CURRRENT_PARTY)
+            storage.delete(CURRENT_PARTY)
             if (storage.contains(SPOTIFY_TOKEN) && currentSong?.occurences[0].platform === 'spotify') {
                 pauseSpotifySongPlayback()
             }
@@ -232,9 +247,9 @@ export default function App() {
         }
     }
 
-    async function addSongToParty(song: CoflnetSongVoterModelsSong) {
+    async function addSongToParty(songId: string) {
         let controller = await getPartyController()
-        await controller.apiPartyUpvoteSongIdPost(song.id)
+        await controller.apiPartyUpvoteSongIdPost(songId)
         setPlaylist([])
         setShowLoadingIndicator(true)
         await loadSongs()
@@ -298,11 +313,11 @@ export default function App() {
                 {currentSong && currentSong.occurences[0].platform === 'youtube' && userInfo?.userId === party?.ownerId ? (
                     <YoutubePlayer videoId={currentSong.occurences[0].externalId} playing={isYoutubePlayerPlaying} onVideoHasEnded={startNextSong} />
                 ) : null}
-                <ScrollView>
-                    {initialLoading || showLoadingIndicator ? (
-                        <ActivityIndicator size="large" />
-                    ) : (
-                        <>
+                {initialLoading || showLoadingIndicator ? (
+                    <ActivityIndicator size="large" />
+                ) : (
+                    <>
+                        <ScrollView>
                             <SongList
                                 songs={playlist ? playlist.map(p => p.song) : []}
                                 playingSong={currentSong}
@@ -337,37 +352,77 @@ export default function App() {
                                     )
                                 }}
                             />
-                            <Divider />
-                            <View style={styles.buttonContainer}>
-                                <Button
-                                    textColor="white"
-                                    onPress={() => {
-                                        setShowAddSongModal(true)
-                                    }}
-                                    style={styles.addSongButton}
-                                >
-                                    Add Song
-                                </Button>
-                                <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
-                                    Show invite Code
-                                </Button>
-                            </View>
-                            <Button textColor="white" onPress={leaveParty} style={styles.leaveButton}>
-                                Leave Party
+                        </ScrollView>
+                        <View style={styles.buttonContainer}>
+                            <Button
+                                textColor="white"
+                                onPress={() => {
+                                    setModalElementToShow(
+                                        <AddSong
+                                            onAfterSongAdded={song => {
+                                                addSongToParty(song.id)
+                                            }}
+                                            platforms={party.platforms}
+                                        />
+                                    )
+                                }}
+                                style={styles.addSongButton}
+                            >
+                                Add Song
                             </Button>
-                        </>
-                    )}
-                </ScrollView>
-                {showAddSongModal ? (
+                            <Button
+                                textColor="white"
+                                onPress={() => {
+                                    setModalElementToShow(
+                                        <AddSpotifyPlaylist
+                                            onAfterPlaylistAdded={async playlist => {
+                                                try {
+                                                    let tracks = await getSpotifyTracksForPlaylist(playlist.id)
+                                                    let listController = await getListController()
+                                                    let userLists = (await listController.apiListsGet()).data
+                                                    let { data: newList } = await listController.apiListsListIdSongsSpotifyPost(
+                                                        userLists[0].id,
+                                                        tracks.map(trackEntry => trackEntry.track.id)
+                                                    )
+                                                    let partyController = await getPartyController()
+                                                    partyController.apiPartyAddPost(newList.songs.map(song => song.id))
+
+                                                    setModalElementToShow(null)
+
+                                                    setPlaylist([])
+                                                    setShowLoadingIndicator(true)
+                                                    await loadSongs()
+                                                    setShowLoadingIndicator(false)
+                                                } catch (e) {
+                                                    showErrorToast(e)
+                                                }
+                                            }}
+                                        />
+                                    )
+                                }}
+                                style={styles.addPlaylistButton}
+                            >
+                                Add Playlist
+                            </Button>
+                            <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
+                                Invite Code
+                            </Button>
+                        </View>
+                        <Button textColor="white" onPress={leaveParty} style={styles.leaveButton}>
+                            Leave Party
+                        </Button>
+                    </>
+                )}
+                {!!modalElementToShow ? (
                     <Portal>
                         <Modal
-                            visible={showAddSongModal}
+                            visible={!!modalElementToShow}
                             onDismiss={() => {
-                                setShowAddSongModal(false)
+                                setModalElementToShow(null)
                             }}
                             contentContainerStyle={{ ...globalStyles.fullModalContainer }}
                         >
-                            <AddSong onAfterSongAdded={addSongToParty} platforms={party.platforms} />
+                            {modalElementToShow}
                         </Modal>
                     </Portal>
                 ) : null}
@@ -383,14 +438,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'red'
     },
     addSongButton: {
-        width: '45%',
+        width: '30%',
+        backgroundColor: 'blue'
+    },
+    addPlaylistButton: {
+        width: '30%',
         backgroundColor: 'blue'
     },
     inviteButton: {
-        width: '45%',
+        width: '30%',
         backgroundColor: 'blue'
     },
     buttonContainer: {
+        minHeight: 40,
         flex: 1,
         justifyContent: 'space-evenly',
         flexDirection: 'row',

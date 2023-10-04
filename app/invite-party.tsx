@@ -9,7 +9,7 @@ import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
 import { useRouter } from 'expo-router'
 import * as Clipboard from 'expo-clipboard'
-import { CURRRENT_PARTY, storage } from '../utils/StorageUtils'
+import { CURRENT_PARTY, storage } from '../utils/StorageUtils'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
 
 export default function App() {

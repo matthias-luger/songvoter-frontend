@@ -22,6 +22,7 @@ export default function GoogleLogin(props: Props) {
     let [authObject, setAuthObject] = useState<TokenResponseConfig>(
         storage.contains(GOOGLE_AUTH_OBJECT) ? JSON.parse(storage.getString(GOOGLE_AUTH_OBJECT)) : null
     )
+    let [isLoggingIn, setIsLoggingIn] = useState(false)
     const [request, response, promptAsync] = Google.useAuthRequest({
         responseType: ResponseType.Code,
         androidClientId: googleClientId,
@@ -34,6 +35,7 @@ export default function GoogleLogin(props: Props) {
         if (response?.type === 'success') {
             handleGoogleSuccessResponse(response)
         } else if (response?.type === 'error') {
+            setIsLoggingIn(false)
             showErrorToast(response.error)
         }
     }, [response])
@@ -56,10 +58,12 @@ export default function GoogleLogin(props: Props) {
                 type: 'success',
                 text1: 'Successfully logged in!'
             })
+            setIsLoggingIn(false)
             if (props.onAfterLogin) {
                 props.onAfterLogin(tokenResponse)
             }
         } catch (e) {
+            setIsLoggingIn(false)
             showErrorToast(e)
         }
     }
@@ -68,10 +72,11 @@ export default function GoogleLogin(props: Props) {
         <View>
             {!authObject ? (
                 <Button
-                    style={globalStyles.primaryElement}
-                    textColor={theme.colors.onPrimary}
-                    disabled={!request}
+                    mode="contained"
+                    loading={isLoggingIn}
+                    disabled={!request || isLoggingIn}
                     onPress={() => {
+                        setIsLoggingIn(true)
                         promptAsync()
                     }}
                 >
@@ -79,8 +84,7 @@ export default function GoogleLogin(props: Props) {
                 </Button>
             ) : (
                 <Button
-                    style={globalStyles.primaryElement}
-                    textColor={theme.colors.onPrimary}
+                    mode="contained"
                     onPress={() => {
                         setAuthObject(null)
                         storage.delete(GOOGLE_AUTH_OBJECT)
