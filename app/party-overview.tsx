@@ -372,8 +372,15 @@ export default function App() {
                                             <AddSpotifyPlaylist
                                                 onAfterPlaylistAdded={async playlist => {
                                                     let tracks = await getSpotifyTracksForPlaylist(playlist.id)
+                                                    let listController = await getListController()
+                                                    let userLists = (await listController.apiListsGet()).data
+                                                    let { data: newList } = await listController.apiListsListIdSongsSpotifyPost(
+                                                        userLists[0].id,
+                                                        tracks.map(trackEntry => trackEntry.track.id)
+                                                    )
                                                     let partyController = await getPartyController()
-                                                    await Promise.all(tracks.map(trackEntry => partyController.apiPartyUpvoteSongIdPost(trackEntry.track.id)))
+                                                    partyController.apiPartyAddPost(newList.songs.map(song => song.id))
+
                                                     setPlaylist([])
                                                     setShowLoadingIndicator(true)
                                                     await loadSongs()

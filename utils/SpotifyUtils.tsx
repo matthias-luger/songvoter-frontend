@@ -293,6 +293,7 @@ export async function getSpotifyPlaylists(): Promise<SpotifyPlaylist[]> {
         }
 
         let data = await response.json()
+
         return data.items as SpotifyPlaylist[]
     } catch (e) {
         showErrorToast(e)

@@ -43,15 +43,12 @@ export default function AddSpotifyPlaylist(props: Props) {
         setPlaylists(newPlaylists)
         try {
             if (props.playlistId) {
-                console.log(props.playlistId)
                 let tracks = await getSpotifyTracksForPlaylist(playlist.id)
-                console.log(tracks)
                 let listController = await getListController()
-                tracks.forEach(trackEntry => {
-                    listController.apiListsListIdSongsPost(props.playlistId, {
-                        id: trackEntry.track.id
-                    })
-                })
+                listController.apiListsListIdSongsSpotifyPost(
+                    props.playlistId,
+                    tracks.map(trackEntry => trackEntry.track.id)
+                )
             }
 
             if (props.onAfterPlaylistAdded) {

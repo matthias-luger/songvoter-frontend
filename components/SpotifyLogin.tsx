@@ -30,7 +30,14 @@ export default function SpotifyLogin(props: Props) {
         {
             responseType: ResponseType.Code,
             clientId: 'f9d80531a87143cea4775783dd4004b5',
-            scopes: ['user-read-email', 'playlist-modify-public', 'user-modify-playback-state', 'user-read-playback-state'],
+            scopes: [
+                'user-read-email',
+                'playlist-modify-public',
+                'user-modify-playback-state',
+                'user-read-playback-state',
+                'playlist-read-private',
+                'playlist-read-collaborative'
+            ],
             // In order to follow the "Authorization Code Flow" to fetch token after authorizationEndpoint
             // this must be set to false
             usePKCE: false,
