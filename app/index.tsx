@@ -23,7 +23,7 @@ export default function App() {
     }
 
     if (storage.contains(CURRENT_PARTY)) {
-        router.push('/party-overview')
+        return <Redirect href="/party-overview" />
     }
 
     async function checkDeeplinkIfUserIsInParty() {
