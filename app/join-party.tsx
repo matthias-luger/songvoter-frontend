@@ -14,16 +14,16 @@ export default function App() {
     const router = useRouter()
     let [joinPartyUrl, setJoinPartyUrl] = useState('')
 
-    async function onJoinParty(joinUrl: string) {
-        let url = joinUrl && joinUrl.length <= 6 ? `https://songvoter.party/invite/${joinUrl}` : joinUrl
-        if (!url || !url.toLocaleLowerCase().includes('songvoter.party')) {
+    async function onJoinParty(joinValue: string) {
+        if (!joinValue || joinValue.length < 6) {
             Toast.show({
                 text1: 'Invalid QR-Code',
                 text2: "This QR-Code doesn't seem to be from a SongVoter party"
             })
             return
         }
-        let id = url.split('/invite/')[1]
+
+        let id = !joinValue.toLocaleLowerCase().includes('songvoter.party') ? joinValue : joinValue.split('/invite/')[1]
         try {
             let partyController = await getPartyController()
             await partyController.apiPartyInviteIdJoinPost(id)
