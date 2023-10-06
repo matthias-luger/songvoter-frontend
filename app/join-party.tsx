@@ -15,7 +15,7 @@ export default function App() {
     let [joinPartyUrl, setJoinPartyUrl] = useState('')
 
     async function onJoinParty(joinUrl: string) {
-        let url = joinUrl && joinUrl.length < 6 ? `https://songvoter.party/invite/${joinUrl}` : joinUrl
+        let url = joinUrl && joinUrl.length <= 6 ? `https://songvoter.party/invite/${joinUrl}` : joinUrl
         if (!url || !url.toLocaleLowerCase().includes('songvoter.party')) {
             Toast.show({
                 text1: 'Invalid QR-Code',
