@@ -1,9 +1,8 @@
 import MainLayout from '../layouts/MainLayout'
-import { Linking, StyleSheet, View } from 'react-native'
-import { useEffect, useState } from 'react'
+import { StyleSheet, View } from 'react-native'
+import { useState } from 'react'
 import { QRCodeScanner } from '../components/QRCodeScanner'
 import { Button, Divider, Text, TextInput, useTheme } from 'react-native-paper'
-import { globalStyles } from '../styles/globalStyles'
 import HeaderText from '../components/HeaderText'
 import { showErrorToast } from '../utils/ToastUtils'
 import { getPartyController } from '../utils/ApiUtils'
@@ -13,18 +12,18 @@ import { CURRENT_PARTY, storage } from '../utils/StorageUtils'
 
 export default function App() {
     const router = useRouter()
-    let theme = useTheme()
     let [joinPartyUrl, setJoinPartyUrl] = useState('')
 
-    async function onJoinParty(joinUrl: string) {
-        if (!joinUrl || !joinUrl.toLocaleLowerCase().includes('songvoter.party')) {
+    async function onJoinParty(joinValue: string) {
+        if (!joinValue || joinValue.length < 6) {
             Toast.show({
                 text1: 'Invalid QR-Code',
                 text2: "This QR-Code doesn't seem to be from a SongVoter party"
             })
             return
         }
-        let id = joinUrl.split('/invite/')[1]
+
+        let id = !joinValue.toLocaleLowerCase().includes('songvoter.party') ? joinValue : joinValue.split('/invite/')[1]
         try {
             let partyController = await getPartyController()
             await partyController.apiPartyInviteIdJoinPost(id)
