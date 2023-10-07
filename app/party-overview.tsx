@@ -366,7 +366,7 @@ export default function App() {
                                         />
                                     )
                                 }}
-                                style={styles.addSongButton}
+                                style={{ ...styles.addButton, width: storage.contains(SPOTIFY_TOKEN) ? '30%' : '45%' }}
                             >
                                 Add Song
                             </Button>
@@ -400,11 +400,15 @@ export default function App() {
                                         />
                                     )
                                 }}
-                                style={styles.addPlaylistButton}
+                                style={{ ...styles.addButton, display: storage.contains(SPOTIFY_TOKEN) ? 'flex' : 'none' }}
                             >
                                 Add Playlist
                             </Button>
-                            <Button textColor="white" onPress={showInviteCode} style={styles.inviteButton}>
+                            <Button
+                                textColor="white"
+                                onPress={showInviteCode}
+                                style={{ ...styles.addButton, width: storage.contains(SPOTIFY_TOKEN) ? '30%' : '45%' }}
+                            >
                                 Invite Code
                             </Button>
                         </View>
@@ -437,15 +441,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         backgroundColor: 'red'
     },
-    addSongButton: {
-        width: '30%',
-        backgroundColor: 'blue'
-    },
-    addPlaylistButton: {
-        width: '30%',
-        backgroundColor: 'blue'
-    },
-    inviteButton: {
+    addButton: {
         width: '30%',
         backgroundColor: 'blue'
     },

@@ -10,7 +10,7 @@ import { showErrorToast } from '../utils/ToastUtils'
 import { CoflnetSongVoterModelsPlayList, CoflnetSongVoterModelsSong } from '../generated'
 import { getListController } from '../utils/ApiUtils'
 import SongList from '../components/SongList'
-import { IS_CURRENTLY_PARTY_OWNER, PLATFORMS_USED_IN_SEARCH, YOUR_SONGS, storage } from '../utils/StorageUtils'
+import { IS_CURRENTLY_PARTY_OWNER, PLATFORMS_USED_IN_SEARCH, SPOTIFY_TOKEN, YOUR_SONGS, storage } from '../utils/StorageUtils'
 import AddSpotifyPlaylist from '../components/AddSpotifyPlaylist'
 
 export default function YourSongs() {
@@ -100,6 +100,7 @@ export default function YourSongs() {
                 <FAB
                     icon="plus"
                     label={'Add Playlist'}
+                    style={{ display: storage.contains(SPOTIFY_TOKEN) ? 'flex' : 'none' }}
                     onPress={() => {
                         setModalElementToShow(<AddSpotifyPlaylist onAfterPlaylistAdded={onAfterPlaylistAdded} playlistId={playlists[0]?.id} />)
                     }}
