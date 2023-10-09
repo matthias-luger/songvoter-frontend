@@ -26,15 +26,20 @@
         "backgroundColor": "#1a1c1e"
       },
       "package": "com.coflnet.songvoter",
-      "intentFilters": [{ 
-        "autoVerify": false, 
-        "action": "VIEW", 
-        "data": { 
-          "scheme": "https",
-           "host": "*.songvoter.party" 
-        }, 
-        "category": ["BROWSABLE", "DEFAULT"] 
-        }]
+      "intentFilters": [
+        {
+          "autoVerify": false,
+          "action": "VIEW",
+          "data": {
+            "scheme": "https",
+            "host": "*.songvoter.party"
+          },
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "plugins": [
       "@react-native-google-signin/google-signin",
@@ -50,6 +55,10 @@
         "projectId": "5ed28b9f-440a-484b-a86d-bc8433942b3e"
       }
     },
-    "owner": "ragult"
+    "owner": "coflnet",
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/5ed28b9f-440a-484b-a86d-bc8433942b3e"
+    }
   }
 }
