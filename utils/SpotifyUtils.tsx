@@ -1,5 +1,5 @@
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
-import { showErrorToast } from './ToastUtils'
+import { showErrorToast, showSpotifyErrorToast } from './ToastUtils'
 import { getUserController, getUserInfo } from './ApiUtils'
 
 async function getSpotifyDevices(): Promise<any[] | null> {
@@ -12,17 +12,13 @@ async function getSpotifyDevices(): Promise<any[] | null> {
                 'Content-Type': 'application/json'
             }
         })
-        let res = await devicesResponse.json()
 
-        if (res.error && res.error.status === 401) {
-            Toast.show({
-                type: 'info',
-                text1: `Error authenticating with Spotify.`,
-                text2: `Please try logging in again with Spotify`
-            })
+        if (!devicesResponse.ok) {
+            showSpotifyErrorToast(devicesResponse)
             return
         }
 
+        let res = await devicesResponse.json()
         let devices: any[] = res.devices
 
         if (!devices || devices.length === 0) {
@@ -42,6 +38,7 @@ async function getSpotifyDevices(): Promise<any[] | null> {
 export async function getSpotifyPlaybackState() {
     try {
         let token = await getUserInfo()
+
         let playResponse = await fetch(`https://api.spotify.com/v1/me/player`, {
             method: 'GET',
             headers: {
@@ -50,12 +47,7 @@ export async function getSpotifyPlaybackState() {
             }
         })
         if (!playResponse.ok) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't get Spotify Playback State`,
-                text2: `(Status ${playResponse.status})`
-            })
-            return
+            showSpotifyErrorToast(playResponse)
         }
         return (await playResponse.json()) as {
             item?: {}
@@ -86,12 +78,7 @@ export async function pauseSpotifySongPlayback() {
             }
         })
         if (!playResponse.ok) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't pause Spotify Playback`,
-                text2: `(Status ${playResponse.status})`
-            })
-            return
+            showSpotifyErrorToast(playResponse)
         }
     } catch (e) {
         showErrorToast(e)
@@ -114,12 +101,7 @@ export async function resumeSpotifySongPlayback() {
             }
         })
         if (!playResponse.ok) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't resume Spotify Playback`,
-                text2: `(Status ${playResponse.status})`
-            })
-            return
+            showSpotifyErrorToast(playResponse)
         }
     } catch (e) {
         showErrorToast(e)
@@ -150,13 +132,8 @@ export async function playSpotifySong(songId: string) {
             }
         })
 
-        if (playResponse.status !== 204) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't start Spotify playback`,
-                text2: `(Status ${playResponse.status})`
-            })
-            return
+        if (!playResponse.ok) {
+            showSpotifyErrorToast(playResponse)
         }
     } catch (e) {
         showErrorToast(e)
@@ -174,11 +151,7 @@ export async function getCurrentlyPlayingSongDataFromSpotify() {
             }
         })
         if (!response.ok) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't fetch currently playing song information`,
-                text2: `(Status ${response.status})`
-            })
+            showSpotifyErrorToast(response)
             return
         }
         if (response.status === 204) {
@@ -252,11 +225,7 @@ export async function getSpotifyTracksForPlaylist(playlistId: string): Promise<S
             }
         })
         if (!response.ok) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't fetch tracks for playlist`,
-                text2: `(Status ${response.status})`
-            })
+            showErrorToast(response)
             return
         }
         if (response.status === 204) {
@@ -281,11 +250,7 @@ export async function getSpotifyPlaylists(): Promise<SpotifyPlaylist[]> {
             }
         })
         if (!response.ok) {
-            Toast.show({
-                type: 'error',
-                text1: `Couldn't fetch playlist information`,
-                text2: `(Status ${response.status})`
-            })
+            showErrorToast(response)
             return
         }
         if (response.status === 204) {

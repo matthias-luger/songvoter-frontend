@@ -1,8 +1,8 @@
 import React from 'react'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
-import { Link, usePathname } from 'expo-router'
+import { Link, router, usePathname, useRouter } from 'expo-router'
 import { Pressable, View } from 'react-native'
-import { Text, useTheme } from 'react-native-paper'
+import { Text, TouchableRipple, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 
 export const DEFAULT_ROUTES: Route[] = [
@@ -50,16 +50,16 @@ export function FooterNavigation(props: Props) {
     }
 
     return (
-        <View style={{ backgroundColor: theme.colors.secondaryContainer, display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <View style={{ backgroundColor: theme.colors.secondaryContainer, display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly' }}>
             {routes.map(route => (
-                <Link href={route.href} replace key={route.href} asChild style={{ flex: 1 }}>
-                    <Pressable>
+                <View style={{ flex: 1 }}>
+                    <TouchableRipple onPress={e => router.replace(route.href)} rippleColor="rgba(0, 0, 0, .32)" borderless={true}>
                         <View style={globalStyles.horizontalCenter}>
                             <MaterialCommunityIcons name={isSelected(route) ? route.selectedIcon : route.icon} size={25} />
                             <Text style={{ fontSize: 18, color: theme.colors.onSecondaryContainer }}>{route.label}</Text>
                         </View>
-                    </Pressable>
-                </Link>
+                    </TouchableRipple>
+                </View>
             ))}
         </View>
     )
