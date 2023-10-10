@@ -8,7 +8,7 @@ import { GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtils'
 import Toast from 'react-native-toast-message'
 import { Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
-import { showErrorToast } from '../utils/ToastUtils'
+import { showErrorToast } from '../utils/ErrorUtils'
 import { getAuthController, googleClientId } from '../utils/ApiUtils'
 WebBrowser.maybeCompleteAuthSession()
 

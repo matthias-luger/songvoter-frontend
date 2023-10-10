@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'expo-router'
 import { ActivityIndicator, Button, Divider, Modal, Portal, Text } from 'react-native-paper'
 import HeaderText from '../components/HeaderText'
-import { showErrorToast } from '../utils/ToastUtils'
+import { showErrorToast } from '../utils/ErrorUtils'
 import { getListController, getPartyController, getUserInfo } from '../utils/ApiUtils'
 import {
     getCurrentlyPlayingSongDataFromSpotify,

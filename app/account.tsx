@@ -15,7 +15,7 @@ export default function App() {
         <>
             <MainLayout>
                 <View style={styles.container}>
-                    <HeaderText text="Account!" />
+                    <HeaderText text="Account" />
                     <View>
                         <View style={styles.accountBox}>
                             <Text style={{ width: '30%', ...theme.fonts.labelLarge }}>Google</Text>

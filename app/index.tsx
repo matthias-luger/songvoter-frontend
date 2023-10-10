@@ -5,14 +5,13 @@ import { CURRENT_PARTY, GOOGLE_AUTH_OBJECT, storage } from '../utils/StorageUtil
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
 import { View, StyleSheet, Linking } from 'react-native'
 import { globalStyles } from '../styles/globalStyles'
-import { showErrorToast } from '../utils/ToastUtils'
+import { showErrorToast } from '../utils/ErrorUtils'
 import HeaderText from '../components/HeaderText'
 import { getPartyController } from '../utils/ApiUtils'
 import Toast from 'react-native-toast-message'
 
 export default function App() {
     const router = useRouter()
-    let theme = useTheme()
 
     useEffect(() => {
         checkDeeplinkIfUserIsInParty()

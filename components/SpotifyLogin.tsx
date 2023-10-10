@@ -7,7 +7,7 @@ import { SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
 import { ActivityIndicator, Button, useTheme } from 'react-native-paper'
 import { globalStyles } from '../styles/globalStyles'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
-import { showErrorToast } from '../utils/ToastUtils'
+import { showErrorToast } from '../utils/ErrorUtils'
 import { getAuthController, getUserController } from '../utils/ApiUtils'
 
 WebBrowser.maybeCompleteAuthSession()

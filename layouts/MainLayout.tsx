@@ -1,5 +1,4 @@
 import { StatusBar } from 'expo-status-bar'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { View, StyleSheet } from 'react-native'
 import { FooterNavigation, Route } from '../components/FooterNavigation'
 import { globalStyles } from '../styles/globalStyles'
@@ -10,6 +9,7 @@ interface Props {
 }
 
 export default function MainLayout(props: Props) {
+
     return (
         <>
             <StatusBar style="dark" />

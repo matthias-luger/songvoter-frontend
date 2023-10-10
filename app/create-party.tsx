@@ -7,7 +7,7 @@ import { Toast } from 'react-native-toast-message/lib/src/Toast'
 import SpotifyLogin from '../components/SpotifyLogin'
 import { getPartyController } from '../utils/ApiUtils'
 import { CURRENT_PARTY, SPOTIFY_TOKEN, storage } from '../utils/StorageUtils'
-import { showErrorToast } from '../utils/ToastUtils'
+import { showErrorToast } from '../utils/ErrorUtils'
 import { router } from 'expo-router'
 import { CoflnetSongVoterModelsSongPlatform } from '../generated'
 

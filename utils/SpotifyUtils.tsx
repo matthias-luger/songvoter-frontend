@@ -1,5 +1,5 @@
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
-import { showErrorToast, showSpotifyErrorToast } from './ToastUtils'
+import { showErrorToast, showSpotifyErrorToast } from './ErrorUtils'
 import { getUserController, getUserInfo } from './ApiUtils'
 
 async function getSpotifyDevices(): Promise<any[] | null> {

@@ -1,5 +1,5 @@
 import { ActivityIndicator, IconButton, List, Text } from 'react-native-paper'
-import { showErrorToast } from '../utils/ToastUtils'
+import { showErrorToast } from '../utils/ErrorUtils'
 import React, { useEffect, useRef, useState } from 'react'
 import { ScrollView, View, StyleSheet, Image } from 'react-native'
 import { Toast } from 'react-native-toast-message/lib/src/Toast'
