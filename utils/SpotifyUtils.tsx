@@ -46,8 +46,17 @@ export async function getSpotifyPlaybackState() {
                 'Content-Type': 'application/json'
             }
         })
+        if (playResponse.status === 204) {
+            Toast.show({
+                type: 'error',
+                text1: "Spotify couln't find player",
+                text2: 'Try restarting Spotify'
+            })
+            return
+        }
         if (!playResponse.ok) {
             showSpotifyErrorToast(playResponse)
+            return
         }
         return (await playResponse.json()) as {
             item?: {}

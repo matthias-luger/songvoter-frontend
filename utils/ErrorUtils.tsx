@@ -117,7 +117,7 @@ function reportErrorToFeedbackService(message: string) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            Context: 'SongVoter',
+            Context: 'Songvoter Android App',
             User: user,
             Feedback: message,
             FeedbackName: 'error'
